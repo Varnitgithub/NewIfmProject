@@ -8,4 +8,5 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="check_btn">#6C6B6B</color>
+    <color name="btn_continue">#acacac</color>
 </resources>
