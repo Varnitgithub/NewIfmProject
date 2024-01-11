@@ -9,4 +9,5 @@
     <color name="white">#FFFFFFFF</color>
     <color name="check_btn">#6C6B6B</color>
     <color name="btn_continue">#acacac</color>
+    <color name="transparent">#00000000</color>
 </resources>
