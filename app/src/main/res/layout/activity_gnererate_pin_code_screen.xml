@@ -168,7 +168,7 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/roboto"
                 android:gravity="start"
-                android:text="Sign In"
+                android:text="Sign in"
                 android:textColor="#001c35"
                 android:textSize="15sp"
                 app:layout_constraintBottom_toBottomOf="parent"

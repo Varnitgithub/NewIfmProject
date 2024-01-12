@@ -1,5 +1,6 @@
 package com.example.ifmapp.activities
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -18,7 +19,13 @@ class EnterPinCodeScreen : AppCompatActivity() {
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_enter_pin_code_screen)
         edtPincodeLiveData = MutableLiveData()
+binding.reset.setOnClickListener {
+    startActivity(Intent(this, GnereratePinCodeScreen::class.java))
 
+}
+        binding.btnSignIn.setOnClickListener {
+           // startActivity(Intent(this,))
+        }
         edtPincodeLiveData.observe(this) {
             if (it >= 5) {
                 binding.btnSignIn.setBackgroundResource(R.drawable.button_back)

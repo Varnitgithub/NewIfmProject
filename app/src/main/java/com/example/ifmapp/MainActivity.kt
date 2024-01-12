@@ -1,5 +1,6 @@
 package com.example.ifmapp
 
+import android.content.Intent
 import com.example.ifmapp.R
 import android.os.Bundle
 import android.view.View
@@ -8,6 +9,7 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import com.example.ifmapp.activities.CheckInScreen
 import com.example.ifmapp.databinding.MainActivityBinding
 
 class MainActivity : AppCompatActivity() {
@@ -23,12 +25,18 @@ class MainActivity : AppCompatActivity() {
             binding.checkoutBtn.setBackgroundResource(R.drawable.button_backwhite)
             binding.checkInBtn.setTextColor(resources.getColor(R.color.white))
             binding.checkInBtn.setBackgroundResource(R.drawable.button_back)
+
+            startActivity(Intent(this,CheckInScreen::class.java))
+
         }
         binding.checkoutBtn.setOnClickListener {
             binding.checkInBtn.setTextColor(resources.getColor(R.color.check_btn))
             binding.checkInBtn.setBackgroundResource(R.drawable.button_backwhite)
             binding.checkoutBtn.setTextColor(resources.getColor(R.color.white))
             binding.checkoutBtn.setBackgroundResource(R.drawable.button_back)
+
+            startActivity(Intent(this,CheckInScreen::class.java))
+
         }
 // Define the items for the dropdown
         val siteItems = arrayOf("IL Environmental Infrastructure Services Limited",

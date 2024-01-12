@@ -1,5 +1,6 @@
 package com.example.ifmapp.activities
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -28,6 +29,10 @@ class GnereratePinCodeScreen : AppCompatActivity() {
                 binding.btnGenerate.setBackgroundResource(R.drawable.site_selection_back)
                 binding.btnGenerate.setTextColor(resources.getColor(R.color.btn_continue))
             }
+        }
+        binding.btnGenerate.setOnClickListener {
+            startActivity(Intent(this, DashBoardScreen::class.java))
+
         }
 
 

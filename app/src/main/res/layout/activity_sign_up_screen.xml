@@ -139,6 +139,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:orientation="vertical"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="@id/top_icons_CL"
             app:layout_constraintStart_toStartOf="@id/top_icons_CL"
             app:layout_constraintTop_toBottomOf="@id/id_icons">

@@ -6,17 +6,18 @@
         android:icon="@drawable/home" />
 
     <item
-        android:id="@+id/navigation_dashboard"
+        android:id="@+id/navigation_musters"
         android:title="Musters"
         android:icon="@drawable/check" />
 
     <item
-        android:id="@+id/navigation_notifications"
+        android:id="@+id/navigation_mydocs"
         android:title="My Docs"
         android:icon="@drawable/docs" />
 
     <item
-        android:id="@+id/navigation_profile"
+        android:id="@+id/navigation_menu"
         android:title="Menu"
+
         android:icon="@drawable/tab" />
 </menu>

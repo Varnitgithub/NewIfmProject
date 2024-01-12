@@ -1,5 +1,6 @@
 package com.example.ifmapp.activities
 
+import android.content.res.ColorStateList
 import android.graphics.Paint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -7,67 +8,74 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.KeyEvent
 import android.widget.EditText
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import com.example.ifmapp.R
 import com.example.ifmapp.databinding.ActivityDashBoardScreenBinding
+import com.example.ifmapp.fragments.DocsFragment
+import com.example.ifmapp.fragments.HomeFragment
+import com.example.ifmapp.fragments.MenuFragment
+import com.example.ifmapp.fragments.MustersFragment
 
 class DashBoardScreen : AppCompatActivity() {
     private lateinit var binding: ActivityDashBoardScreenBinding
+    private lateinit var fragmentManager: FragmentManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dash_board_screen)
-binding = DataBindingUtil.setContentView(this,R.layout.activity_dash_board_screen)
-        binding.forgotPin.paintFlags = binding.forgotPin.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_dash_board_screen)
 
-        val editTexts = listOf(binding.otp1, binding.otp2, binding.otp3, binding.otp4)
+        val homeFragment = HomeFragment()
+        val mustersFragment = MustersFragment()
+        val docsFragment = DocsFragment()
+        val menuFragment = MenuFragment()
 
-        for (i in 0 until editTexts.size) {
-            editTexts[i].addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+        addFragment(homeFragment)
+        binding.bottomNavigation.itemTextColor = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.white))
+        binding.bottomNavigation.itemIconTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.white))
 
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-
-                override fun afterTextChanged(s: Editable?) {
-                    // Implement your logic here if needed
-                }
-            })
-
-            editTexts[i].setOnKeyListener { _, keyCode, event ->
-                if (keyCode == KeyEvent.KEYCODE_DEL && event.action == KeyEvent.ACTION_DOWN) {
-                    // If backspace is pressed, move the focus to the previous EditText
-                    if (i > 0) {
-                        editTexts[i - 1].requestFocus()
-                    }
+        binding.bottomNavigation.setOnNavigationItemSelectedListener {
+            when (it.itemId) {
+                R.id.navigation_home -> {
+                    addFragment(homeFragment)
                     true
-                } else {
+                }
+
+                R.id.navigation_musters -> {
+                    addFragment(mustersFragment)
+                    true
+                }
+
+                R.id.navigation_mydocs -> {
+                    addFragment(docsFragment)
+
+                    true
+                }
+
+                R.id.navigation_menu -> {
+                    addFragment(menuFragment)
+
+                    true
+                }
+
+                else -> {
                     false
                 }
+
             }
         }
-        setupOtpEditTextListeners()
+
 
     }
 
+    private fun addFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.frameLayout, fragment)
+            .commit()
 
-    private fun setupOtpEditTextListeners() {
-        binding.otp1.addTextChangedListener(createOtpTextWatcher(binding.otp2))
-        binding.otp2.addTextChangedListener(createOtpTextWatcher(binding.otp3))
-        binding.otp3.addTextChangedListener(createOtpTextWatcher(binding.otp4))
-        binding.otp4.addTextChangedListener(createOtpTextWatcher(null))
     }
 
-    private fun createOtpTextWatcher(nextEditText: EditText?): TextWatcher {
-        return object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (s?.length == 1) {
-                    nextEditText?.requestFocus()
-                }
-            }
-
-            override fun afterTextChanged(s: Editable?) {}
-        }
-    }
 
 }

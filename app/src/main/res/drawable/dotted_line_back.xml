@@ -1,0 +1,23 @@
+<!-- res/drawable/vertical_dotted_line.xml -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Background to prevent clipping -->
+
+    <!-- Rotated line shape -->
+    <item>
+        <rotate
+            android:fromDegrees="90"
+            android:pivotX="50%"
+            android:pivotY="50%">
+
+            <shape android:shape="line">
+                <stroke
+                    android:color="#001C35"
+                    android:width="3dp"
+                    android:dashWidth="4dp"
+                    android:dashGap="4dp" />
+            </shape>
+        </rotate>
+    </item>
+
+</layer-list>
