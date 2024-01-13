@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.example.ifmapp.activities.CheckInScreen
+import com.example.ifmapp.activities.ScannerScreen
 import com.example.ifmapp.databinding.MainActivityBinding
 
 class MainActivity : AppCompatActivity() {
@@ -26,7 +27,7 @@ class MainActivity : AppCompatActivity() {
             binding.checkInBtn.setTextColor(resources.getColor(R.color.white))
             binding.checkInBtn.setBackgroundResource(R.drawable.button_back)
 
-            startActivity(Intent(this,CheckInScreen::class.java))
+            startActivity(Intent(this,ScannerScreen::class.java))
 
         }
         binding.checkoutBtn.setOnClickListener {
@@ -35,7 +36,7 @@ class MainActivity : AppCompatActivity() {
             binding.checkoutBtn.setTextColor(resources.getColor(R.color.white))
             binding.checkoutBtn.setBackgroundResource(R.drawable.button_back)
 
-            startActivity(Intent(this,CheckInScreen::class.java))
+            startActivity(Intent(this,ScannerScreen::class.java))
 
         }
 // Define the items for the dropdown

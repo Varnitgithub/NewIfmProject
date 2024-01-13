@@ -193,6 +193,7 @@
                                 android:layout_weight="1"
                                 android:inputType="number|numberPassword"
                                 android:maxLength="1"
+                                android:gravity="center"
                                 android:textColorHint="@color/white"
                                 android:textColor="@color/white"
                                 app:layout_constraintBottom_toBottomOf="parent"
@@ -225,6 +226,8 @@
                                 android:layout_weight="1"
                                 android:inputType="number|numberPassword"
                                 android:maxLength="1"
+                                android:gravity="center"
+
                                 android:textColorHint="@color/white"
                                 android:textColor="@color/white"
 
@@ -258,6 +261,8 @@
                                 android:layout_weight="1"
                                 android:inputType="number|numberPassword"
                                 android:maxLength="1"
+                                android:gravity="center"
+
                                 android:textColorHint="@color/white"
                                 android:textColor="@color/white"
 
@@ -292,6 +297,8 @@
                                 android:textColor="@color/white"
                                 android:inputType="number|numberPassword"
                                 android:maxLength="1"
+                                android:gravity="center"
+
                                 android:textColorHint="@color/white"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"

@@ -16,8 +16,7 @@ import com.example.ifmapp.R
 import com.example.ifmapp.databinding.ActivitySignUpScreenBinding
 
 class SignUpScreen : AppCompatActivity() {
-    private val LOCATION_PERMISSION_REQUEST_CODE = 123
-    private var isPermissionDenied = false
+
     private lateinit var employeeidLiveData: MutableLiveData<Int>
     private lateinit var otpLiveData: MutableLiveData<Int>
 
@@ -29,16 +28,10 @@ class SignUpScreen : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_sign_up_screen)
 
         binding.btnContinue.setOnClickListener {
-            if (checkPermission()) {
+
                 startActivity(Intent(this,GnereratePinCodeScreen::class.java))
 
-            } else {
-                if (isPermissionDenied) {
-                    requestLocation()
-                } else {
-                    requestLocation()
-                }
-            }
+
         }
 
         //Initialization
@@ -68,7 +61,7 @@ class SignUpScreen : AppCompatActivity() {
             }
         }
 
-        binding.employeeId.addTextChangedListener(object : TextWatcher {
+        binding.employeeidEdt.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
 
@@ -119,57 +112,7 @@ class SignUpScreen : AppCompatActivity() {
     }
 
 
-    private fun checkPermission(): Boolean {
-        return ActivityCompat.checkSelfPermission(
-            this,
-            android.Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(
-                    this,
-                    android.Manifest.permission.ACCESS_COARSE_LOCATION
-                ) == PackageManager.PERMISSION_GRANTED
-    }
 
-    private fun requestLocation() {
-        if (isPermissionDenied) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(
-                    android.Manifest.permission.ACCESS_FINE_LOCATION,
-                    android.Manifest.permission.ACCESS_COARSE_LOCATION
-                ),
-                LOCATION_PERMISSION_REQUEST_CODE
-            )
-        } else {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(
-                    android.Manifest.permission.ACCESS_FINE_LOCATION,
-                    android.Manifest.permission.ACCESS_COARSE_LOCATION
-                ),
-                LOCATION_PERMISSION_REQUEST_CODE
-            )
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            // Check if the permissions were granted or denied
-            if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
-                Toast.makeText(this, "location granted", Toast.LENGTH_SHORT).show()
-                startActivity(Intent(this,GnereratePinCodeScreen::class.java))
-
-            } else {
-                isPermissionDenied = true
-            }
-        }
-    }
 
 
     }
