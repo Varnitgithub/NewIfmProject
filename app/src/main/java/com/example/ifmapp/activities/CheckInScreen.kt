@@ -1,11 +1,14 @@
 package com.example.ifmapp.activities
 
+
 import android.Manifest
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.location.Address
@@ -15,9 +18,14 @@ import android.location.LocationListener
 import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.IBinder
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
+import android.view.animation.AnimationSet
+import android.view.animation.DecelerateInterpolator
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -27,28 +35,33 @@ import com.example.ifmapp.Locationmodel
 import com.example.ifmapp.R
 import com.example.ifmapp.databinding.ActivityCheckInScreenBinding
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationAvailability
 import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.greenrobot.eventbus.EventBus
 import java.io.IOException
 import java.util.Locale
 
-class CheckInScreen : AppCompatActivity(), LocationListener {
-    private lateinit var locationManager: LocationManager
+class CheckInScreen : AppCompatActivity() {
     private lateinit var realtimeLocationLiveData: MutableLiveData<Locationmodel>
     private lateinit var binding: ActivityCheckInScreenBinding
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private lateinit var locationCallback: LocationCallback
-    private val LOCATION_PERMISSION_REQUEST_CODE = 123
-    private var isLocationFetched = false
+    private var fusedLocationProviderClient: FusedLocationProviderClient? = null
+    private var locationCallback: LocationCallback? = null
+    private var locationRequest: LocationRequest? = null
     private var address: String? = null
-    private var latitude: String? = null
-    private var longitude: String? = null
+    private var mLatitude: String? = null
+    private var mLongitude: String? = null
     private var userBitmap: Bitmap? = null
     private val REQUEST_IMAGE_CAPTURE = 1
-    private val REQUEST_CAMERA_PERMISSION = 200
     private val CAMERA_PERMISSION_CODE = 101
 
-
-    private var isPermissionDenied = true
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_check_in_screen)
@@ -56,16 +69,54 @@ class CheckInScreen : AppCompatActivity(), LocationListener {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_check_in_screen)
 
         //initialization
-        locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+        locationRequest =
+            LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000).setIntervalMillis(500)
+                .build()
+
+
+        locationCallback = object : LocationCallback() {
+            override fun onLocationAvailability(p0: LocationAvailability) {
+                super.onLocationAvailability(p0)
+            }
+
+            override fun onLocationResult(locationResult: LocationResult) {
+                super.onLocationResult(locationResult)
+                val location = locationResult.lastLocation
+                mLatitude = location?.latitude.toString()
+                mLongitude = location?.longitude.toString()
+                getAddressFromLocation(
+                    this@CheckInScreen,
+                    mLatitude?.toDouble() ?: 0.0,
+                    mLongitude?.toDouble() ?: 0.0
+                )
+                realtimeLocationLiveData.postValue(
+                    Locationmodel(
+                        location?.latitude,
+                        location?.longitude
+                    )
+                )
+
+            }
+        }
         realtimeLocationLiveData = MutableLiveData()
 
-        val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-        val isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
 
+        createLocationRequest()
 
-        realtimeLocationLiveData.observe(this){
-            Log.d("TAGGGGGGGGG", "onCreate: loc ${it.longitude} ${it.latitude}")
-            Toast.makeText(this, " loc ${it.longitude} ${it.latitude}", Toast.LENGTH_SHORT).show()
+        realtimeLocationLiveData.observe(this) {
+            binding.checkInlatlong.text = "$mLatitude $mLongitude"
+            it.let {
+                it.latitude?.let { it1 ->
+                    it.longitude?.let { it2 ->
+                        getAddressFromLocation(
+                            this, it1,
+                            it2
+                        )
+                    }
+                }
+
+            }
         }
 
         binding.finalLayoutCL.visibility = View.GONE
@@ -78,22 +129,17 @@ class CheckInScreen : AppCompatActivity(), LocationListener {
             binding.btnRetake.setTextColor(resources.getColor(R.color.white))
             binding.btnRetake.setBackgroundResource(R.drawable.button_back)
 
-
-
-            setFinalDialog(
-                userBitmap!!,
-                latitude.toString(),
-                longitude.toString(),
-                address.toString()
-            )
-
-            val animator = ObjectAnimator.ofFloat(binding.blinkingBtn, "alpha", 1f, 0f)
-            animator.duration = 500 // Set the duration for one iteration (in milliseconds)
-            animator.repeatMode = ObjectAnimator.REVERSE // Reverse the animation
-            animator.repeatCount = ObjectAnimator.INFINITE // Repeat indefinitely
-
-            // Start the animation
-            animator.start()
+            if (userBitmap != null && mLatitude != null && mLongitude != null) {
+                setFinalDialog(
+                    userBitmap!!,
+                    mLatitude.toString(),
+                    mLongitude.toString(),
+                    address.toString()
+                )
+                startBlinkAnimation()
+            }else{
+                binding.btnSubmit.isEnabled = false
+            }
         }
 
         binding.btnRetake.setOnClickListener {
@@ -107,109 +153,46 @@ class CheckInScreen : AppCompatActivity(), LocationListener {
         }
 
         binding.bigProfile.setOnClickListener {
-            if (checkPermission()/*&&isGpsEnabled&&isNetworkEnabled*/) {
-                Log.d("TAGGGGGGGG", "onCreate:i am here ")
-                //get location
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5f, this)
 
-                if (checkCameraPermission()) {
-                    dispatchTakePictureIntent()
-                } else {
-                    requestCameraPermission()
-                }
+            if (checkCameraPermission()) {
+                dispatchTakePictureIntent()
             } else {
-                Log.d("TAGGGGGGGG", "onCreate:i am here 2")
-
-                requestLocation()
+                requestCameraPermission()
             }
-
         }
+
 
         binding.btnCross.setOnClickListener {
             startActivity(Intent(this, DashBoardScreen::class.java))
         }
-    }
-
-    private fun checkPermission(): Boolean {
-        return ActivityCompat.checkSelfPermission(
-            this,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                ) == PackageManager.PERMISSION_GRANTED
-    }
-
-    private fun requestLocation() {
-
-        ActivityCompat.requestPermissions(
-            this,
-            arrayOf(
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ),
-            LOCATION_PERMISSION_REQUEST_CODE
-        )
 
     }
 
-    @SuppressLint("MissingPermission")
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5f, this)
-
-                if (checkCameraPermission()) {
-                    dispatchTakePictureIntent()
-
-                } else {
-                    requestCameraPermission()
-                }
-            }
-        } else if (requestCode == CAMERA_PERMISSION_CODE) {
-            if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
-                dispatchTakePictureIntent()
-            }
-        }
-    }
 
     private fun getAddressFromLocation(
         context: Context,
         latitude: Double,
         longitude: Double
-    ): String {
-        val geocoder = Geocoder(context, Locale.getDefault())
+    ) {
+        GlobalScope.launch(Dispatchers.IO) {
+            val geocoder = Geocoder(context, Locale.getDefault())
 
-        try {
-            val addresses: List<Address>? = geocoder.getFromLocation(latitude, longitude, 1)
-            if (addresses != null && addresses.isNotEmpty()) {
-                val address: Address = addresses[0]
-                binding.address.text =
-                    "${address.locality} ${address.subLocality} ${address.adminArea} ${address.subAdminArea}"
-
+            try {
+                val addresses: List<Address>? = geocoder.getFromLocation(latitude, longitude, 1)
+                if (!addresses.isNullOrEmpty()) {
+                    val address: Address = addresses[0]
+                    withContext(Dispatchers.Main) {
+                        binding.address.text =
+                            "${address.locality} ${address.subLocality} ${address.adminArea} ${address.subAdminArea}"
+                    }
+                }
+            } catch (e: IOException) {
+                Log.e("Geocoding", "Error getting address from location: $e")
             }
-        } catch (e: IOException) {
-            Log.e("Geocoding", "Error getting address from location: $e")
         }
-
-        return "Address not found"
     }
 
-    override fun onLocationChanged(location: Location) {
-        realtimeLocationLiveData.postValue(Locationmodel(location.latitude, location.longitude))
-        latitude = location.latitude.toString()
-        longitude = location.longitude.toString()
-        address = getAddressFromLocation(this, location.latitude, location.longitude)
-        isLocationFetched = true
-        Log.d("TAGGGGG", "onLocationChanged:thisi=s ${location.latitude}")
-    }
+
 
     private fun dispatchTakePictureIntent() {
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
@@ -233,13 +216,7 @@ class CheckInScreen : AppCompatActivity(), LocationListener {
             // Do something with the captured image (e.g., display it in an ImageView)
             binding.bigProfile.setImageBitmap(imageBitmap)
             userBitmap = imageBitmap
-            binding.checkInlatlong.text = "$latitude  $longitude"
-            var address = getAddressFromLocation(
-                this@CheckInScreen,
-                latitude?.toDouble() ?: 0.0,
-                longitude?.toDouble() ?: 0.0
-            )
-            binding.checkInAdress.text = "$latitude  $longitude"
+
 
         }
     }
@@ -259,8 +236,27 @@ class CheckInScreen : AppCompatActivity(), LocationListener {
         )
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == CAMERA_PERMISSION_CODE) {
 
-    fun setFinalDialog(image: Bitmap, latitude: String, longitude: String, address: String) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                dispatchTakePictureIntent()
+            }
+        }
+    }
+
+
+    private fun setFinalDialog(
+        image: Bitmap,
+        latitude: String,
+        longitude: String,
+        address: String
+    ) {
         binding.checkinCL.visibility = View.GONE
         binding.finalLayoutCL.visibility = View.VISIBLE
         binding.profileFinal.setImageBitmap(image)
@@ -269,8 +265,59 @@ class CheckInScreen : AppCompatActivity(), LocationListener {
     }
 
     @SuppressLint("MissingPermission")
-    private fun picture() {
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5f, this)
+    fun createLocationRequest() {
+        try {
+            fusedLocationProviderClient?.requestLocationUpdates(
+                locationRequest!!,
+                locationCallback!!,
+                null
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
+    private fun removeLocationUpdates() {
+        locationCallback.let {
+            if (it != null) {
+                fusedLocationProviderClient?.removeLocationUpdates(it)
+            }
+        }
+
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        removeLocationUpdates()
+    }
+
+
+    private fun startBlinkAnimation() {
+        val fadeIn = AlphaAnimation(0.0f, 1.0f)
+        fadeIn.duration = 300 // You can adjust the duration as needed
+        fadeIn.interpolator = DecelerateInterpolator()
+
+        val fadeOut = AlphaAnimation(1.0f, 0.0f)
+        fadeOut.startOffset = 300 // Time to wait before starting fade out
+        fadeOut.duration = 300 // You can adjust the duration as needed
+        fadeOut.interpolator = DecelerateInterpolator()
+
+        val animationSet = AnimationSet(true)
+        animationSet.addAnimation(fadeIn)
+        animationSet.addAnimation(fadeOut)
+
+        // Set the AnimationListener to restart the animation when it ends
+        animationSet.setAnimationListener(object : Animation.AnimationListener {
+            override fun onAnimationStart(animation: Animation) {}
+            override fun onAnimationEnd(animation: Animation) {
+                startBlinkAnimation()
+            }
+
+            override fun onAnimationRepeat(animation: Animation) {}
+        })
+
+        // Apply the animation to your layout
+        binding.blinkingBtn.startAnimation(animationSet)
+        binding.attendanceMarkedTxt.startAnimation(animationSet)
+    }
 }

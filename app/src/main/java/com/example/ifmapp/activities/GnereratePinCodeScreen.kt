@@ -1,19 +1,24 @@
 package com.example.ifmapp.activities
 
+
+import LocationServiceClass
+import android.Manifest
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
 import com.example.ifmapp.R
-import com.example.ifmapp.databinding.ActivityEnterPinCodeScreenBinding
 import com.example.ifmapp.databinding.ActivityGnereratePinCodeScreenBinding
 
 class GnereratePinCodeScreen : AppCompatActivity() {
     private lateinit var edtPincodeLiveData: MutableLiveData<Int>
     private lateinit var binding: ActivityGnereratePinCodeScreenBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //setContentView(R.layout.activity_enter_pin_code_screen)
@@ -30,11 +35,13 @@ class GnereratePinCodeScreen : AppCompatActivity() {
                 binding.btnGenerate.setTextColor(resources.getColor(R.color.btn_continue))
             }
         }
+
+
+
         binding.btnGenerate.setOnClickListener {
             startActivity(Intent(this, DashBoardScreen::class.java))
 
         }
-
 
         binding.edtEnterPinCode.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -50,4 +57,5 @@ class GnereratePinCodeScreen : AppCompatActivity() {
         })
 
     }
+
 }
