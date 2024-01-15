@@ -46,10 +46,6 @@ class DashBoardScreen : AppCompatActivity() {
         setContentView(R.layout.activity_dash_board_screen)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dash_board_screen)
 
-        val homeFragment = HomeFragment()
-        val mustersFragment = MustersFragment()
-        val docsFragment = DocsFragment()
-        val menuFragment = MenuFragment()
 
         if (!isMockLocation()) {
             if (checkPermission()) {

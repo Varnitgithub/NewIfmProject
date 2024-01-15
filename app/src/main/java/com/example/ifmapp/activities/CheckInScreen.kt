@@ -21,6 +21,7 @@ import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.view.animation.AnimationSet
 import android.view.animation.DecelerateInterpolator
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -129,13 +130,13 @@ class CheckInScreen : AppCompatActivity() {
 
         binding.btnSubmit.setOnClickListener {
 
-            binding.btnSubmit.setTextColor(resources.getColor(R.color.check_btn))
-            binding.btnSubmit.setBackgroundResource(R.drawable.button_backwhite)
-            binding.btnRetake.setTextColor(resources.getColor(R.color.white))
-            binding.btnRetake.setBackgroundResource(R.drawable.button_back)
+            binding.btnSubmit.setTextColor(resources.getColor(R.color.white))
+            binding.btnSubmit.setBackgroundResource(R.drawable.button_back)
+            binding.btnRetake.setTextColor(resources.getColor(R.color.check_btn))
+            binding.btnRetake.setBackgroundResource(R.drawable.button_backwhite)
 
             if (userBitmap != null && mLatitude != null && mLongitude != null) {
-                setFinalDialog(
+                  setFinalDialog(
                     userBitmap!!,
                     mLatitude.toString(),
                     mLongitude.toString(),
@@ -153,22 +154,19 @@ class CheckInScreen : AppCompatActivity() {
 
                 }, delayMillis)
 
-            }else{
-                binding.btnSubmit.isEnabled = false
             }
         }
 
         binding.btnRetake.setOnClickListener {
             if (userBitmap != null) {
-                binding.btnRetake.setTextColor(resources.getColor(R.color.check_btn))
-                binding.btnRetake.setBackgroundResource(R.drawable.button_backwhite)
-                binding.btnSubmit.setTextColor(resources.getColor(R.color.white))
-                binding.btnSubmit.setBackgroundResource(R.drawable.button_back)
+
+                binding.btnRetake.setTextColor(resources.getColor(R.color.white))
+                binding.btnRetake.setBackgroundResource(R.drawable.button_back)
+                binding.btnSubmit.setTextColor(resources.getColor(R.color.check_btn))
+                binding.btnSubmit.setBackgroundResource(R.drawable.button_backwhite)
+                binding.btnRetake.isEnabled = true
                 dispatchTakePictureIntent()
             }
-
-
-
         }
 
         binding.bigProfile.setOnClickListener {
@@ -179,16 +177,10 @@ class CheckInScreen : AppCompatActivity() {
                 requestCameraPermission()
             }
         }
-
-
         binding.btnCross.setOnClickListener {
             startActivity(Intent(this, DashBoardScreen::class.java))
         }
-
     }
-
-
-
     private fun getAddressFromLocation(
         context: Context,
         latitude: Double,
@@ -234,7 +226,7 @@ class CheckInScreen : AppCompatActivity() {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
             val imageBitmap = data?.extras?.get("data") as Bitmap
             // Do something with the captured image (e.g., display it in an ImageView)
-            binding.bigProfile.setImageBitmap(imageBitmap)
+            resizeAndSetBitmap(binding.bigProfile,imageBitmap,313,313)
             userBitmap = imageBitmap
 
 
@@ -283,12 +275,15 @@ class CheckInScreen : AppCompatActivity() {
         binding.latlgTxt.text = "$latitude $longitude"
         binding.address.text = address
     }
-
     @SuppressLint("MissingPermission")
     fun createLocationRequest() {
         try {
             fusedLocationProviderClient?.requestLocationUpdates(
-                locationRequest!!,
+                LocationRequest.create().apply {
+                    priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+                    interval = 1000 // Update interval in milliseconds
+                    fastestInterval = 500 // Fastest update interval in milliseconds
+                },
                 locationCallback!!,
                 null
             )
@@ -347,5 +342,28 @@ class CheckInScreen : AppCompatActivity() {
             contentResolver,
             Settings.Secure.ALLOW_MOCK_LOCATION
         ) != "0"
+    }
+    private fun resizeAndSetBitmap(imageView: ImageView, bitmap: Bitmap?, targetWidth: Int, targetHeight: Int) {
+        if (bitmap == null) return
+
+        val scaleFactor = calculateScaleFactor(bitmap.width, bitmap.height, targetWidth, targetHeight)
+
+        val newWidth = (bitmap.width * scaleFactor).toInt()
+        val newHeight = (bitmap.height * scaleFactor).toInt()
+
+        val resizedBitmap = Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true)
+
+        imageView.setImageBitmap(resizedBitmap)
+    }
+
+    private fun calculateScaleFactor(originalWidth: Int, originalHeight: Int, targetWidth: Int, targetHeight: Int): Float {
+        val widthScale = targetWidth.toFloat() / originalWidth
+        val heightScale = targetHeight.toFloat() / originalHeight
+
+        return if (widthScale > heightScale) {
+            heightScale
+        } else {
+            widthScale
+        }
     }
 }

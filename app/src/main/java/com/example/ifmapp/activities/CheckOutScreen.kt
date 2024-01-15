@@ -22,11 +22,11 @@ class CheckOutScreen : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_check_out_screen)
 binding = DataBindingUtil.setContentView(this,R.layout.activity_check_out_screen)
-        gestureDetector = GestureDetectorCompat(this, SwipeGestureListener())
+        /*gestureDetector = GestureDetectorCompat(this, SwipeGestureListener())
 
             binding.frameLayout.setOnTouchListener { _, event ->
                 gestureDetector.onTouchEvent(event)
-            }
+            }*/
 
         val bottomFragment = BottomFragment.newInstance()
         bottomFragment.show(supportFragmentManager, "add_photo_dialog_fragment")

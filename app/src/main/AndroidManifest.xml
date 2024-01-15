@@ -23,14 +23,17 @@
         android:theme="@style/Theme.IFMApp"
         tools:targetApi="31">
         <activity
+            android:name=".activities.ProfileScreen"
+            android:exported="false" />
+        <activity
+            android:name=".activities.SalaryScreen"
+            android:exported="false" />
+        <activity
             android:name=".activities.CheckOutScreen"
-            android:exported="false" />
-
-        <service
-            android:name=".LocationServiceClass"
-            android:enabled="true"
-            android:exported="false" />
-
+            android:exported="false" /> <!-- <service -->
+        <!-- android:name=".LocationServiceClass" -->
+        <!-- android:enabled="true" -->
+        <!-- android:exported="false" /> -->
         <activity
             android:name=".activities.MobileRegisterScreen"
             android:exported="true">
@@ -66,7 +69,7 @@
         <activity
             android:name=".activities.SignUpScreen"
             android:exported="true"
-            android:windowSoftInputMode="adjustResize"></activity>
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

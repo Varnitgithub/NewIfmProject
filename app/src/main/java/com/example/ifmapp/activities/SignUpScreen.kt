@@ -28,9 +28,21 @@ class SignUpScreen : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_sign_up_screen)
 
         binding.btnContinue.setOnClickListener {
-
-                startActivity(Intent(this,GnereratePinCodeScreen::class.java))
-
+               startActivity(Intent(this,GnereratePinCodeScreen::class.java))
+//            if (binding.companycodeEdt.text.isNotEmpty()&&binding.employeeidEdt.text.isNotEmpty()
+//                &&binding.employeepinEdt.text.isNotEmpty()){
+//
+//                binding.btnContinue.setBackgroundResource(R.drawable.button_back)
+//                binding.btnContinue.setTextColor(resources.getColor(R.color.white))
+//
+//                //Move forward
+//
+//
+//            }else{
+//                binding.btnContinue.setBackgroundResource(R.drawable.site_selection_back)
+//                binding.btnContinue.setTextColor(resources.getColor(R.color.btn_continue))
+//                Toast.makeText(this, "Please enter all details", Toast.LENGTH_SHORT).show()
+//            }
 
         }
 
@@ -41,7 +53,7 @@ class SignUpScreen : AppCompatActivity() {
 
 
         employeeidLiveData.observe(this) {
-            if (it >= 5) {
+            if (it >= 9) {
                 binding.btnContinue.setBackgroundResource(R.drawable.button_back)
                 binding.btnContinue.setTextColor(resources.getColor(R.color.white))
             } else {
@@ -64,7 +76,6 @@ class SignUpScreen : AppCompatActivity() {
         binding.employeeidEdt.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
-
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val currentLength = s?.length ?: 0
                 employeeidLiveData.postValue(currentLength)
