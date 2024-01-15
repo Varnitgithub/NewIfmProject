@@ -9,8 +9,9 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
-<uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -21,9 +22,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.IFMApp"
         tools:targetApi="31">
-<service android:name="LocationServiceClass"
-    android:enabled="true"
-    android:exported="false"/>
+        <activity
+            android:name=".activities.CheckOutScreen"
+            android:exported="false" />
+
+        <service
+            android:name=".LocationServiceClass"
+            android:enabled="true"
+            android:exported="false" />
 
         <activity
             android:name=".activities.MobileRegisterScreen"
@@ -60,9 +66,7 @@
         <activity
             android:name=".activities.SignUpScreen"
             android:exported="true"
-            android:windowSoftInputMode="adjustResize">
-
-        </activity>
+            android:windowSoftInputMode="adjustResize"></activity>
         <activity
             android:name=".MainActivity"
             android:exported="true"

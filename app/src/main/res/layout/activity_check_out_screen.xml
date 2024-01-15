@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".activities.CheckOutScreen">
+
+
+        <androidx.constraintlayout.widget.Guideline
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:id="@+id/guideline"
+            app:layout_constraintGuide_percent="0.75" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:background="#FBFBFB"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/guideline">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/top_icons_CL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toTopOf="@id/user_CL"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="6dp"
+
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/ifm360_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:src="@drawable/ifm360"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/refresh_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+
+                    android:src="@drawable/refresh"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/m_icon"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/m_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:src="@drawable/m_icon"
+
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/user_CL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/top_icons_CL">
+
+                <ImageView
+                    android:id="@+id/profile_pic"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="10dp"
+                    android:src="@drawable/profile_icon"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/user_LL"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <LinearLayout
+                    android:id="@+id/user_LL"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_margin="3dp"
+                    android:orientation="vertical"
+                    android:weightSum="2"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/profile_pic"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:id="@+id/user_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/roboto"
+                        android:text="Cameron Williamson"
+                        android:textColor="@color/black"
+                        android:textSize="15sp"
+
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/designation"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/roboto"
+                        android:text="Security Guard"
+                        android:textColor="#5E5D5D"
+
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/Selection_CL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/user_CL">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:cardCornerRadius="8dp"
+                    android:padding="4dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/main_deshboard_back"
+                        android:orientation="vertical"
+                        android:padding="12dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:weightSum="3">
+
+                            <TextView
+                                android:id="@+id/currentSite_txt"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginStart="8dp"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/roboto"
+                                android:padding="4dp"
+                                android:text="Current Site"
+                                android:textColor="#121212"
+                                android:textSize="15sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/shifts"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/shift_back"
+                                android:paddingStart="6dp"
+                                android:paddingTop="3dp"
+                                android:layout_weight="2"
+                                android:paddingEnd="6dp"
+                                android:gravity="center"
+                                android:paddingBottom="3dp"
+                                android:text="Shift A"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginEnd="8dp"
+                                android:textColor="@color/white"
+                                android:textSize="15sp"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+
+                        </LinearLayout>
+
+
+                        <TextView
+                            android:id="@+id/company_txt"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginStart="6dp"
+                            android:layout_weight="1"
+                            android:layout_marginTop="8dp"
+                            android:fontFamily="@font/roboto"
+                            android:padding="4dp"
+                            android:text="FS Environmental Infrastructure \n &amp; Services Limited DLE Unit 12345"
+                            android:textColor="#121212"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="8dp"
+                            android:weightSum="2">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/starttime_txt"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:layout_marginStart="6dp"
+                                    android:layout_weight="1"
+                                    android:fontFamily="@font/roboto"
+                                    android:padding="4dp"
+                                    android:text="Select Site"
+                                    android:textColor="#121212"
+                                    android:textSize="15sp"
+                                    android:textStyle="bold"
+                                    app:layout_constraintBottom_toTopOf="@id/spinner_select_site"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                                <androidx.constraintlayout.widget.ConstraintLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/shifttiming_back"
+                                    android:padding="8dp"
+                                    android:layout_marginEnd="6dp">
+
+                                    <TextView
+                                        android:id="@+id/shift_startdate_text"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:textColor="#595858"
+                                        android:textSize="15sp"
+                                        android:fontFamily="@font/roboto"
+                                        android:gravity="start"
+                                        android:layout_marginStart="22dp"
+                                        app:layout_constraintTop_toTopOf="parent"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        app:layout_constraintEnd_toEndOf="parent"
+                                        android:layout_marginTop="2dp"
+                                        android:text="Tue 6 feb" />
+
+                                    <TextView
+                                        android:id="@+id/shift_start_time"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        app:layout_constraintTop_toBottomOf="@id/shift_startdate_text"
+                                        android:textColor="@color/black"
+                                        android:textSize="24sp"
+                                        app:layout_constraintBottom_toBottomOf="parent"
+                                        android:text="07::00"
+                                        android:layout_marginStart="22dp"
+                                        app:layout_constraintEnd_toStartOf="@id/start_am"
+                                        android:gravity="start"
+                                        android:textStyle="bold"
+                                        android:fontFamily="@font/roboto" />
+
+                                    <TextView
+                                        android:id="@+id/start_am"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:textColor="@color/black"
+                                        android:textSize="12sp"
+                                        android:fontFamily="@font/roboto"
+                                        android:gravity="start"
+                                        android:textStyle="bold"
+                                        android:layout_marginBottom="4dp"
+                                        app:layout_constraintBottom_toBottomOf="parent"
+                                        app:layout_constraintStart_toEndOf="@id/shift_start_time"
+                                        app:layout_constraintEnd_toEndOf="parent"
+                                        android:layout_marginTop="2dp"
+                                        android:text="AM" />
+
+
+                                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:layout_weight="1">
+
+                                <TextView
+                                    android:id="@+id/endtime_txt"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:layout_marginStart="6dp"
+                                    android:layout_weight="1"
+                                    android:fontFamily="@font/roboto"
+                                    android:padding="4dp"
+                                    android:text="Select Site"
+                                    android:textColor="#121212"
+                                    android:textSize="15sp"
+                                    android:textStyle="bold"
+                                    app:layout_constraintBottom_toTopOf="@id/spinner_select_site"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                                <androidx.constraintlayout.widget.ConstraintLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/shifttiming_back"
+                                    android:padding="8dp"
+                                    android:layout_marginStart="6dp">
+
+                                    <TextView
+                                        android:id="@+id/shift_enddate_text"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:textColor="#595858"
+                                        android:textSize="15sp"
+                                        android:fontFamily="@font/roboto"
+                                        android:gravity="start"
+                                        android:layout_marginStart="22dp"
+                                        app:layout_constraintTop_toTopOf="parent"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        app:layout_constraintEnd_toEndOf="parent"
+                                        android:layout_marginTop="2dp"
+                                        android:text="Tue 6 feb" />
+
+                                    <TextView
+                                        android:id="@+id/shift_end_time"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        app:layout_constraintTop_toBottomOf="@id/shift_enddate_text"
+                                        android:textColor="@color/black"
+                                        android:textSize="24sp"
+                                        app:layout_constraintBottom_toBottomOf="parent"
+                                        android:text="10::00"
+                                        android:layout_marginStart="22dp"
+                                        app:layout_constraintEnd_toStartOf="@id/end_Pm"
+                                        android:gravity="start"
+                                        android:textStyle="bold"
+                                        android:fontFamily="@font/roboto" />
+
+                                    <TextView
+                                        android:id="@+id/end_Pm"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:textColor="@color/black"
+                                        android:textSize="12sp"
+                                        android:fontFamily="@font/roboto"
+                                        android:gravity="start"
+                                        android:textStyle="bold"
+                                        android:layout_marginBottom="4dp"
+                                        app:layout_constraintBottom_toBottomOf="parent"
+                                        app:layout_constraintStart_toEndOf="@id/shift_end_time"
+                                        app:layout_constraintEnd_toEndOf="parent"
+                                        android:layout_marginTop="2dp"
+                                        android:text="PM" />
+
+
+                                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintStart_toStartOf="@id/Selection_CL"
+                            app:layout_constraintEnd_toEndOf="@id/Selection_CL"
+                            app:layout_constraintTop_toBottomOf="@id/Selection_CL"
+                            android:orientation="horizontal"
+                            android:gravity="center"
+                            android:padding="6dp"
+                            android:layout_marginTop="16dp"
+                            android:paddingBottom="10dp"
+                            android:weightSum="2">
+
+
+                            <Button
+                                android:id="@+id/checkIn_Btn"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Check in"
+                                android:layout_marginEnd="10dp"
+                                android:textAllCaps="false"
+                                android:layout_marginBottom="3dp"
+                                android:textColor="#ffffff"
+                                android:background="@drawable/button_back"
+                                android:layout_weight="1" />
+
+                            <Button
+                                android:id="@+id/checkout_Btn"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textAllCaps="false"
+                                android:textColor="#6C6B6B"
+                                android:layout_marginBottom="3dp"
+                                android:background="@drawable/button_backwhite"
+                                android:layout_marginStart="10dp"
+                                android:text="Check out"
+                                android:layout_weight="1" />
+
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+
+                </androidx.cardview.widget.CardView>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <FrameLayout
+            android:id="@+id/frameLayout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/guideline" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

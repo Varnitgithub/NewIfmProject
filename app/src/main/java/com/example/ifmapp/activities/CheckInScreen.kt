@@ -2,23 +2,18 @@ package com.example.ifmapp.activities
 
 
 import android.Manifest
-import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.location.Address
+import android.provider.Settings
 import android.location.Geocoder
-import android.location.Location
-import android.location.LocationListener
 import android.location.LocationManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.IBinder
+import android.os.Handler
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
@@ -27,10 +22,12 @@ import android.view.animation.Animation
 import android.view.animation.AnimationSet
 import android.view.animation.DecelerateInterpolator
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.lifecycleScope
 import com.example.ifmapp.Locationmodel
 import com.example.ifmapp.R
 import com.example.ifmapp.databinding.ActivityCheckInScreenBinding
@@ -45,7 +42,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.greenrobot.eventbus.EventBus
 import java.io.IOException
 import java.util.Locale
 
@@ -82,21 +78,30 @@ class CheckInScreen : AppCompatActivity() {
 
             override fun onLocationResult(locationResult: LocationResult) {
                 super.onLocationResult(locationResult)
-                val location = locationResult.lastLocation
-                mLatitude = location?.latitude.toString()
-                mLongitude = location?.longitude.toString()
-                getAddressFromLocation(
-                    this@CheckInScreen,
-                    mLatitude?.toDouble() ?: 0.0,
-                    mLongitude?.toDouble() ?: 0.0
-                )
-                realtimeLocationLiveData.postValue(
-                    Locationmodel(
-                        location?.latitude,
-                        location?.longitude
-                    )
-                )
 
+                // Use a coroutine to perform location-related tasks asynchronously
+                lifecycleScope.launch(Dispatchers.IO) {
+                    val location = locationResult.lastLocation
+                    mLatitude = location?.latitude.toString()
+                    mLongitude = location?.longitude.toString()
+
+                    // Use suspend functions or other asynchronous mechanisms if needed
+                    getAddressFromLocation(
+                        this@CheckInScreen,
+                        mLatitude?.toDouble() ?: 0.0,
+                        mLongitude?.toDouble() ?: 0.0
+                    )
+
+                    realtimeLocationLiveData.postValue(
+                        Locationmodel(
+                            location?.latitude,
+                            location?.longitude
+                        )
+                    )
+
+                    // Other code to be executed on the main thread after fetching location
+                    // ...
+                }
             }
         }
         realtimeLocationLiveData = MutableLiveData()
@@ -137,6 +142,17 @@ class CheckInScreen : AppCompatActivity() {
                     address.toString()
                 )
                 startBlinkAnimation()
+
+                val delayMillis = 8000L
+
+                Handler().postDelayed({
+                    finish()
+                    // Start another activity
+                    val intent = Intent(this@CheckInScreen, CheckOutScreen::class.java)
+                    startActivity(intent)
+
+                }, delayMillis)
+
             }else{
                 binding.btnSubmit.isEnabled = false
             }
@@ -150,6 +166,9 @@ class CheckInScreen : AppCompatActivity() {
                 binding.btnSubmit.setBackgroundResource(R.drawable.button_back)
                 dispatchTakePictureIntent()
             }
+
+
+
         }
 
         binding.bigProfile.setOnClickListener {
@@ -167,6 +186,7 @@ class CheckInScreen : AppCompatActivity() {
         }
 
     }
+
 
 
     private fun getAddressFromLocation(
@@ -319,5 +339,13 @@ class CheckInScreen : AppCompatActivity() {
         // Apply the animation to your layout
         binding.blinkingBtn.startAnimation(animationSet)
         binding.attendanceMarkedTxt.startAnimation(animationSet)
+    }
+
+    private fun checkMockLocation(): Boolean {
+        // Check if mock locations are enabled
+        return Settings.Secure.getString(
+            contentResolver,
+            Settings.Secure.ALLOW_MOCK_LOCATION
+        ) != "0"
     }
 }

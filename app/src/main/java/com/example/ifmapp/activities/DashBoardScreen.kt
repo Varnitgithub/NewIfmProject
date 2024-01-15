@@ -2,10 +2,12 @@ package com.example.ifmapp.activities
 
 import LocationServiceClass
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Paint
+import android.location.LocationManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -48,10 +50,16 @@ class DashBoardScreen : AppCompatActivity() {
         val mustersFragment = MustersFragment()
         val docsFragment = DocsFragment()
         val menuFragment = MenuFragment()
-        if (checkPermission()) {
 
-            addFragment(homeFragment)
+        if (!isMockLocation()) {
+            if (checkPermission()) {
+                addFragment(homeFragment)
+            } else {
+                requestLocation()
+            }
         } else {
+            Toast.makeText(this, "mock location is enabled please disable it", Toast.LENGTH_SHORT)
+                .show()
             requestLocation()
         }
 
@@ -96,6 +104,17 @@ class DashBoardScreen : AppCompatActivity() {
 
     }
 
+    private fun isMockLocation(): Boolean {
+        try {
+            val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+            return location?.isFromMockProvider ?: false
+        } catch (e: SecurityException) {
+            e.printStackTrace()
+        }
+        return false
+    }
+
     private fun addFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.frameLayout, fragment)
@@ -136,8 +155,17 @@ class DashBoardScreen : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (!isMockLocation()) {
+                    addFragment(homeFragment)
+                } else {
+                    Toast.makeText(
+                        this,
+                        "mock location is enabled please disable it",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
                 //Permission Granted
-                addFragment(homeFragment)
+
 
             }
         }
