@@ -1,4 +1,4 @@
-package com.example.ifmapp
+package com.example.ifmapp.adapters
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -9,7 +9,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
+import com.example.ifmapp.R
 import com.example.ifmapp.modelclasses.DocumentsModel
 
 class DocumentsAdapter(private var context: Context):RecyclerView.Adapter<DocumentsAdapter.DocumentsViewHolder>() {
@@ -38,7 +38,7 @@ class DocumentsAdapter(private var context: Context):RecyclerView.Adapter<Docume
 
         holder.docName.text = currentItem.doc_name
         holder.docNumber.text = currentItem.doc_no
-        Glide.with(context).load(currentItem.doc_image).placeholder(R.drawable.aadhar).into(holder.docImage)
+       // Glide.with(context).load(currentItem.doc_image).placeholder(R.drawable.aadhar).into(holder.docImage)
     }
     fun updateList(newList: List<DocumentsModel>) {
         val diffCallback = DocumentsDiffCallback(documentsList, newList)
