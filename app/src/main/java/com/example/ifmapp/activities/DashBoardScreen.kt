@@ -1,22 +1,14 @@
 package com.example.ifmapp.activities
 
-import LocationServiceClass
 import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
-import android.graphics.Paint
 import android.location.LocationManager
-import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.view.KeyEvent
-import android.widget.EditText
 import android.widget.Toast
-import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -28,6 +20,7 @@ import com.example.ifmapp.fragments.DocsFragment
 import com.example.ifmapp.fragments.HomeFragment
 import com.example.ifmapp.fragments.MenuFragment
 import com.example.ifmapp.fragments.MustersFragment
+import com.example.ifmapp.services.LocationService
 
 class DashBoardScreen : AppCompatActivity() {
     private lateinit var binding: ActivityDashBoardScreenBinding
@@ -50,6 +43,7 @@ class DashBoardScreen : AppCompatActivity() {
         if (!isMockLocation()) {
             if (checkPermission()) {
                 addFragment(homeFragment)
+               // startService(Intent(this@DashBoardScreen,LocationService::class.java))
             } else {
                 requestLocation()
             }
