@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import com.example.ifmapp.R
+import com.example.ifmapp.activities.CheckOutScreen
 import com.example.ifmapp.activities.ProfileScreen
 import com.example.ifmapp.activities.SalaryScreen
 import com.example.ifmapp.databinding.FragmentMenuBinding
@@ -35,7 +36,25 @@ private lateinit var binding: FragmentMenuBinding
             startActivity(Intent(requireContext(),SalaryScreen::class.java))
         }
 
+        binding.mustersBtm.setOnClickListener{
+addFragment(MustersFragment())
+        }
+
+        binding.myDocBtm.setOnClickListener {
+           addFragment(DocsFragment())
+        }
+
+        binding.homeBtm.setOnClickListener {
+            startActivity(Intent(requireContext(),CheckOutScreen::class.java))
+        }
+
         return binding.root
+    }
+    private fun addFragment(fragment: Fragment) {
+      requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.blur_CL, fragment)
+            .commit()
+
     }
 
 }

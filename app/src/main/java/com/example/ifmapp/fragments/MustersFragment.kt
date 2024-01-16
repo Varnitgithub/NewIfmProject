@@ -1,33 +1,37 @@
 package com.example.ifmapp.fragments
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.graphics.Typeface
+import android.os.Build
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import com.example.ifmapp.R
+import com.example.ifmapp.databinding.FragmentMustersBinding
+import java.text.SimpleDateFormat
+import java.time.Month
+import java.util.Calendar
+import java.util.Locale
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [MustersFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class MustersFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private lateinit var binding: FragmentMustersBinding
+    private lateinit var calendar: Calendar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+        calendar = Calendar.getInstance()
+
     }
 
     override fun onCreateView(
@@ -35,26 +39,110 @@ class MustersFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_musters, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_musters, container, false)
+
+        updateCalendar()
+
+        binding.previousMonth.setOnClickListener {
+            calendar.add(Calendar.MONTH, -1)
+            updateCalendar()
+        }
+
+        binding.nextMonth.setOnClickListener {
+            calendar.add(Calendar.MONTH, 1)
+            updateCalendar()
+        }
+
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment MustersFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            MustersFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    private fun updateCalendar() {
+        val dateFormat = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
+        val monthYearString = dateFormat.format(calendar.time)
+
+        (activity as? AppCompatActivity)?.supportActionBar?.title = monthYearString
+
+        val daysOfWeek = arrayListOf("Su", "Mo", "Tu", "We", "Th", "Fr", "Sa")
+        val dates = arrayListOf<String>()
+
+        // Add days of the week as the first row
+        dates.addAll(daysOfWeek)
+
+        val firstDayOfMonth = calendar.get(Calendar.DAY_OF_WEEK)
+        val maxDaysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+
+        // Add empty cells before the first day of the month
+        for (i in 1 until firstDayOfMonth) {
+            dates.add("")
+        }
+
+        // Add days of the month
+        for (i in 1..maxDaysInMonth) {
+            dates.add(i.toString())
+        }
+
+        // Update the month and year TextView
+        val month = calendar.get(Calendar.MONTH).toString()
+        val year = calendar.get(Calendar.YEAR).toString()
+
+        var monthName = getMonthName(month.toInt())
+        binding.monthTxt.text = "$monthName ${year}"
+
+        // Use the custom adapter
+        val adapter = CustomGridAdapter(requireContext(), android.R.layout.simple_list_item_1, dates)
+        binding.gridView.adapter = adapter
+    }
+    private fun getMonthName(monthNumber: Int): String {
+        val monthNames = arrayOf(
+            "January", "February", "March", "April",
+            "May", "June", "July", "August",
+            "September", "October", "November", "December"
+        )
+
+        return if (monthNumber in 0..11) {
+            monthNames[monthNumber]
+        } else {
+            "Invalid month number"
+        }
+    }
+
+
+
+    class CustomGridAdapter(context: Context, resource: Int, objects: List<String>) :
+        ArrayAdapter<String>(context, resource, objects) {
+
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+            val textView = super.getView(position, convertView, parent) as TextView
+
+            // Check if the item is a day of the week
+            val isDayOfWeek = position < 7
+
+            // Make days of the week bold
+            if (isDayOfWeek) {
+                textView.setTypeface(null, Typeface.BOLD)
+            } else {
+                textView.setTypeface(null, Typeface.NORMAL)
+            }
+
+            // Center-align the text
+            textView.gravity = Gravity.CENTER_HORIZONTAL
+
+            // Center-align the text vertically
+            textView.setPadding(0, textView.paddingTop, 0, textView.paddingBottom)
+            // Set top margin
+            if (position >= 7) { // Skip setting margin for days of the week
+                val layoutParams = textView.layoutParams
+
+                if (layoutParams is LinearLayout.LayoutParams) {
+                    layoutParams.setMargins(0, 1, 0, 0) // Adjust the margin as needed
+                    textView.layoutParams = layoutParams
                 }
             }
+
+
+            return textView
+        }
     }
+
+
 }

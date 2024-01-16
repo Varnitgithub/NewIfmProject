@@ -20,7 +20,7 @@ class CheckOutScreen : AppCompatActivity() {
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_check_out_screen)
+     //   setContentView(R.layout.activity_check_out_screen)
 binding = DataBindingUtil.setContentView(this,R.layout.activity_check_out_screen)
         /*gestureDetector = GestureDetectorCompat(this, SwipeGestureListener())
 

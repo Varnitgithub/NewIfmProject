@@ -13,31 +13,7 @@
         tools:context=".activities.SalaryScreen">
 
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/edt_salary_search_CL"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="2dp"
-            android:layout_marginEnd="16dp"
-            android:padding="6dp"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
 
-            <EditText
-                android:id="@+id/edt_salary_search"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Search for month"
-                android:maxLines="1"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/top_icons_CL"
@@ -45,8 +21,10 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
+
             android:layout_marginEnd="16dp"
             android:padding="6dp"
+            app:layout_constraintBottom_toTopOf="@id/salary_RecyclerView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -81,6 +59,24 @@
                 android:textColor="#121212"
                 android:textSize="18sp"
                 android:textStyle="bold"
+                android:padding="6dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/search_icon"
+                app:layout_constraintStart_toEndOf="@id/nav_icon"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <EditText
+                android:id="@+id/edt_salary_search"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="Search for months,year"
+                android:maxLines="1"
+                android:background="@drawable/salaryedit_back"
+                android:layout_marginStart="13dp"
+                android:visibility="gone"
+                android:layout_marginEnd="13dp"
+                android:padding="8dp"
+                android:layout_marginBottom="3dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/search_icon"
                 app:layout_constraintStart_toEndOf="@id/nav_icon"

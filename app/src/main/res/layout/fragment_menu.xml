@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:background="#80000000"
-            app:layout_constraintBottom_toTopOf="@id/guideLine_1"
+            app:layout_constraintBottom_toBottomOf="@id/guideLine_1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -236,7 +236,6 @@
 
                 <LinearLayout
                     android:id="@+id/notification_btm"
-
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"

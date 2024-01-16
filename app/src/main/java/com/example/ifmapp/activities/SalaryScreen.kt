@@ -1,34 +1,32 @@
 package com.example.ifmapp.activities
 
-import android.media.Image
-import androidx.appcompat.app.AppCompatActivity
+import SalaryAdapter
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.compose.ui.text.toLowerCase
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ifmapp.R
-import com.example.ifmapp.adapters.SalaryAdapter
 import com.example.ifmapp.databinding.ActivitySalaryScreenBinding
 import com.example.ifmapp.modelclasses.SalaryModel
-import java.util.Locale
 
 class SalaryScreen : AppCompatActivity() {
     private lateinit var binding: ActivitySalaryScreenBinding
     private lateinit var search: ImageView
+    private lateinit var salaryData:ArrayList<SalaryModel>
     private lateinit var salaryAdapter: SalaryAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_salary_screen)
+      //  setContentView(R.layout.activity_salary_screen)
         binding = DataBindingUtil.setContentView(this, (R.layout.activity_salary_screen))
 
-        binding.edtSalarySearchCL.visibility = View.GONE
-        binding.topIconsCL.visibility = View.VISIBLE
+        binding.edtSalarySearch.visibility = View.GONE
+        binding.salaryTxt.visibility = View.VISIBLE
 
 
         val recyclerView: RecyclerView = findViewById(R.id.salary_RecyclerView)
@@ -39,29 +37,42 @@ class SalaryScreen : AppCompatActivity() {
 
         recyclerView.adapter = salaryAdapter
 
-        val salarydata = getSalary()
-        salaryAdapter.updateList(salarydata)
+
+
+          salaryData = getSalary()
+        salaryAdapter.updateList(salaryData)
+
+/*
+        binding.edtSalarySearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            override fun onTextChanged(changeInText: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                findingSlip(changeInText.toString().trim(),salaryData)
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+            }
+        })*/
 
         search.setOnClickListener {
-            binding.topIconsCL.visibility = View.GONE
-            binding.edtSalarySearchCL.visibility = View.VISIBLE
-            val salaryData = getSalary()
+            if (binding.edtSalarySearch.text.toString().isNotEmpty()){
+                binding.salaryTxt.visibility = View.VISIBLE
+                binding.edtSalarySearch.visibility = View.GONE
+                findingSlip(binding.edtSalarySearch.text.toString().trim(),salaryData)
+                binding.edtSalarySearch.text.clear()
 
-           binding.edtSalarySearch.addTextChangedListener(object : TextWatcher {
-               override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }else{
+                binding.salaryTxt.visibility = View.GONE
+                binding.edtSalarySearch.visibility = View.VISIBLE
+            }
 
-               }
-
-               override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                   findingSlip(p0.toString().trim(),salaryData)
-               }
-
-               override fun afterTextChanged(p0: Editable?) {
-               }
-           })
 
         }
-    }
+
+
+        }
 
 
     private fun getSalary(): ArrayList<SalaryModel> {
@@ -69,17 +80,17 @@ class SalaryScreen : AppCompatActivity() {
         var salaryModel = arrayListOf<SalaryModel>()
 
         salaryModel.add(SalaryModel(1, "Jan 2023"))
-        salaryModel.add(SalaryModel(1, "Feb 2023"))
-        salaryModel.add(SalaryModel(1, "Mar 2023"))
-        salaryModel.add(SalaryModel(1, "Apr 2023"))
-        salaryModel.add(SalaryModel(1, "May 2023"))
-        salaryModel.add(SalaryModel(1, "Jun 2023"))
-        salaryModel.add(SalaryModel(1, "Jul 2023"))
-        salaryModel.add(SalaryModel(1, "Aug 2023"))
-        salaryModel.add(SalaryModel(1, "Sept 2023"))
-        salaryModel.add(SalaryModel(1, "Oct 2023"))
-        salaryModel.add(SalaryModel(1, "Nov 2023"))
-        salaryModel.add(SalaryModel(1, "Dec 2023"))
+        salaryModel.add(SalaryModel(2, "Feb 2023"))
+        salaryModel.add(SalaryModel(3, "Mar 2023"))
+        salaryModel.add(SalaryModel(4, "Apr 2023"))
+        salaryModel.add(SalaryModel(5, "May 2023"))
+        salaryModel.add(SalaryModel(6, "Jun 2023"))
+        salaryModel.add(SalaryModel(7, "Jul 2023"))
+        salaryModel.add(SalaryModel(8, "Aug 2023"))
+        salaryModel.add(SalaryModel(9, "Sep 2023"))
+        salaryModel.add(SalaryModel(10, "Oct 2023"))
+        salaryModel.add(SalaryModel(11, "Nov 2023"))
+        salaryModel.add(SalaryModel(12, "Dec 2023"))
 
 
         return salaryModel
@@ -89,7 +100,6 @@ class SalaryScreen : AppCompatActivity() {
            val matchingUsers = salaryList.filter { it.salaryDate.contains(inputText,ignoreCase = true)}
         // Display the result
         if (matchingUsers.isNotEmpty()) {
-            Toast.makeText(this, "$matchingUsers is the user", Toast.LENGTH_SHORT).show()
             salaryAdapter.updateList(matchingUsers as ArrayList<SalaryModel>)
         } else {
             Toast.makeText(this, "There is no salary slip", Toast.LENGTH_SHORT).show()

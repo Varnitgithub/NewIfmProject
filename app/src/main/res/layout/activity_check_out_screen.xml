@@ -265,65 +265,144 @@
                                     android:layout_marginTop="8dp"
                                     android:layout_marginEnd="6dp">
 
-                                    <TextView
-                                        android:id="@+id/shift_startdate_text"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:textColor="#ACACAC"
-                                        android:textSize="16sp"
-                                        android:fontFamily="@font/roboto"
-                                        android:gravity="start"
-                                        android:layout_marginStart="22dp"
+                                    <LinearLayout
+                                        android:layout_width="0dp"
+                                        android:layout_height="match_parent"
+                                        android:orientation="vertical"
                                         app:layout_constraintTop_toTopOf="parent"
                                         app:layout_constraintStart_toStartOf="parent"
-                                        app:layout_constraintEnd_toEndOf="parent"
-                                        android:layout_marginTop="2dp"
-                                        android:text="Tue 6 feb" />
-
-                                    <TextView
-                                        android:id="@+id/shift_start_time"
-                                        android:layout_width="0dp"
-                                        android:layout_height="wrap_content"
-                                        app:layout_constraintStart_toStartOf="parent"
-                                        app:layout_constraintTop_toBottomOf="@id/shift_startdate_text"
-                                        android:textColor="#121212"
-                                        android:textSize="24sp"
                                         app:layout_constraintBottom_toBottomOf="parent"
-                                        android:text="07::00"
-                                        android:paddingStart="3dp"
-                                        android:layout_marginStart="20dp"
-                                        app:layout_constraintEnd_toStartOf="@id/start_am"
-                                        android:gravity="start"
-                                        android:textStyle="bold"
-                                        android:fontFamily="@font/roboto" />
+                                        app:layout_constraintEnd_toEndOf="parent">
 
-                                    <TextView
-                                        android:id="@+id/start_am"
-                                        android:layout_width="0dp"
-                                        android:layout_height="wrap_content"
-                                        android:textColor="#121212"
-                                        android:textSize="12sp"
-                                        android:fontFamily="@font/roboto"
-                                        android:gravity="start"
-                                        android:textStyle="bold"
-                                        android:layout_marginBottom="4dp"
-                                        app:layout_constraintBottom_toBottomOf="parent"
-                                        app:layout_constraintStart_toEndOf="@id/shift_start_time"
-                                        app:layout_constraintEnd_toEndOf="parent"
-                                        android:layout_marginTop="2dp"
-                                        android:text="AM" />
+                                        <androidx.constraintlayout.widget.ConstraintLayout
+                                            android:layout_width="match_parent"
+                                            android:layout_height="match_parent">
+
+                                            <TextView
+                                                android:id="@+id/shift_startdate_text"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                android:textColor="#ACACAC"
+                                                android:textSize="16sp"
+                                                android:fontFamily="@font/roboto"
+                                                android:gravity="start"
+                                                android:layout_marginStart="22dp"
+                                                app:layout_constraintTop_toTopOf="parent"
+                                                app:layout_constraintStart_toStartOf="parent"
+                                                app:layout_constraintEnd_toEndOf="parent"
+                                                android:layout_marginTop="2dp"
+                                                android:text="Tue 6 feb" />
+
+                                            <TextView
+                                                android:id="@+id/shift_start_time"
+                                                android:layout_width="0dp"
+                                                android:layout_height="wrap_content"
+                                                app:layout_constraintStart_toStartOf="parent"
+                                                app:layout_constraintTop_toBottomOf="@id/shift_startdate_text"
+                                                android:textColor="#121212"
+                                                android:textSize="24sp"
+                                                app:layout_constraintBottom_toBottomOf="parent"
+                                                android:text="07::00"
+                                                android:paddingStart="3dp"
+                                                android:layout_marginStart="20dp"
+                                                app:layout_constraintEnd_toStartOf="@id/start_am"
+                                                android:gravity="start"
+                                                android:textStyle="bold"
+                                                android:fontFamily="@font/roboto" />
+
+                                            <TextView
+                                                android:id="@+id/start_am"
+                                                android:layout_width="0dp"
+                                                android:layout_height="wrap_content"
+                                                android:textColor="#121212"
+                                                android:textSize="12sp"
+                                                android:fontFamily="@font/roboto"
+                                                android:gravity="start"
+                                                android:textStyle="bold"
+                                                android:layout_marginBottom="4dp"
+                                                app:layout_constraintBottom_toBottomOf="parent"
+                                                app:layout_constraintStart_toEndOf="@id/shift_start_time"
+                                                app:layout_constraintEnd_toEndOf="parent"
+                                                android:layout_marginTop="2dp"
+                                                android:text="AM" />
+
+                                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                                        <View
+                                            android:layout_width="match_parent"
+                                            android:layout_height="2dp"
+                                            android:layout_marginTop="6dp"
+                                            android:background="#D5D3D3"/>
+
+                                        <androidx.constraintlayout.widget.ConstraintLayout
+                                            android:layout_width="match_parent"
+                                            android:layout_marginTop="6dp"
+                                            android:layout_height="match_parent">
+
+                                            <TextView
+                                                android:id="@+id/join"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                android:textColor="#ACACAC"
+                                                android:textSize="16sp"
+                                                android:fontFamily="@font/roboto"
+                                                android:gravity="start"
+                                                android:layout_marginStart="22dp"
+                                                app:layout_constraintTop_toTopOf="parent"
+                                                app:layout_constraintStart_toStartOf="parent"
+                                                app:layout_constraintEnd_toEndOf="parent"
+                                                android:layout_marginTop="2dp"
+                                                android:text="Join" />
+
+                                            <TextView
+                                                android:id="@+id/joining_time"
+                                                android:layout_width="0dp"
+                                                android:layout_height="wrap_content"
+                                                app:layout_constraintStart_toStartOf="parent"
+                                                app:layout_constraintTop_toBottomOf="@id/join"
+                                                android:textColor="#121212"
+                                                android:textSize="24sp"
+                                                app:layout_constraintBottom_toBottomOf="parent"
+                                                android:text="07::00"
+                                                android:paddingStart="3dp"
+                                                android:layout_marginStart="20dp"
+                                                app:layout_constraintEnd_toStartOf="@id/joining_am"
+                                                android:gravity="start"
+                                                android:textStyle="bold"
+                                                android:fontFamily="@font/roboto" />
+
+                                            <TextView
+                                                android:id="@+id/joining_am"
+                                                android:layout_width="0dp"
+                                                android:layout_height="wrap_content"
+                                                android:textColor="#121212"
+                                                android:textSize="12sp"
+                                                android:fontFamily="@font/roboto"
+                                                android:gravity="start"
+                                                android:textStyle="bold"
+                                                android:layout_marginBottom="4dp"
+                                                app:layout_constraintBottom_toBottomOf="parent"
+                                                app:layout_constraintStart_toEndOf="@id/joining_time"
+                                                app:layout_constraintEnd_toEndOf="parent"
+                                                android:layout_marginTop="2dp"
+                                                android:text="AM" />
+
+                                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                                    </LinearLayout>
+
+
 
 
                                 </androidx.constraintlayout.widget.ConstraintLayout>
 
 
                             </LinearLayout>
-
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:orientation="vertical"
-                                android:layout_weight="1">
+                                android:layout_weight="1"
+                                android:orientation="vertical">
 
                                 <TextView
                                     android:id="@+id/endtime_txt"
@@ -349,59 +428,145 @@
                                     android:layout_height="wrap_content"
                                     android:background="@drawable/shifttiming_back"
                                     android:padding="8dp"
-                                    android:layout_marginStart="6dp">
+                                    android:layout_marginTop="8dp"
+                                    android:layout_marginEnd="6dp">
 
-                                    <TextView
-                                        android:id="@+id/shift_enddate_text"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:textColor="#ACACAC"
-                                        android:textSize="16sp"
-                                        android:fontFamily="@font/roboto"
-                                        android:gravity="start"
-                                        android:layout_marginStart="22dp"
+                                    <LinearLayout
+                                        android:layout_width="0dp"
+                                        android:layout_height="match_parent"
+                                        android:orientation="vertical"
                                         app:layout_constraintTop_toTopOf="parent"
                                         app:layout_constraintStart_toStartOf="parent"
-                                        app:layout_constraintEnd_toEndOf="parent"
-                                        android:layout_marginTop="2dp"
-                                        android:text="Tue 6 feb" />
-
-                                    <TextView
-                                        android:id="@+id/shift_end_time"
-                                        android:layout_width="0dp"
-                                        android:layout_height="wrap_content"
-                                        app:layout_constraintStart_toStartOf="parent"
-                                        app:layout_constraintTop_toBottomOf="@id/shift_enddate_text"
-                                        android:textColor="#121212"
-                                        android:textSize="24sp"
                                         app:layout_constraintBottom_toBottomOf="parent"
-                                        android:text="10::00"
-                                        android:layout_marginStart="22dp"
-                                        app:layout_constraintEnd_toStartOf="@id/end_Pm"
-                                        android:gravity="start"
-                                        android:textStyle="bold"
-                                        android:fontFamily="@font/roboto" />
+                                        app:layout_constraintEnd_toEndOf="parent">
 
-                                    <TextView
-                                        android:id="@+id/end_Pm"
-                                        android:layout_width="0dp"
-                                        android:layout_height="wrap_content"
-                                        android:textColor="#121212"
-                                        android:textSize="12sp"
-                                        android:fontFamily="@font/roboto"
-                                        android:gravity="start"
-                                        android:textStyle="bold"
-                                        android:layout_marginBottom="4dp"
-                                        app:layout_constraintBottom_toBottomOf="parent"
-                                        app:layout_constraintStart_toEndOf="@id/shift_end_time"
-                                        app:layout_constraintEnd_toEndOf="parent"
-                                        android:layout_marginTop="2dp"
-                                        android:text="PM" />
+                                        <androidx.constraintlayout.widget.ConstraintLayout
+                                            android:layout_width="match_parent"
+                                            android:layout_height="match_parent">
+
+                                            <TextView
+                                                android:id="@+id/shift_enddate_text"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                android:textColor="#ACACAC"
+                                                android:textSize="16sp"
+                                                android:fontFamily="@font/roboto"
+                                                android:gravity="start"
+                                                android:layout_marginStart="22dp"
+                                                app:layout_constraintTop_toTopOf="parent"
+                                                app:layout_constraintStart_toStartOf="parent"
+                                                app:layout_constraintEnd_toEndOf="parent"
+                                                android:layout_marginTop="2dp"
+                                                android:text="Tue 6 feb" />
+
+                                            <TextView
+                                                android:id="@+id/shift_end_time"
+                                                android:layout_width="0dp"
+                                                android:layout_height="wrap_content"
+                                                app:layout_constraintStart_toStartOf="parent"
+                                                app:layout_constraintTop_toBottomOf="@id/shift_enddate_text"
+                                                android:textColor="#121212"
+                                                android:textSize="24sp"
+                                                app:layout_constraintBottom_toBottomOf="parent"
+                                                android:text="10::00"
+                                                android:paddingStart="3dp"
+                                                android:layout_marginStart="20dp"
+                                                app:layout_constraintEnd_toStartOf="@id/end_pm"
+                                                android:gravity="start"
+                                                android:textStyle="bold"
+                                                android:fontFamily="@font/roboto" />
+
+                                            <TextView
+                                                android:id="@+id/end_pm"
+                                                android:layout_width="0dp"
+                                                android:layout_height="wrap_content"
+                                                android:textColor="#121212"
+                                                android:textSize="12sp"
+                                                android:fontFamily="@font/roboto"
+                                                android:gravity="start"
+                                                android:textStyle="bold"
+                                                android:layout_marginBottom="4dp"
+                                                app:layout_constraintBottom_toBottomOf="parent"
+                                                app:layout_constraintStart_toEndOf="@id/shift_end_time"
+                                                app:layout_constraintEnd_toEndOf="parent"
+                                                android:layout_marginTop="2dp"
+                                                android:text="AM" />
+
+                                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                                        <View
+                                            android:layout_width="match_parent"
+                                            android:layout_height="2dp"
+                                            android:layout_marginTop="6dp"
+                                            android:background="#D5D3D3"/>
+
+                                        <androidx.constraintlayout.widget.ConstraintLayout
+                                            android:layout_width="match_parent"
+                                            android:layout_marginTop="6dp"
+                                            android:layout_height="match_parent">
+
+                                            <TextView
+                                                android:id="@+id/out"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                android:textColor="#ACACAC"
+                                                android:textSize="16sp"
+                                                android:fontFamily="@font/roboto"
+                                                android:gravity="start"
+                                                android:layout_marginStart="22dp"
+                                                app:layout_constraintTop_toTopOf="parent"
+                                                app:layout_constraintStart_toStartOf="parent"
+                                                app:layout_constraintEnd_toEndOf="parent"
+                                                android:layout_marginTop="2dp"
+                                                android:text="Left" />
+
+                                            <TextView
+                                                android:id="@+id/out_time"
+                                                android:layout_width="0dp"
+                                                android:layout_height="wrap_content"
+                                                app:layout_constraintStart_toStartOf="parent"
+                                                app:layout_constraintTop_toBottomOf="@id/out"
+                                                android:textColor="#121212"
+                                                android:textSize="24sp"
+                                                app:layout_constraintBottom_toBottomOf="parent"
+                                                android:text="- - - - - - - "
+                                                android:paddingStart="3dp"
+                                                android:layout_marginStart="20dp"
+                                                app:layout_constraintEnd_toStartOf="@id/out_pm"
+                                                android:gravity="start"
+                                                android:textStyle="bold"
+                                                android:fontFamily="@font/roboto" />
+
+                                            <TextView
+                                                android:id="@+id/out_pm"
+                                                android:layout_width="0dp"
+                                                android:layout_height="wrap_content"
+                                                android:textColor="#121212"
+                                                android:textSize="12sp"
+                                                android:fontFamily="@font/roboto"
+                                                android:gravity="start"
+                                                android:textStyle="bold"
+                                                android:visibility="gone"
+                                                android:layout_marginBottom="4dp"
+                                                app:layout_constraintBottom_toBottomOf="parent"
+                                                app:layout_constraintStart_toEndOf="@id/out_time"
+                                                app:layout_constraintEnd_toEndOf="parent"
+                                                android:layout_marginTop="2dp"
+                                                android:text="AM" />
+
+                                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                                    </LinearLayout>
+
+
 
 
                                 </androidx.constraintlayout.widget.ConstraintLayout>
 
+
                             </LinearLayout>
+
+
 
                         </LinearLayout>
 
@@ -428,8 +593,8 @@
                                 android:layout_marginEnd="10dp"
                                 android:textAllCaps="false"
                                 android:layout_marginBottom="3dp"
-                                android:textColor="#ffffff"
-                                android:background="@drawable/button_back"
+                                android:textColor="#6C6B6B"
+                                android:background="@drawable/button_backwhite"
                                 android:layout_weight="1" />
 
                             <Button
@@ -437,9 +602,9 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textAllCaps="false"
-                                android:textColor="#6C6B6B"
+                                android:textColor="#ffffff"
                                 android:layout_marginBottom="3dp"
-                                android:background="@drawable/button_backwhite"
+                                android:background="@drawable/button_back"
                                 android:layout_marginStart="10dp"
                                 android:text="Check out"
                                 android:layout_weight="1" />
