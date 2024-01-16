@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import com.example.ifmapp.R
 import com.example.ifmapp.activities.CheckOutScreen
+import com.example.ifmapp.activities.LeaveScreen
 import com.example.ifmapp.activities.ProfileScreen
 import com.example.ifmapp.activities.SalaryScreen
 import com.example.ifmapp.databinding.FragmentMenuBinding
@@ -46,6 +47,10 @@ addFragment(MustersFragment())
 
         binding.homeBtm.setOnClickListener {
             startActivity(Intent(requireContext(),CheckOutScreen::class.java))
+        }
+
+        binding.leavesBtm.setOnClickListener {
+            startActivity(Intent(requireContext(),LeaveScreen::class.java))
         }
 
         return binding.root
