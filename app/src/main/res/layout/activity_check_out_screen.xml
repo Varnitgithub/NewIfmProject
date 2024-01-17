@@ -594,6 +594,7 @@
                                 android:textAllCaps="false"
                                 android:layout_marginBottom="3dp"
                                 android:textColor="#6C6B6B"
+
                                 android:background="@drawable/button_backwhite"
                                 android:layout_weight="1" />
 

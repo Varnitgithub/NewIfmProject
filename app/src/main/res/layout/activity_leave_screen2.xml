@@ -12,10 +12,54 @@
         android:layout_height="match_parent"
         tools:context=".activities.LeaveScreen">
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/leavetxt_CL"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:padding="6dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/nav_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/navigationicon"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <TextView
+                android:id="@+id/applyforleave_txt"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="13dp"
+                android:layout_marginEnd="13dp"
+                android:fontFamily="@font/roboto"
+                android:gravity="center"
+                android:padding="6dp"
+                android:text="Apply for Leave"
+                android:textColor="#121212"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/nav_icon"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/leavetxt_CL"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
@@ -24,6 +68,7 @@
                 android:layout_height="match_parent"
                 android:layout_margin="4dp"
                 app:cardCornerRadius="10dp"
+                android:padding="4dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="parent">
@@ -32,6 +77,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="4dp"
+                    android:padding="8dp"
                     android:orientation="vertical">
 
 
@@ -46,7 +92,7 @@
                             android:layout_marginEnd="10dp"
                             android:background="@drawable/appliedleaves_back"
                             android:orientation="horizontal"
-                            android:padding="10dp"
+                            android:padding="14dp"
                             android:weightSum="2">
 
                             <TextView
@@ -87,7 +133,7 @@
                             android:layout_marginEnd="10dp"
                             android:background="@drawable/appliedleaves_back"
                             android:orientation="horizontal"
-                            android:padding="10dp"
+                            android:padding="14dp"
                             android:weightSum="2">
 
                             <TextView
@@ -128,7 +174,7 @@
                             android:layout_marginEnd="10dp"
                             android:background="@drawable/appliedleaves_back"
                             android:orientation="horizontal"
-                            android:padding="10dp"
+                            android:padding="14dp"
                             android:weightSum="2">
 
                             <TextView

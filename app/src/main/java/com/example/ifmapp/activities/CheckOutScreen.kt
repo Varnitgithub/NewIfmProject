@@ -27,7 +27,7 @@ binding = DataBindingUtil.setContentView(this,R.layout.activity_check_out_screen
             binding.frameLayout.setOnTouchListener { _, event ->
                 gestureDetector.onTouchEvent(event)
             }*/
-
+binding.checkInBtn.isEnabled = false
         val bottomFragment = BottomFragment.newInstance()
         bottomFragment.show(supportFragmentManager, "add_photo_dialog_fragment")
 
