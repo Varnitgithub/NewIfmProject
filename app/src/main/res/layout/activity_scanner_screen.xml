@@ -6,6 +6,9 @@
     android:layout_height="match_parent"
     tools:context=".activities.ScannerScreen">
 
+
+
+
 <com.budiyev.android.codescanner.CodeScannerView
     android:id="@+id/scanner_view"
     android:layout_width="match_parent"
@@ -22,5 +25,18 @@
     app:frameThickness="2dp"
     app:maskColor="#77000000"/>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:textSize="19sp"
+        android:textStyle="bold"
+        android:layout_marginTop="120dp"
+        android:textColor="#ffffff"
+        android:gravity="center"
+        android:text="Scan QR code for the unit/shift "/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

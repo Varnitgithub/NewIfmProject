@@ -26,11 +26,11 @@ class MainActivity : AppCompatActivity() {
             binding.checkoutBtn.setBackgroundResource(R.drawable.button_backwhite)
             binding.checkInBtn.setTextColor(resources.getColor(R.color.white))
             binding.checkInBtn.setBackgroundResource(R.drawable.button_back)
-
             startActivity(Intent(this,ScannerScreen::class.java))
-
         }
+
         binding.checkoutBtn.setOnClickListener {
+            binding.checkoutBtn.isEnabled = false
             binding.checkInBtn.setTextColor(resources.getColor(R.color.check_btn))
             binding.checkInBtn.setBackgroundResource(R.drawable.button_backwhite)
             binding.checkoutBtn.setTextColor(resources.getColor(R.color.white))
