@@ -38,7 +38,7 @@ private lateinit var binding: FragmentMenuBinding
         }
 
         binding.mustersBtm.setOnClickListener{
-addFragment(MustersFragment())
+addFragment(MustersFragment(requireContext()))
         }
 
         binding.myDocBtm.setOnClickListener {

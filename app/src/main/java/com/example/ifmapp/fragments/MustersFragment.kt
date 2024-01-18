@@ -18,13 +18,14 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.example.ifmapp.R
 import com.example.ifmapp.databinding.FragmentMustersBinding
+import com.example.ifmapp.utils.CustomGridAdapter
 import java.text.SimpleDateFormat
 import java.time.Month
 import java.util.Calendar
 import java.util.Locale
 
 
-class MustersFragment : Fragment() {
+class MustersFragment(private var context: Context) : Fragment() {
     private lateinit var binding: FragmentMustersBinding
     private lateinit var calendar: Calendar
 
@@ -71,6 +72,11 @@ class MustersFragment : Fragment() {
         val firstDayOfMonth = calendar.get(Calendar.DAY_OF_WEEK)
         val maxDaysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
 
+        val txtYear = calendar.get(Calendar.YEAR)
+        val txtMonth = calendar.get(Calendar.MONTH)
+
+        binding.monthTxt.text =  "${getMonthName(txtMonth)} $txtYear"
+
         // Add empty cells before the first day of the month
         for (i in 1 until firstDayOfMonth) {
             dates.add("")
@@ -81,17 +87,14 @@ class MustersFragment : Fragment() {
             dates.add(i.toString())
         }
 
-        // Update the month and year TextView
-        val month = calendar.get(Calendar.MONTH).toString()
-        val year = calendar.get(Calendar.YEAR).toString()
-
-        var monthName = getMonthName(month.toInt())
-        binding.monthTxt.text = "$monthName ${year}"
-
-        // Use the custom adapter
-        val adapter = CustomGridAdapter(requireContext(), android.R.layout.simple_list_item_1, dates)
+        val adapter = CustomGridAdapter(
+            context,
+            android.R.layout.simple_list_item_1,
+            dates
+        )
         binding.gridView.adapter = adapter
     }
+
     private fun getMonthName(monthNumber: Int): String {
         val monthNames = arrayOf(
             "January", "February", "March", "April",
@@ -106,43 +109,25 @@ class MustersFragment : Fragment() {
         }
     }
 
-
-
-    class CustomGridAdapter(context: Context, resource: Int, objects: List<String>) :
-        ArrayAdapter<String>(context, resource, objects) {
-
-        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-            val textView = super.getView(position, convertView, parent) as TextView
-
-            // Check if the item is a day of the week
-            val isDayOfWeek = position < 7
-
-            // Make days of the week bold
-            if (isDayOfWeek) {
-                textView.setTypeface(null, Typeface.BOLD)
-            } else {
-                textView.setTypeface(null, Typeface.NORMAL)
-            }
-
-            // Center-align the text
-            textView.gravity = Gravity.CENTER_HORIZONTAL
-
-            // Center-align the text vertically
-            textView.setPadding(0, textView.paddingTop, 0, textView.paddingBottom)
-            // Set top margin
-            if (position >= 7) { // Skip setting margin for days of the week
-                val layoutParams = textView.layoutParams
-
-                if (layoutParams is LinearLayout.LayoutParams) {
-                    layoutParams.setMargins(0, 1, 0, 0) // Adjust the margin as needed
-                    textView.layoutParams = layoutParams
-                }
-            }
-
-
-            return textView
-        }
+    fun getMonth(): Int {
+        return calendar.get(Calendar.MONTH)
     }
+
+    fun getYear(): Int {
+        return calendar.get(Calendar.YEAR)
+    }
+
+
+    fun getCalendar():Calendar{
+        return this.calendar
+    }
+
+    //kotlin.UninitializedPropertyAccessException: lateinit property calendar has not been initialized
+    private fun checkCalendar() {
+        if (isAdded &&::binding.isInitialized) {
+            updateCalendar()
+
+        }}
 
 
 }

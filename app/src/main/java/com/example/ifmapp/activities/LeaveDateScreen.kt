@@ -1,12 +1,15 @@
 package com.example.ifmapp.activities
 
 import CustomDialogClass
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -19,13 +22,12 @@ import com.example.ifmapp.fragments.SingleLeaveFragment
 import com.example.ifmapp.utils.CommonCalendarUtils
 import java.util.Calendar
 
-class LeaveDateScreen : AppCompatActivity(), CommonCalendarUtils.CalendarUpdateCallback {
-    private val singleLeaveFragment by lazy { SingleLeaveFragment() }
-    private val multipleLeaveFragment by lazy { MultipleLeaveFragment() }
-    private val longleaveFragment by lazy { LongLeaveFragment() }
+class LeaveDateScreen : AppCompatActivity() {
+    private val singleLeaveFragment by lazy { SingleLeaveFragment(this) }
+    private val multipleLeaveFragment by lazy { MultipleLeaveFragment(this) }
+    private val longleaveFragment by lazy { LongLeaveFragment(this) }
     private lateinit var calendar: Calendar
     private lateinit var customDialog :CustomDialogClass
-    private   var commonCalendarUtils: CommonCalendarUtils= CommonCalendarUtils(this)
 
 
     private lateinit var binding: ActivityLeaveDateScreenBinding
@@ -38,17 +40,17 @@ class LeaveDateScreen : AppCompatActivity(), CommonCalendarUtils.CalendarUpdateC
        // longLeaveFragment.setCalendarUpdateListener(this)
         customDialog = CustomDialogClass(this)
         addFragment(singleLeaveFragment)
-        accessMonthAndYear()
-        // Button click listeners
-        binding.singleLeave.setOnClickListener {
-            updateButtonUI(binding.singleLeave)
-            addFragment(singleLeaveFragment)
-        }
+
 
         binding.btnLeaveApprove.setOnClickListener {
 
-          showCustomDialog()
+            dialog()
 
+        }
+
+        binding.singleLeave.setOnClickListener {
+            updateButtonUI(binding.singleLeave)
+            addFragment(singleLeaveFragment)
         }
 
         binding.multipleLeave.setOnClickListener {
@@ -60,56 +62,10 @@ class LeaveDateScreen : AppCompatActivity(), CommonCalendarUtils.CalendarUpdateC
             updateButtonUI(binding.longLeave)
             addFragment(longleaveFragment)
 
-//            longLeaveFragment.setCalendarUpdateListener(this)
-//            addFragment(longLeaveFragment)
-
-            // Call both updatePreviousMonth and updateNextMonth
-
         }
 
-        // Initialize LongLeaveFragment with listener
-
-
-        binding.previousMonth.setOnClickListener {
-            val frameLayout = findViewById<FrameLayout>(R.id.leaveFrameLayout)
-            val currentFragment = supportFragmentManager.findFragmentById(frameLayout.id)
-
-            if (currentFragment is SingleLeaveFragment) {
-                commonCalendarUtils.updatePreviousMonth(singleLeaveFragment.getCalendar())
-                accessMonthAndYear()
-            } else if (currentFragment is MultipleLeaveFragment) {
-                commonCalendarUtils.updatePreviousMonth(multipleLeaveFragment.getCalendar())
-                accessMonthAndYear()
-            } else if (currentFragment is LongLeaveFragment) {
-                commonCalendarUtils.updatePreviousMonth(longleaveFragment.getCalendar())
-                accessMonthAndYear()
-            } else {
-                Toast.makeText(this, "no fragment attached", Toast.LENGTH_SHORT).show()
-            }
-
-        }
-
-        binding.nextMonth.setOnClickListener {
-            val frameLayout = findViewById<FrameLayout>(R.id.leaveFrameLayout)
-            val currentFragment = supportFragmentManager.findFragmentById(frameLayout.id)
-
-            if (currentFragment is SingleLeaveFragment) {
-                commonCalendarUtils.updateNextMonth(singleLeaveFragment.getCalendar())
-                accessMonthAndYear()
-            } else if (currentFragment is MultipleLeaveFragment) {
-                commonCalendarUtils.updateNextMonth(multipleLeaveFragment.getCalendar())
-                accessMonthAndYear()
-            } else if (currentFragment is LongLeaveFragment) {
-                commonCalendarUtils.updateNextMonth(longleaveFragment.getCalendar())
-                accessMonthAndYear()
-            } else {
-                Toast.makeText(this, "no fragment attached", Toast.LENGTH_SHORT).show()
-            }
-        }
     }
-    override fun updatesCalendar(calendar: Calendar) {
-        longleaveFragment.updatesCalendar(calendar)
-    }
+
 
     private fun addFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
@@ -130,46 +86,24 @@ class LeaveDateScreen : AppCompatActivity(), CommonCalendarUtils.CalendarUpdateC
 
     private fun resetButtonUI(button: Button ) {
         button.setBackgroundResource(R.drawable.site_selection_back)
-      //  button.setTextColor(resources.getColor(R.color.btn_continue))
+        button.setTextColor(resources.getColor(R.color.btn_continue))
     }
 
 
-
-    private fun accessMonthAndYear() {
-        val longLeaveFragment = supportFragmentManager.findFragmentById(R.id.leaveFrameLayout) as? LongLeaveFragment
-
-        val month = longLeaveFragment?.getMonth()
-        val year = longLeaveFragment?.getYear()
-
-        // Now you can use 'month' and 'year' as needed
-        // For example, updating a TextView in your activity
-       // binding.monthTxt.text = "${month?.let { getMonthName(it) }} $year"
-    }
-
-    private fun getMonthName(monthNumber: Int): String {
-        val monthNames = arrayOf(
-            "January", "February", "March", "April",
-            "May", "June", "July", "August",
-            "September", "October", "November", "December"
-        )
-
-        return if (monthNumber in 0..11) {
-            monthNames[monthNumber]
-        } else {
-            "Invalid month number"
-        }
-    }
-    private fun showCustomDialog() {
+    private fun dialog() {
         val dialog = Dialog(this)
-        val inflater = LayoutInflater.from(this)
-        val customDialogView = inflater.inflate(R.layout.leave_approve_dialog, null)
-        val layoutParams = ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        )
-        dialog.window?.setLayout(layoutParams.width, layoutParams.height)
+        dialog.setContentView(R.layout.leave_approve_dialog)
 
-        dialog.setContentView(customDialogView)
+        val doneBtn: Button = dialog.findViewById(R.id.done_btn)
+        val crossDialog: ImageView = dialog.findViewById(R.id.cross_leaveDialog)
+
+        doneBtn.setOnClickListener {
+            dialog.dismiss()
+        }
+        crossDialog.setOnClickListener {
+            dialog.dismiss()
+        }
+
         dialog.show()
     }
 }

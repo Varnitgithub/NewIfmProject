@@ -30,7 +30,7 @@ class DashBoardScreen : AppCompatActivity() {
 
 
     private val homeFragment by lazy { HomeFragment() }
-    private val mustersFragment by lazy { MustersFragment() }
+    private val mustersFragment by lazy { MustersFragment(this) }
     private val docsFragment by lazy { DocsFragment() }
     private val menuFragment by lazy { MenuFragment() }
 

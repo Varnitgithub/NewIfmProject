@@ -1,5 +1,6 @@
 package com.example.ifmapp.fragments
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -15,7 +16,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-class LongLeaveFragment : Fragment(), CommonCalendarUtils.CalendarUpdateCallback  {
+class LongLeaveFragment(private var context: Context) : Fragment() {
     private lateinit var binding: FragmentLongLeaveBinding
     private lateinit var calendar: Calendar
 
@@ -35,7 +36,15 @@ class LongLeaveFragment : Fragment(), CommonCalendarUtils.CalendarUpdateCallback
             calendar = Calendar.getInstance()
             updateCalendar()
         }
+        binding.previousMonth.setOnClickListener {
+            calendar.add(Calendar.MONTH, -1)
+            updateCalendar()
+        }
 
+        binding.nextMonth.setOnClickListener {
+            calendar.add(Calendar.MONTH, 1)
+            updateCalendar()
+        }
 
         checkCalendar()
 
@@ -61,6 +70,10 @@ class LongLeaveFragment : Fragment(), CommonCalendarUtils.CalendarUpdateCallback
         val firstDayOfMonth = calendar.get(Calendar.DAY_OF_WEEK)
         val maxDaysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
 
+        val txtYear = calendar.get(Calendar.YEAR)
+        val txtMonth = calendar.get(Calendar.MONTH)
+        binding.leaveMonthTxt.text = "${getMonthName(txtMonth)} $txtYear"
+
         // Add empty cells before the first day of the month
         for (i in 1 until firstDayOfMonth) {
             dates.add("")
@@ -72,7 +85,7 @@ class LongLeaveFragment : Fragment(), CommonCalendarUtils.CalendarUpdateCallback
         }
 
         val adapter = CustomGridAdapter(
-            requireContext(),
+          context,
             android.R.layout.simple_list_item_1,
             dates
         )
@@ -101,10 +114,7 @@ class LongLeaveFragment : Fragment(), CommonCalendarUtils.CalendarUpdateCallback
         return calendar.get(Calendar.YEAR)
     }
 
-    override fun updatesCalendar(calendar: Calendar) {
-        this.calendar = calendar
-        updateCalendar()
-    }
+
     fun getCalendar():Calendar{
         return this.calendar
     }
