@@ -150,6 +150,7 @@ class HomeFragment(private var context: Context) : Fragment(),
 
                     }else{
                         Toast.makeText(requireContext(), "this is invalid mPIN, Please enter valid pin", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "this is invalid mPIN, Please enter valid pin", Toast.LENGTH_SHORT).show()
                     }
                 }
 
