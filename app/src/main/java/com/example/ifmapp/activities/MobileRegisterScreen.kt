@@ -19,18 +19,19 @@ import com.example.ifmapp.RetrofitInstance
 import com.example.ifmapp.databinding.ActivityMobileRegisterScreenBinding
 import com.example.ifmapp.modelclasses.verifymobile.InputMobileRegister
 import com.example.ifmapp.modelclasses.verifymobile.OtpSend
+import com.example.ifmapp.modelclasses.verifymobile.OtpSendItem
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class MobileRegisterScreen : AppCompatActivity() {
     private lateinit var binding: ActivityMobileRegisterScreenBinding
-
-    private var otp:String? = null
+    private var mobileNumber: String? = null
+    private var otp: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // setContentView(R.layout.activity_mobile_register_screen)
-        var retrofitInstance = RetrofitInstance.apiInstance
+        val retrofitInstance = RetrofitInstance.apiInstance
         binding = DataBindingUtil.setContentView(this, R.layout.activity_mobile_register_screen)
 
         binding.wayToSignup.setOnClickListener {
@@ -38,39 +39,76 @@ class MobileRegisterScreen : AppCompatActivity() {
         }
 
         binding.btnContinue.setOnClickListener {
-            if (binding.mobileNoEdt.text.isNotEmpty()) {
-                if (binding.mobileNoEdt.text.toString().length==10) {
-                    Log.d("TAGGGGGG", "onCreate: ${binding.mobileNoEdt.text}")
+            if (binding.otp1.text.isEmpty() && binding.otp2.text.isEmpty() && binding.otp3.text.isEmpty() && binding.otp4.text.isEmpty()) {
 
-                    retrofitInstance.registeredMobileNumber(
-                        InputMobileRegister(
+
+                if (binding.mobileNoEdt.text.isNotEmpty()) {
+                    if (binding.mobileNoEdt.text.toString().length == 10) {
+                        mobileNumber = binding.mobileNoEdt.text.toString().trim()
+                        retrofitInstance.registeredMobileNumber(
                             "sams",
-                            binding.mobileNoEdt.text.toString().trim()
-                        )
-                    ).enqueue(object : Callback<OtpSend?> {
-                        override fun onResponse(call: Call<OtpSend?>, response: Response<OtpSend?>) {
-                            Toast.makeText(
-                                this@MobileRegisterScreen,
-                                "Otp Send ${response.body()}",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            binding.otpSectionLL.visibility = View.VISIBLE
+                            mobileNumber = binding.mobileNoEdt.text.toString()
+                        ).enqueue(object : Callback<OtpSend?> {
+                            override fun onResponse(
+                                call: Call<OtpSend?>,
+                                response: Response<OtpSend?>
+                            ) {
+                                if (response.isSuccessful) {
+                                    Toast.makeText(this@MobileRegisterScreen, "otp send", Toast.LENGTH_SHORT).show()
+
+                                    binding.otpSectionLL.visibility = View.VISIBLE
+                                } else {
+                                    Toast.makeText(this@MobileRegisterScreen, "otp not send", Toast.LENGTH_SHORT).show()
+
+                                    binding.otpSectionLL.visibility = View.VISIBLE
+                                }
+
+                            }
+
+                            override fun onFailure(call: Call<OtpSend?>, t: Throwable) {
+                                Toast.makeText(this@MobileRegisterScreen, "otp failed", Toast.LENGTH_SHORT).show()
+
+                                binding.otpSectionLL.visibility = View.VISIBLE
+
+
+                            }
+                        })
+                    } else {
+                        Toast.makeText(this, "Mobile no should be 10 digit", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                } else {
+                    Toast.makeText(this, "Please enter your mobile number", Toast.LENGTH_SHORT)
+                        .show()
+
+                }
+            } else {
+
+                if (binding.otp1.text.isNotEmpty() && binding.otp2.text.isNotEmpty()
+                    && binding.otp3.text.isNotEmpty() && binding.otp4.text.isNotEmpty()
+                ) {
+                    val mobileOtp = "${binding.otp1.text.toString().trim()}${binding.otp2.text.toString().trim()}" +
+                            "${binding.otp3.text.toString().trim()}${binding.otp4.text.toString().trim()}"
+                    Log.d("TGGGGGGGG", "onCreate: $mobileOtp is the otp")
+                    retrofitInstance.verifyMobileNumber("sams",mobileNumber?:"",mobileOtp).enqueue(object : Callback<Void?> {
+                        override fun onResponse(call: Call<Void?>, response: Response<Void?>) {
+                            if (response.isSuccessful){
+                                Toast.makeText(this@MobileRegisterScreen, "otp verified", Toast.LENGTH_SHORT).show()
+                            }else{
+                                Toast.makeText(this@MobileRegisterScreen, "otp not verified", Toast.LENGTH_SHORT).show()
+
+                            }
                         }
 
-                        override fun onFailure(call: Call<OtpSend?>, t: Throwable) {
-                            Toast.makeText(this@MobileRegisterScreen, "error", Toast.LENGTH_SHORT)
-                                .show()
+                        override fun onFailure(call: Call<Void?>, t: Throwable) {
+                            Toast.makeText(this@MobileRegisterScreen, "otp failed", Toast.LENGTH_SHORT).show()
 
                         }
                     })
 
-//mobile number
-
                 } else {
-                    Toast.makeText(this, "Mobile no should be 10 digit", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "please enter valid otp", Toast.LENGTH_SHORT).show()
                 }
-            } else {
-                Toast.makeText(this, "Please enter your mobile number", Toast.LENGTH_SHORT).show()
 
             }
         }
@@ -103,8 +141,8 @@ class MobileRegisterScreen : AppCompatActivity() {
         })
 
         val editTexts = listOf(binding.otp1, binding.otp2, binding.otp3, binding.otp4)
-
         for (i in 0 until editTexts.size) {
+
             editTexts[i].addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(
                     s: CharSequence?,
@@ -115,13 +153,9 @@ class MobileRegisterScreen : AppCompatActivity() {
                 }
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-//                    if (editTexts[3].text.toString().isNotEmpty()){
-//
-//                    }
-
-                    otp = otp + editTexts[i]
-
-                    Log.d("TAGGGGGGG", "onTextChanged: $otp is the otp")
+                    if (editTexts[3].text.toString().isNotEmpty()) {
+                        Toast.makeText(this@MobileRegisterScreen, "press continue", Toast.LENGTH_SHORT).show()
+                    }
                     editTexts[i].inputType =
                         InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD
                 }

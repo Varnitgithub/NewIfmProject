@@ -1,18 +1,22 @@
 package com.example.ifmapp.apiinterface
 
-import com.example.ifmapp.modelclasses.verifymobile.InputMobileRegister
 import com.example.ifmapp.modelclasses.verifymobile.OtpSend
-import com.example.ifmapp.modelclasses.verifymobile.VerifyMobileNumber
 import retrofit2.Call
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST
-import retrofit2.http.Query
 
 interface ApiInterface {
-    @POST("GroupLApp.asmx")
-    fun registeredMobileNumber(@Query("op")inputMobileRegister: InputMobileRegister):Call<OtpSend>
 
+    @FormUrlEncoded
+    @POST("SendOTP")
+    fun registeredMobileNumber(@Field("connectionKey") connectionKey: String,
+                               @Field("mobileNumber") mobileNumber: String):Call<OtpSend>
+    @FormUrlEncoded
     @POST("GroupLApp.asmx")
-    fun verifyMobileNumber(@Query("op")verifyMobileNumber: VerifyMobileNumber):Call<Void>
+    fun verifyMobileNumber(@Field("connectionKey") connectionKey: String,
+                           @Field("mobileNumber") mobileNumber: String,
+                           @Field("OTP") OTP:String): Call<Void>
 
 
 }
