@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import com.example.ifmapp.modelclasses.loginby_pin.LoginByPINResponseItem
 
 
-@Database(entities = [EmployeePin::class,LoginByPINResponseItem::class], version = 1, exportSchema = false)
+@Database(entities = [LoginByPINResponseItem::class], version = 1, exportSchema = false)
 abstract class EmployeeDB :RoomDatabase() {
 
     abstract fun employeePinDao():EmployeePinDao
@@ -22,7 +22,7 @@ abstract class EmployeeDB :RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     EmployeeDB::class.java,
-                    "app_database"
+                    "EmployeeDataBase"
                 ).build()
                 INSTANCE = instance
                 instance

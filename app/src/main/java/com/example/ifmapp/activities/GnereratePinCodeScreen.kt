@@ -17,6 +17,8 @@ import com.example.ifmapp.databasedb.EmployeeDB
 import com.example.ifmapp.databasedb.EmployeePin
 import com.example.ifmapp.databasedb.EmployeePinDao
 import com.example.ifmapp.databinding.ActivityGnereratePinCodeScreenBinding
+import com.example.ifmapp.modelclasses.loginby_pin.LoginByPINResponse
+import com.example.ifmapp.modelclasses.loginby_pin.LoginByPINResponseItem
 import com.example.ifmapp.modelclasses.verifymobile.VerifyOtpResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -91,12 +93,53 @@ class GnereratePinCodeScreen : AppCompatActivity() {
                 ) {
                     if (response.isSuccessful) {
 
+
+                        retrofitInstance.loginByPIN(
+                            "sams",
+                            mobileNumber.toString(),
+                            binding.edtEnterPinCode.text.toString().trim()
+                        ).enqueue(object : Callback<LoginByPINResponse?> {
+                            override fun onResponse(
+                                call: Call<LoginByPINResponse?>,
+                                response: Response<LoginByPINResponse?>
+                            ) {
+                                if (response.isSuccessful&&response.body()!=null) {
+                                    CoroutineScope(Dispatchers.IO).launch {
+
+                                        val employeeDetails = LoginByPINResponseItem(
+                                            Designation = response.body()!![0].Designation,
+                                            EmpName = response.body()!![0].EmpName,
+                                            EmpNumber = response.body()!![0].EmpNumber,
+                                            LocationAutoID = response.body()!![0].LocationAutoID,
+                                            MessageID = response.body()!![0].MessageID,
+                                            MessageString = response.body()!![0].MessageString,
+                                            pin =  binding.edtEnterPinCode.text.toString().trim(),
+                                            mobileNumber = mobileNumber?:"",
+                                        )
+                                        employeePinDao.insertEmployeeDetails(
+                                            employeeDetails
+                                        )
+
+                                    }
+                                    Log.d(
+                                        "TAGGGGGG",
+                                        "onResponse: data called and saved successful"
+                                    )
+                                }
+                            }
+
+                            override fun onFailure(call: Call<LoginByPINResponse?>, t: Throwable) {
+
+                            }
+                        })
+
+
                         val intent = Intent(
-                                this@GnereratePinCodeScreen,
-                                DashBoardScreen::class.java
-                            )
-                        intent.putExtra("usermobileNumber",mobileNumber)
-                        intent.putExtra("PIN",binding.edtEnterPinCode.text.toString().trim())
+                            this@GnereratePinCodeScreen,
+                            DashBoardScreen::class.java
+                        )
+                        /*intent.putExtra("usermobileNumber",mobileNumber)
+                        intent.putExtra("PIN",binding.edtEnterPinCode.text.toString().trim())*/
                         startActivity(intent)
 
 

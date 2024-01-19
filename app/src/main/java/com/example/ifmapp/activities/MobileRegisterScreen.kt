@@ -101,11 +101,7 @@ class MobileRegisterScreen : AppCompatActivity() {
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                     if (editTexts[3].text.toString().isNotEmpty()) {
-                        Toast.makeText(
-                            this@MobileRegisterScreen,
-                            "press continue",
-                            Toast.LENGTH_SHORT
-                        ).show()
+
                         editTexts[i].inputType =
                             InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD
                     }

@@ -13,21 +13,28 @@ import com.bumptech.glide.Glide
 import com.example.ifmapp.R
 import com.example.ifmapp.modelclasses.AddAccountModel
 import com.example.ifmapp.modelclasses.DocumentsModel
+import com.example.ifmapp.modelclasses.loginby_pin.LoginByPINResponseItem
 
-class AddAccountAdapter(private var context: Context):RecyclerView.Adapter<AddAccountAdapter.DocumentsViewHolder>() {
+class AddAccountAdapter(private var context: Context,private var listener:OnClickedInterface):RecyclerView.Adapter<AddAccountAdapter.DocumentsViewHolder>() {
 
-    var documentsList=ArrayList<AddAccountModel>()
+    private var documentsList=ArrayList<LoginByPINResponseItem>()
 
     class DocumentsViewHolder(itemView: View) :RecyclerView.ViewHolder(itemView){
         var addAccountImage:ImageView = itemView.findViewById(R.id.addAccount_imageview)
         var addAccountName:TextView = itemView.findViewById(R.id.add_accountName)
+        var addAccountLL:LinearLayout = itemView.findViewById(R.id.addAccountLLayout)
 
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DocumentsViewHolder {
-        var view = LayoutInflater.from(parent.context).inflate(R.layout.add_account_layout,parent,false)
+        val view = DocumentsViewHolder(LayoutInflater.from(parent.context)
+            .inflate(R.layout.add_account_layout,parent,false))
 
-       return DocumentsViewHolder(view)
+
+        view.addAccountLL.setOnClickListener {
+            listener.onclick(documentsList[view.adapterPosition],view.adapterPosition)
+        }
+       return view
     }
 
     override fun getItemCount(): Int {
@@ -37,11 +44,11 @@ class AddAccountAdapter(private var context: Context):RecyclerView.Adapter<AddAc
     override fun onBindViewHolder(holder: DocumentsViewHolder, position: Int) {
      val currentItem = documentsList[position]
 
-        holder.addAccountName.text = currentItem.name
+        holder.addAccountName.text = currentItem.EmpName
 
-        Glide.with(context).load(currentItem.image).placeholder(R.drawable.aadhar).into(holder.addAccountImage)
+        Glide.with(context).load(R.drawable.account_user_profile).placeholder(R.drawable.aadhar).into(holder.addAccountImage)
     }
-    fun updateList(newList: List<AddAccountModel>) {
+    fun updateList(newList: List<LoginByPINResponseItem>) {
         val diffCallback = DocumentsDiffCallback(documentsList, newList)
         val diffResult = DiffUtil.calculateDiff(diffCallback)
 
@@ -52,8 +59,8 @@ class AddAccountAdapter(private var context: Context):RecyclerView.Adapter<AddAc
     }
 
     class DocumentsDiffCallback(
-        private val oldList: List<AddAccountModel>,
-        private val newList: List<AddAccountModel>
+        private val oldList: List<LoginByPINResponseItem>,
+        private val newList: List<LoginByPINResponseItem>
     ) : DiffUtil.Callback() {
         override fun getOldListSize(): Int = oldList.size
         override fun getNewListSize(): Int = newList.size
@@ -65,5 +72,9 @@ class AddAccountAdapter(private var context: Context):RecyclerView.Adapter<AddAc
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
             return oldList[oldItemPosition] == newList[newItemPosition]
         }
+    }
+
+    interface OnClickedInterface{
+       fun onclick(employeeModel:LoginByPINResponseItem,position: Int)
     }
 }

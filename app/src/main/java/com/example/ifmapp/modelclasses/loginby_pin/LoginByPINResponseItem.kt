@@ -5,11 +5,13 @@ import androidx.room.PrimaryKey
 
 @Entity("EmployeeDetailsTable")
 data class LoginByPINResponseItem(
-   @PrimaryKey(autoGenerate = true) var id:Int ,
-    val Designation: String,
-    val EmpName: String,
-    val EmpNumber: String,
-    val LocationAutoID: String,
-    val MessageID: String,
-    val MessageString: String
+   @PrimaryKey(autoGenerate = true) var id:Int=0 ,
+    val Designation: String="",
+    val EmpName: String="",
+    val EmpNumber: String="",
+    val LocationAutoID: String="",
+    val MessageID: String="",
+    val MessageString: String="",
+ var pin:String="",
+ var mobileNumber:String=""
 )
