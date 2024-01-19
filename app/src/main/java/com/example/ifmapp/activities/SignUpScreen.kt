@@ -27,6 +27,10 @@ class SignUpScreen : AppCompatActivity() {
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_sign_up_screen)
 
+        binding.wayToSignin.setOnClickListener {
+            startActivity(Intent(this@SignUpScreen,DashBoardScreen::class.java))
+        }
+
         binding.btnContinue.setOnClickListener {
                startActivity(Intent(this,GnereratePinCodeScreen::class.java))
 //            if (binding.companycodeEdt.text.isNotEmpty()&&binding.employeeidEdt.text.isNotEmpty()

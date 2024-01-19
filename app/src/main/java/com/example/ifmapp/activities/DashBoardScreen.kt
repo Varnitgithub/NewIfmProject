@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.location.LocationManager
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -29,19 +30,29 @@ class DashBoardScreen : AppCompatActivity() {
     private val BACKGROUND_LOCATION_CODE = 111
 
 
-    private val homeFragment by lazy { HomeFragment() }
     private val mustersFragment by lazy { MustersFragment(this) }
     private val docsFragment by lazy { DocsFragment() }
     private val menuFragment by lazy { MenuFragment() }
-
+    private val homeFragment = HomeFragment(this)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dash_board_screen)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dash_board_screen)
 
+        val mobileNumber = intent.getStringExtra("usermobileNumber")
+        val pin = intent.getStringExtra("PIN")
+
+        Log.d("TAGGGGGGGGG", "onCreate: $pin and $mobileNumber")
 
         if (!isMockLocation()) {
             if (checkPermission()) {
+
+
+                val bundle = Bundle().apply {
+                    putString("MOBILE_NUMBER", mobileNumber)
+                    putString("PIN", pin)
+                }
+                homeFragment.arguments = bundle
                 addFragment(homeFragment)
                // startService(Intent(this@DashBoardScreen,LocationService::class.java))
             } else {

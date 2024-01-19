@@ -22,6 +22,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
+                android:layout_marginTop="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -92,7 +93,7 @@
                 android:id="@+id/pin_cardview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="20dp"
                 app:cardCornerRadius="12dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
@@ -107,7 +108,8 @@
                     android:paddingStart="14dp"
                     android:paddingTop="14dp"
                     android:paddingEnd="14dp"
-                    android:paddingBottom="8dp">
+
+                    android:paddingBottom="26dp">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/enterPin_txt"
@@ -122,7 +124,7 @@
                             android:layout_height="wrap_content"
                             android:gravity="center"
                             android:orientation="horizontal"
-                            android:paddingTop="10dp"
+                            android:paddingTop="14dp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent">
@@ -161,7 +163,7 @@
                         android:id="@+id/Pin_edt_LL"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="14dp"
+                        android:layout_marginTop="18dp"
                         android:gravity="center"
                         android:orientation="horizontal"
                         android:paddingStart="6dp"
@@ -326,7 +328,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
 
-                            android:layout_marginTop="20dp"
+                            android:layout_marginTop="25dp"
                             android:gravity="center"
                             android:text="Forgot Pin?"
                             android:textColor="@color/white"
@@ -338,24 +340,42 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/accounts_recyclerView"
+                android:layout_width="80dp"
+                android:layout_height="0dp"
+                tools:listitem="@layout/add_account_layout"
+                tools:itemCount="1"
+                android:layout_marginEnd="10dp"
+                app:layout_constraintTop_toTopOf="@id/addAccount_LL"
+                app:layout_constraintBottom_toBottomOf="@id/addAccount_LL"
+                app:layout_constraintEnd_toStartOf="@id/addAccount_LL"
+                />
+
+
+
             <LinearLayout
                 android:id="@+id/addAccount_LL"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="80dp"
                 android:gravity="center"
+                android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/pin_cardview">
 
+
+
                 <LinearLayout
+                    android:id="@+id/addAccount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/addaccountout_back"
                     android:padding="20dp">
 
                     <ImageView
-                        android:id="@+id/addAccount"
+                        android:id="@+id/addAccount_"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/addaccount_back"

@@ -112,6 +112,8 @@
                     android:background="@drawable/site_selection_back"
                     android:hint="Enter your pin"
                     android:padding="16dp"
+                    android:inputType="number"
+                    android:maxLength="4"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
