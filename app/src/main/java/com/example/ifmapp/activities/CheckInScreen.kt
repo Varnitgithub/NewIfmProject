@@ -557,6 +557,7 @@ myaddress = "${address.locality} ${address.subLocality} ${address.adminArea} ${a
                 ) {
                     if (response.isSuccessful){
                         Log.d("TAGGGGGGGG", "onResponse: attendance inserted")
+                        Toast.makeText(this@CheckInScreen, "attendance marked", Toast.LENGTH_SHORT).show()
                     }else{
                         Log.d("TAGGGGGGGG", "onResponse:error ${response.errorBody()}")
                     }
