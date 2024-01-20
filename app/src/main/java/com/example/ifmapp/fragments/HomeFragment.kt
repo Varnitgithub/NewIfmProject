@@ -51,6 +51,7 @@ class HomeFragment(private var context: Context) : Fragment(),
     var otp: String? = null
     private lateinit var addAccountAdapter: AddAccountAdapter
     private var mobileNumber: String? = null
+    private var empNumber: String? = null
     private lateinit var myPreferences: MyPreferences
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,6 +82,7 @@ class HomeFragment(private var context: Context) : Fragment(),
         employeePinDao.getFirstEmployeeDetails().observe(requireActivity()) { employeeDetails ->
             employeeDetails?.let {
                 binding.userName.text = it.EmpName
+                empNumber = employeeDetails.EmpNumber
             }
         }
 
@@ -139,21 +141,27 @@ class HomeFragment(private var context: Context) : Fragment(),
                     editTexts[i].inputType =
                         InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD
 
-                employeePinDao.getcurrentEmployeeDetails(otp.toString()).observe(requireActivity()){
-                    if (it!=null){
-                        Log.d("TAGGGGGG", "onTextChanged:it is not null")
+                    employeePinDao.getcurrentEmployeeDetails(otp.toString())
+                        .observe(requireActivity()) {
+                            if (it != null) {
+                                Log.d("TAGGGGGG", "onTextChanged:it is not null")
 
-                        val intent = Intent(requireContext(),MainActivity::class.java)
+                                val intent = Intent(requireContext(), MainActivity::class.java)
 
-                        intent.putExtra("mPIN",otp)
-                        startActivity(intent)
+                                intent.putExtra("mPIN", otp)
+                                intent.putExtra("empNumber", empNumber)
+                                startActivity(intent)
 
-                    }else{
-                        Toast.makeText(requireContext(), "this is invalid mPIN, Please enter valid pin", Toast.LENGTH_SHORT).show()
-                        Toast.makeText(requireContext(), "this is invalid mPIN, Please enter valid pin", Toast.LENGTH_SHORT).show()
-                    }
-                }
+                                binding.otp1.text.clear()
+                                binding.otp2.text.clear()
+                                binding.otp3.text.clear()
+                                binding.otp4.text.clear()
 
+
+                            } else {
+                                Log.d("TAGGGGGGGGG", "onTextChanged: //")
+                            }
+                        }
 
 
                 }

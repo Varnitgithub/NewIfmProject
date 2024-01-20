@@ -17,11 +17,16 @@ import com.example.ifmapp.R
 class ScannerScreen : AppCompatActivity() {
     private val CAMERA_REQUEST_CODE =11
 private lateinit var codeScanner: CodeScanner
+private var otp:String?=null
+private var siteSelect:String?=null
+private var shiftSelect:String?=null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_scanner_screen)
 
-
+        otp = intent.getStringExtra("mPIN")
+        siteSelect = intent.getStringExtra("siteSelect")
+        shiftSelect = intent.getStringExtra("shiftSelect")
      if (ActivityCompat.checkSelfPermission(this,android.Manifest.permission.CAMERA)
          ==PackageManager.PERMISSION_GRANTED){
          startScanning()
@@ -43,8 +48,11 @@ private lateinit var codeScanner: CodeScanner
         codeScanner.decodeCallback = DecodeCallback {result->
             runOnUiThread {
                 Toast.makeText(this, "scan Result $result", Toast.LENGTH_SHORT).show()
-                var intent = Intent(this,CheckInScreen::class.java)
+                val intent = Intent(this,CheckInScreen::class.java)
                 intent.putExtra("qrResult",result.toString())
+                intent.putExtra("mPIN",otp)
+                intent.putExtra("siteSelect",siteSelect)
+                intent.putExtra("shiftSelect",shiftSelect)
                 startActivity(intent)
             }
         }

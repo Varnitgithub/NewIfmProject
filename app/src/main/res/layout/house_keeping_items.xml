@@ -1,23 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="wrap_content"
+    android:paddingBottom="4dp">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
+        android:layout_marginTop="6dp"
         android:layout_marginEnd="10dp"
-        app:layout_constraintStart_toStartOf="parent"
+        app:cardCornerRadius="14dp"
+        android:background="#C3C1C1"
+
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="3dp"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="3dp">
+            android:layout_margin="3dp"
+            android:background="@drawable/house_keeping_back"
+            android:paddingBottom="4dp">
 
             <TextView
                 android:id="@+id/ent_glass"
@@ -29,80 +35,119 @@
                 android:padding="6dp"
                 android:text="Entrance glass clean &amp; free \nfrom smudges"
                 android:textColor="#121212"
-                android:textSize="15sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@id/shade_line"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                 />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/pending"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="13dp"
-                android:layout_marginEnd="13dp"
                 android:fontFamily="@font/roboto"
+                android:gravity="end"
                 android:padding="6dp"
                 android:text="Pending"
-                android:textColor="#121212"
+                android:textColor="#ACACAC"
                 android:textSize="15sp"
                 android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@id/shade_line"
+                app:layout_constraintEnd_toStartOf="@id/unselect_check"
                 app:layout_constraintStart_toEndOf="@id/ent_glass"
-                app:layout_constraintTop_toTopOf="parent"
-                 />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
-                android:id="@+id/right"
+                android:id="@+id/unselect_check"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:background="@drawable/right_back"
                 android:padding="8dp"
-                android:layout_margin="20dp"
-                app:layout_constraintBottom_toTopOf="@id/btns_LL"
-                android:src="@drawable/right"
-                app:layout_constraintStart_toEndOf="@id/pending"
+                android:src="@drawable/unselect_check"
+                app:layout_constraintBottom_toTopOf="@id/shade_line"
+                android:layout_marginEnd="6dp"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/pending"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <LinearLayout
+            <View
+                android:id="@+id/shade_line"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_marginTop="10dp"
+                android:background="#ACACAC"
+                app:layout_constraintBottom_toTopOf="@id/btns_LL"
+                app:layout_constraintEnd_toEndOf="@id/btns_LL"
+                app:layout_constraintStart_toStartOf="@id/btns_LL"
+                app:layout_constraintTop_toBottomOf="@id/ent_glass" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/btns_LL"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/ent_glass"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="15dp"
+                android:paddingBottom="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                android:orientation="horizontal"
-                android:weightSum="2">
+                app:layout_constraintTop_toBottomOf="@id/shade_line">
 
-                <Button
-                    android:id="@+id/checkIn_Btn"
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Add Photo"
-                    android:layout_marginEnd="10dp"
-                    android:textAllCaps="false"
-                    android:layout_marginBottom="3dp"
-                    android:textColor="#6C6B6B"
+                    android:orientation="horizontal"
+                    android:padding="5dp"
+                    android:weightSum="2"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
 
-                    android:background="@drawable/blue_stroke"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
-                    android:layout_weight="1" />
+                    <Button
+                        android:id="@+id/checkIn_Btn"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginBottom="3dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/blue_stroke"
+                        android:text="Add Photo"
+                        android:textAllCaps="false"
+                        android:textColor="#6C6B6B"
 
-                <Button
-                    android:id="@+id/checkout_Btn"
-                    android:layout_width="match_parent"
+                        android:textSize="14sp" />
+
+                    <Button
+                        android:id="@+id/checkout_Btn"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginBottom="3dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/button_back"
+                        android:text="View Photo"
+
+                        android:textAllCaps="false"
+                        android:textColor="#ffffff"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:textAllCaps="false"
+                    android:layout_marginStart="25dp"
                     android:layout_marginBottom="3dp"
-                    android:background="@drawable/button_back"
-                    android:textColor="#ffffff"
+                    android:src="@drawable/addphoto_icons"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-                    android:layout_marginStart="10dp"
-                    android:text="View Photo"
-                    android:layout_weight="1" />
-
-            </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

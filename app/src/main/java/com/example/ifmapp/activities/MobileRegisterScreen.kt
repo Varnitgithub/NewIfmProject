@@ -197,136 +197,152 @@ class MobileRegisterScreen : AppCompatActivity() {
                         call: Call<VerifyOtpResponse?>,
                         response: Response<VerifyOtpResponse?>
                     ) {
-                        if (response.isSuccessful) {
-                            Log.d("TAGGGGGGGG", "onResponse: user is valid")
-
-                            if (binding.otp1.text.isEmpty() && binding.otp2.text.isEmpty() && binding.otp3.text.isEmpty() && binding.otp4.text.isEmpty()) {
+                        if (response.isSuccessful  ) {
+                            if (response.body()?.get(0)?.MessageID?.toInt()==1) {
 
 
-                                if (binding.mobileNoEdt.text.isNotEmpty()) {
-                                    if (binding.mobileNoEdt.text.toString().length == 10) {
-                                        mobileNumber = binding.mobileNoEdt.text.toString().trim()
-                                        retrofitInstance.registeredMobileNumber(
-                                            "sams",
-                                            mobileNumber = binding.mobileNoEdt.text.toString()
-                                        ).enqueue(object : Callback<OtpSend?> {
-                                            override fun onResponse(
-                                                call: Call<OtpSend?>,
-                                                response: Response<OtpSend?>
-                                            ) {
-                                                if (response.isSuccessful) {
-                                                    Log.d(
-                                                        "TAGGGGGGGG",
-                                                        "onResponse: otp send successfully"
-                                                    )
-                                                    binding.otpSectionLL.visibility = View.VISIBLE
+                                Log.d("TAGGGGGGGG", "onResponse: user is valid")
 
-                                                } else {
+                                if (binding.otp1.text.isEmpty() && binding.otp2.text.isEmpty() && binding.otp3.text.isEmpty() && binding.otp4.text.isEmpty()) {
 
-                                                    Log.d(
-                                                        "TAGGGGGGGG",
-                                                        "onResponse: otp send failure"
-                                                    )
 
+                                    if (binding.mobileNoEdt.text.isNotEmpty()) {
+                                        if (binding.mobileNoEdt.text.toString().length == 10) {
+                                            mobileNumber =
+                                                binding.mobileNoEdt.text.toString().trim()
+                                            retrofitInstance.registeredMobileNumber(
+                                                "sams",
+                                                mobileNumber = binding.mobileNoEdt.text.toString()
+                                            ).enqueue(object : Callback<OtpSend?> {
+                                                override fun onResponse(
+                                                    call: Call<OtpSend?>,
+                                                    response: Response<OtpSend?>
+                                                ) {
+                                                    if (response.isSuccessful) {
+                                                        Log.d(
+                                                            "TAGGGGGGGG",
+                                                            "onResponse: otp send successfully"
+                                                        )
+                                                        binding.otpSectionLL.visibility =
+                                                            View.VISIBLE
+
+                                                    } else {
+
+                                                        Log.d(
+                                                            "TAGGGGGGGG",
+                                                            "onResponse: otp send failure"
+                                                        )
+
+
+                                                    }
 
                                                 }
 
-                                            }
-
-                                            override fun onFailure(
-                                                call: Call<OtpSend?>,
-                                                t: Throwable
-                                            ) {
-                                                Log.d("TAGGGGGGGG", "onFailure: ${t.message}")
+                                                override fun onFailure(
+                                                    call: Call<OtpSend?>,
+                                                    t: Throwable
+                                                ) {
+                                                    Log.d("TAGGGGGGGG", "onFailure: ${t.message}")
 
 
 
-                                                binding.otpSectionLL.visibility = View.VISIBLE
+                                                    binding.otpSectionLL.visibility = View.VISIBLE
 
 
-                                            }
-                                        })
+                                                }
+                                            })
+                                        } else {
+                                            Toast.makeText(
+                                                this@MobileRegisterScreen,
+                                                "Mobile no should be 10 digit",
+                                                Toast.LENGTH_SHORT
+                                            )
+                                                .show()
+                                        }
                                     } else {
                                         Toast.makeText(
                                             this@MobileRegisterScreen,
-                                            "Mobile no should be 10 digit",
+                                            "Please enter your mobile number",
                                             Toast.LENGTH_SHORT
                                         )
                                             .show()
+
                                     }
                                 } else {
-                                    Toast.makeText(
-                                        this@MobileRegisterScreen,
-                                        "Please enter your mobile number",
-                                        Toast.LENGTH_SHORT
-                                    )
-                                        .show()
 
-                                }
-                            } else {
+                                    if (binding.otp1.text.isNotEmpty() && binding.otp2.text.isNotEmpty()
+                                        && binding.otp3.text.isNotEmpty() && binding.otp4.text.isNotEmpty()
+                                    ) {
+                                        val mobileOtp = "${binding.otp1.text.toString().trim()}${
+                                            binding.otp2.text.toString().trim()
+                                        }" +
+                                                "${binding.otp3.text.toString().trim()}${
+                                                    binding.otp4.text.toString().trim()
+                                                }"
+                                        retrofitInstance.verifyMobileNumber(
+                                            "sams",
+                                            mobileNumber ?: "",
+                                            mobileOtp
+                                        )
+                                            .enqueue(object : Callback<VerifyOtpResponse?> {
+                                                override fun onResponse(
+                                                    call: Call<VerifyOtpResponse?>,
+                                                    response: Response<VerifyOtpResponse?>
+                                                ) {
+                                                    if (response.isSuccessful) {
 
-                                if (binding.otp1.text.isNotEmpty() && binding.otp2.text.isNotEmpty()
-                                    && binding.otp3.text.isNotEmpty() && binding.otp4.text.isNotEmpty()
-                                ) {
-                                    val mobileOtp = "${binding.otp1.text.toString().trim()}${
-                                        binding.otp2.text.toString().trim()
-                                    }" +
-                                            "${binding.otp3.text.toString().trim()}${
-                                                binding.otp4.text.toString().trim()
-                                            }"
-                                    retrofitInstance.verifyMobileNumber(
-                                        "sams",
-                                        mobileNumber ?: "",
-                                        mobileOtp
-                                    )
-                                        .enqueue(object : Callback<VerifyOtpResponse?> {
-                                            override fun onResponse(
-                                                call: Call<VerifyOtpResponse?>,
-                                                response: Response<VerifyOtpResponse?>
-                                            ) {
-                                                if (response.isSuccessful) {
+                                                        Log.d(
+                                                            "TAGGGGGGGGGG",
+                                                            "onResponse: verify otp"
+                                                        )
+                                                        val intent = Intent(
+                                                            this@MobileRegisterScreen,
+                                                            GnereratePinCodeScreen::class.java
+                                                        )
+                                                        intent.putExtra(
+                                                            "mobileNumber",
+                                                            mobileNumber
+                                                        )
+                                                        startActivity(intent)
 
-                                                    Log.d("TAGGGGGGGGGG", "onResponse: verify otp")
-                                                    val intent = Intent(
-                                                        this@MobileRegisterScreen,
-                                                        GnereratePinCodeScreen::class.java
-                                                    )
-                                                    intent.putExtra("mobileNumber",mobileNumber)
-                                                    startActivity(intent)
+                                                    } else {
 
-                                                } else {
+                                                        Log.d(
+                                                            "TAGGGGGGGGGG",
+                                                            "onResponse: otp verification failed"
+                                                        )
 
-                                                    Log.d(
-                                                        "TAGGGGGGGGGG",
-                                                        "onResponse: otp verification failed"
-                                                    )
+                                                    }
+                                                }
+
+                                                override fun onFailure(
+                                                    call: Call<VerifyOtpResponse?>,
+                                                    t: Throwable
+                                                ) {
+
+                                                    Log.d("TAGGGGGGGGGG", "onFailure: ${t.message}")
+
 
                                                 }
-                                            }
+                                            })
 
-                                            override fun onFailure(
-                                                call: Call<VerifyOtpResponse?>,
-                                                t: Throwable
-                                            ) {
+                                    } else {
 
-                                                Log.d("TAGGGGGGGGGG", "onFailure: ${t.message}")
-
-
-                                            }
-                                        })
-
-                                } else {
+                                    }
 
                                 }
-
+                            }
+                            else{
+                                Toast.makeText(this@MobileRegisterScreen, "${response.body()?.get(0)?.MessageString}", Toast.LENGTH_SHORT).show()
                             }
 
 
-                        } else {
-                            Log.d("TAGGGGGGGG", "onResponse: user is not valid")
+                        }
 
 
 
+                        else {
+                            Toast.makeText(this@MobileRegisterScreen, "user is not valid", Toast.LENGTH_SHORT).show()
                         }
                     }
 

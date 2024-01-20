@@ -1,6 +1,10 @@
 package com.example.ifmapp.apiinterface
 
+import com.example.ifmapp.modelclasses.attendance_response.AttendanceResponse
+import com.example.ifmapp.modelclasses.geomappedsite_model.GeoMappedResponse
 import com.example.ifmapp.modelclasses.loginby_pin.LoginByPINResponse
+import com.example.ifmapp.modelclasses.shift_selection_model.ShiftSelectionResponse
+import com.example.ifmapp.modelclasses.shift_selection_model.ShiftSelectionResponseItem
 import com.example.ifmapp.modelclasses.verifymobile.OtpSend
 import com.example.ifmapp.modelclasses.verifymobile.VerifyOtpResponse
 import retrofit2.Call
@@ -48,6 +52,43 @@ interface ApiInterface {
         @Field("OTP") OTP: String
     ): Call<VerifyOtpResponse>
 
+
+    @FormUrlEncoded
+    @POST("GetStandardShifts")
+    fun shiftSelectionApi(
+        @Field("connectionKey") connectionKey: String,
+        @Field("LocationAutoID") LocationAutoID: String,
+       ):Call<ShiftSelectionResponse>
+
+    @FormUrlEncoded
+    @POST("GetGeoMappedSites")
+    fun getGeoMappedSites(
+        @Field("connectionKey") connectionKey: String,
+        @Field("LocationAutoID") LocationAutoID: String,
+        @Field("Latitude") Latitude: String,
+        @Field("Longitude") Longitude: String,
+    ):Call<GeoMappedResponse>
+
+
+    @FormUrlEncoded
+    @POST("InsertEmployeeAttendance")
+    fun insertAttendance(
+        @Field("connectionKey") connectionKey: String,
+        @Field("IMEI") IMEI: String,
+        @Field("userId") userId: String,
+        @Field("AsmtID") AsmtID: String,
+        @Field("employeeNumber") employeeNumber: String,
+        @Field("InOutStatus") InOutStatus: String,
+        @Field("DutyDateTime") DutyDateTime: String,
+        @Field("latitude") latitude: String,
+        @Field("longitude") longitude: String,
+        @Field("altitude") altitude: String,
+        @Field("employeeImageBase64") employeeImageBase64: String,
+        @Field("LocationAutoId") LocationAutoId: String,
+        @Field("ClientCode") ClientCode: String,
+        @Field("ShiftCode") ShiftCode: String,
+        @Field("LocationName") LocationName: String,
+    ):Call<AttendanceResponse>
 
 }
 

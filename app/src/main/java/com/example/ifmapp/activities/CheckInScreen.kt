@@ -12,9 +12,11 @@ import android.location.Address
 import android.provider.Settings
 import android.location.Geocoder
 import android.location.LocationManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.provider.MediaStore
+import android.telephony.TelephonyManager
 import android.util.Log
 import android.view.View
 import android.view.animation.AlphaAnimation
@@ -23,6 +25,7 @@ import android.view.animation.AnimationSet
 import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -31,7 +34,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import com.example.ifmapp.Locationmodel
 import com.example.ifmapp.R
+import com.example.ifmapp.RetrofitInstance
+import com.example.ifmapp.apiinterface.ApiInterface
+import com.example.ifmapp.databasedb.EmployeeDB
+import com.example.ifmapp.databasedb.EmployeePinDao
 import com.example.ifmapp.databinding.ActivityCheckInScreenBinding
+import com.example.ifmapp.modelclasses.attendance_response.AttendanceResponse
+import com.example.ifmapp.modelclasses.geomappedsite_model.GeoMappedResponse
+import com.example.ifmapp.modelclasses.shift_selection_model.ShiftSelectionResponse
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationAvailability
 import com.google.android.gms.location.LocationCallback
@@ -43,33 +53,77 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Currency
+import java.util.Date
 import java.util.Locale
 
 class CheckInScreen : AppCompatActivity() {
-    private lateinit var realtimeLocationLiveData: MutableLiveData<Locationmodel>
+
+    private var employeeId: String? = null
     private lateinit var binding: ActivityCheckInScreenBinding
     private var fusedLocationProviderClient: FusedLocationProviderClient? = null
     private var locationCallback: LocationCallback? = null
     private var locationRequest: LocationRequest? = null
     private var address: String? = null
+    private var myaddress: String? = null
     private var mLatitude: String? = null
     private var mLongitude: String? = null
+    private var mAltitude: String? = null
     private var userBitmap: Bitmap? = null
     private val REQUEST_IMAGE_CAPTURE = 1
     private val CAMERA_PERMISSION_CODE = 101
+    private var employeeName: String? = null
+    private var employeeDesignation: String? = null
+    private var otp: String? = null
+    private var siteSelect: String? = null
+    private var shiftSelect: String? = null
+    private var time: String? = null
+    private var locationAutoID: String? = null
+    private var empNumber: String? = null
+    private lateinit var retrofitInstance: ApiInterface
 
+
+    private lateinit var formattedDate: String
+private var currenTtime:String?=null
+    private lateinit var currentDate: Date
+    private lateinit var employeePinDao: EmployeePinDao
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_check_in_screen)
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_check_in_screen)
+        retrofitInstance = RetrofitInstance.apiInstance
 
-        //initialization
+        binding.checkinCL.visibility = View.VISIBLE
+        binding.finalLayoutCL.visibility = View.GONE
+        currentDate = Date()
+        formattedDate = getFormattedDate(currentDate)
+
+        employeePinDao = EmployeeDB.getInstance(this).employeePinDao()
+        otp = intent.getStringExtra("mPIN")
+        siteSelect = intent.getStringExtra("siteSelect")
+        shiftSelect = intent.getStringExtra("shiftSelect")
+        empNumber = intent.getStringExtra("empNumber")
+
+
+        time = getCurrentTime()
+
+        if (otp.toString().isNotEmpty()) {
+
+            otp?.let { getEmployee(otp = it) }
+
+        }
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         locationRequest =
             LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000).setIntervalMillis(500)
                 .build()
+
 
 
         locationCallback = object : LocationCallback() {
@@ -85,6 +139,8 @@ class CheckInScreen : AppCompatActivity() {
                     val location = locationResult.lastLocation
                     mLatitude = location?.latitude.toString()
                     mLongitude = location?.longitude.toString()
+                    mAltitude = location?.altitude.toString()
+                    binding.checkInlatlong.text = "${location?.latitude} ${location?.longitude}"
 
                     // Use suspend functions or other asynchronous mechanisms if needed
                     getAddressFromLocation(
@@ -93,37 +149,12 @@ class CheckInScreen : AppCompatActivity() {
                         mLongitude?.toDouble() ?: 0.0
                     )
 
-                    realtimeLocationLiveData.postValue(
-                        Locationmodel(
-                            location?.latitude,
-                            location?.longitude
-                        )
-                    )
-
-                    // Other code to be executed on the main thread after fetching location
-                    // ...
                 }
             }
         }
-        realtimeLocationLiveData = MutableLiveData()
-
 
         createLocationRequest()
 
-        realtimeLocationLiveData.observe(this) {
-            binding.checkInlatlong.text = "$mLatitude $mLongitude"
-            it.let {
-                it.latitude?.let { it1 ->
-                    it.longitude?.let { it2 ->
-                        getAddressFromLocation(
-                            this, it1,
-                            it2
-                        )
-                    }
-                }
-
-            }
-        }
 
         binding.finalLayoutCL.visibility = View.GONE
         binding.checkinCL.visibility = View.VISIBLE
@@ -136,26 +167,36 @@ class CheckInScreen : AppCompatActivity() {
             binding.btnRetake.setBackgroundResource(R.drawable.button_backwhite)
 
             if (userBitmap != null && mLatitude != null && mLongitude != null) {
-                  setFinalDialog(
-                    userBitmap!!,
-                    mLatitude.toString(),
-                    mLongitude.toString(),
-                    address.toString()
-                )
+
+                getGeoMappedSites("sams", locationAutoID!!, mLatitude!!, mLongitude!!)
+
+
+
                 startBlinkAnimation()
 
-                val delayMillis = 8000L
-
+                val delayMillis = 15000L
                 Handler().postDelayed({
                     finish()
+                    Log.d("TAGGGGGG", "onCreate:sssssss $shiftSelect is shift $time is time")
+
                     // Start another activity
                     val intent = Intent(this@CheckInScreen, CheckOutScreen::class.java)
+                    intent.putExtra("shiftTime", shiftSelect)
+                    intent.putExtra("currentTime", time)
+                    intent.putExtra("employeeName", employeeName)
+                    intent.putExtra("employeeDesignation", employeeDesignation)
+                    intent.putExtra("currentTime", time)
+                    intent.putExtra("address", myaddress)
+                    intent.putExtra("siteSelect", siteSelect)
+                    intent.putExtra("shiftSelect", shiftSelect)
                     startActivity(intent)
 
                 }, delayMillis)
 
             }
+
         }
+        Log.d("TAGGGGGG", "onCreate: $shiftSelect is shift $time is time")
 
         binding.btnRetake.setOnClickListener {
             if (userBitmap != null) {
@@ -181,6 +222,7 @@ class CheckInScreen : AppCompatActivity() {
             startActivity(Intent(this, DashBoardScreen::class.java))
         }
     }
+
     private fun getAddressFromLocation(
         context: Context,
         latitude: Double,
@@ -192,8 +234,11 @@ class CheckInScreen : AppCompatActivity() {
             try {
                 val addresses: List<Address>? = geocoder.getFromLocation(latitude, longitude, 1)
                 if (!addresses.isNullOrEmpty()) {
-                    val address: Address = addresses[0]
+                    var address: Address = addresses[0]
                     withContext(Dispatchers.Main) {
+myaddress = "${address.locality} ${address.subLocality} ${address.adminArea} ${address.subAdminArea}"
+                        binding.locationName.text =
+                            "${address.locality} ${address.subLocality} ${address.adminArea} ${address.subAdminArea}"
                         binding.address.text =
                             "${address.locality} ${address.subLocality} ${address.adminArea} ${address.subAdminArea}"
                     }
@@ -203,7 +248,6 @@ class CheckInScreen : AppCompatActivity() {
             }
         }
     }
-
 
 
     private fun dispatchTakePictureIntent() {
@@ -226,7 +270,7 @@ class CheckInScreen : AppCompatActivity() {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
             val imageBitmap = data?.extras?.get("data") as Bitmap
             // Do something with the captured image (e.g., display it in an ImageView)
-            resizeAndSetBitmap(binding.bigProfile,imageBitmap,313,313)
+            resizeAndSetBitmap(binding.bigProfile, imageBitmap, 313, 313)
             userBitmap = imageBitmap
 
 
@@ -272,9 +316,15 @@ class CheckInScreen : AppCompatActivity() {
         binding.checkinCL.visibility = View.GONE
         binding.finalLayoutCL.visibility = View.VISIBLE
         binding.profileFinal.setImageBitmap(image)
+        binding.nameAtfinal.text = employeeName
+        binding.designationAtfinal.text = employeeDesignation
+        binding.shiftAtfinal.text = "${siteSelect} $shiftSelect $formattedDate"
         binding.latlgTxt.text = "$latitude $longitude"
         binding.address.text = address
+
+
     }
+
     @SuppressLint("MissingPermission")
     fun createLocationRequest() {
         try {
@@ -343,10 +393,17 @@ class CheckInScreen : AppCompatActivity() {
             Settings.Secure.ALLOW_MOCK_LOCATION
         ) != "0"
     }
-    private fun resizeAndSetBitmap(imageView: ImageView, bitmap: Bitmap?, targetWidth: Int, targetHeight: Int) {
+
+    private fun resizeAndSetBitmap(
+        imageView: ImageView,
+        bitmap: Bitmap?,
+        targetWidth: Int,
+        targetHeight: Int
+    ) {
         if (bitmap == null) return
 
-        val scaleFactor = calculateScaleFactor(bitmap.width, bitmap.height, targetWidth, targetHeight)
+        val scaleFactor =
+            calculateScaleFactor(bitmap.width, bitmap.height, targetWidth, targetHeight)
 
         val newWidth = (bitmap.width * scaleFactor).toInt()
         val newHeight = (bitmap.height * scaleFactor).toInt()
@@ -356,7 +413,12 @@ class CheckInScreen : AppCompatActivity() {
         imageView.setImageBitmap(resizedBitmap)
     }
 
-    private fun calculateScaleFactor(originalWidth: Int, originalHeight: Int, targetWidth: Int, targetHeight: Int): Float {
+    private fun calculateScaleFactor(
+        originalWidth: Int,
+        originalHeight: Int,
+        targetWidth: Int,
+        targetHeight: Int
+    ): Float {
         val widthScale = targetWidth.toFloat() / originalWidth
         val heightScale = targetHeight.toFloat() / originalHeight
 
@@ -364,6 +426,175 @@ class CheckInScreen : AppCompatActivity() {
             heightScale
         } else {
             widthScale
+        }
+    }
+
+    private fun getEmployee(otp: String) {
+
+        employeePinDao.getcurrentEmployeeDetails(otp)
+            .observe(this) {
+                if (it != null) {
+                    Log.d("TAGGGGGG", "onTextChanged:it is not null")
+
+                    binding.userName.text = it.EmpName
+                    binding.designation.text = it.Designation
+                    binding.shifts.text = shiftSelect
+                    employeeName = it.EmpName
+                    //binding.locationName.text = address
+                    employeeDesignation = it.Designation
+                    locationAutoID = it.LocationAutoID
+
+
+                } else {
+                    Log.d("TAGGGGGGGGGGGG", "getEmployee: ")
+                }
+            }
+    }
+
+    private fun getFormattedDate(date: Date): String {
+        val calendar = Calendar.getInstance()
+        calendar.time = date
+
+        val dayOfWeek = SimpleDateFormat("EEEE", Locale.getDefault()).format(date)
+        val dayOfMonth = SimpleDateFormat("d", Locale.getDefault()).format(date)
+        val month = SimpleDateFormat("MMM", Locale.getDefault()).format(date)
+        val year = SimpleDateFormat("yyyy", Locale.getDefault()).format(date)
+
+        return "$dayOfWeek $dayOfMonth $month $year"
+    }
+
+    private fun getCurrentTime(): String {
+        val calendar = Calendar.getInstance()
+        val dateFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
+        return dateFormat.format(calendar.time)
+    }
+
+    private fun getGeoMappedSites(
+        connectionKey: String,
+        LocationAutoID: String,
+        Latitude: String,
+        Longitude: String
+    ) {
+
+
+        retrofitInstance.getGeoMappedSites(connectionKey, LocationAutoID, Latitude, Longitude)
+            .enqueue(object : Callback<GeoMappedResponse?> {
+                @RequiresApi(Build.VERSION_CODES.O)
+                override fun onResponse(
+                    call: Call<GeoMappedResponse?>,
+                    response: Response<GeoMappedResponse?>
+                ) {
+                    if (response.isSuccessful) {
+
+                        Log.d("TAGGGGGGGGGG", "onResponse: response Successfulllll")
+
+                        val emp = response.body()?.get(0)
+                        Log.d("TAGGGGGGG", "onResponse: this is $mAltitude")
+                        if ( myaddress!=null){
+                            Log.d("TAGGGGG", "onResponse:1${time} \n2 ${getIMEI(this@CheckInScreen)}\n" +
+                                    "3${empNumber} 4${emp?.AsmtID} 5${mLatitude.toString()} 6 ${mLongitude.toString()}" +
+                                    "7${mAltitude.toString()} 8${userBitmap.toString()} 9${emp?.LocationAutoID} 10${emp?.ClientCode}" +
+                                    "11${siteSelect} 12${shiftSelect} 13${myaddress}")
+                            insertAttendance(
+                                "sams",
+                                "",
+                                empNumber.toString(),
+                                emp?.AsmtID.toString(),
+                                empNumber.toString(),
+                                "IN",
+                                time.toString(),
+                                latitude = mLatitude.toString(),
+                                mLongitude.toString(),
+                                mAltitude.toString(),
+                                userBitmap.toString(),
+                                emp?.LocationAutoID.toString(),
+                                emp?.ClientCode.toString(),
+                                siteSelect.toString(),
+                                myaddress.toString()
+                            )
+                        }
+
+                    } else {
+                        Log.d("TAGGGGGGGG", "onResponse: attendance not success")
+                    }
+                }
+
+                                override fun onFailure(
+                                    call: Call<GeoMappedResponse?>,
+                                    t: Throwable
+                                ) {
+                                    Log.d("TAGGGGGGGGGG", "onFailure: falied")
+                                }
+                            })
+
+                    }
+
+                    /* setFinalDialog(
+                     userBitmap!!,
+                     mLatitude.toString(),
+                     mLongitude.toString(),
+                     address.toString()
+                 )*/
+
+
+
+    fun insertAttendance(
+        connectionKey: String, IMEI: String?, userId: String, AsmtID: String, employeeNumber: String,
+        InOutStatus: String, DutyDateTime: String, latitude: String,
+        longitude: String, altitude: String, employeeImageBase64: String,
+        LocationAutoId: String, ClientCode: String, ShiftCode: String, LocationName: String
+    ) {
+
+        if (IMEI != null) {
+            retrofitInstance.insertAttendance(
+                connectionKey, IMEI, userId, AsmtID, employeeNumber, InOutStatus,
+                DutyDateTime, latitude, longitude, altitude, employeeImageBase64,
+                LocationAutoId, ClientCode, ShiftCode, LocationName
+            ).enqueue(object : Callback<AttendanceResponse?> {
+                override fun onResponse(
+                    call: Call<AttendanceResponse?>,
+                    response: Response<AttendanceResponse?>
+                ) {
+                    if (response.isSuccessful){
+                        Log.d("TAGGGGGGGG", "onResponse: attendance inserted")
+                    }else{
+                        Log.d("TAGGGGGGGG", "onResponse:error ${response.errorBody()}")
+                    }
+                }
+
+                override fun onFailure(call: Call<AttendanceResponse?>, t: Throwable) {
+                    Log.d("TAGGGGGGGGGGG", "onFailure: attendance failed")
+                }
+            })
+        }
+    }
+
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun getIMEI(context: Context): String {
+        val telephonyManager =
+            context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+
+        // Check for the READ_PHONE_STATE permission
+        if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_PHONE_STATE)
+            == PackageManager.PERMISSION_GRANTED
+        ) {
+            // Check for the Android version to handle changes in permissions starting from Android 10
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                if (ContextCompat.checkSelfPermission(
+                        context,
+                        android.Manifest.permission.READ_PHONE_STATE
+                    ) == PackageManager.PERMISSION_GRANTED
+                ) {
+                    telephonyManager.imei ?: "IMEI not available"
+                } else {
+                    "Permission not granted for READ_PHONE_STATE"
+                }
+            } else {
+                telephonyManager.imei ?: "IMEI not available"
+            }
+        } else {
+            return "Permission not granted for READ_PHONE_STATE"
         }
     }
 }
