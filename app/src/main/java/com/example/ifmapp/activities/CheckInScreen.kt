@@ -3,23 +3,19 @@ package com.example.ifmapp.activities
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.location.Address
 import android.location.Geocoder
 import android.os.Build
-import android.graphics.Bitmap
-import android.util.Base64
-import java.io.ByteArrayOutputStream
 import android.os.Bundle
 import android.os.Handler
-import android.provider.MediaStore
 import android.provider.Settings
 import android.telephony.TelephonyManager
+import android.util.Base64
 import android.util.Log
-import android.view.SurfaceView
 import android.view.View
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
@@ -45,7 +41,6 @@ import com.example.ifmapp.databinding.ActivityCheckInScreenBinding
 import com.example.ifmapp.modelclasses.attendance_response.AttendanceResponse
 import com.example.ifmapp.modelclasses.geomappedsite_model.GeoMappedResponse
 import com.example.ifmapp.utils.IMEIGetter
-import com.example.lenovo.sam.CheckInOut.FrontCameraSetupScreen
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationAvailability
 import com.google.android.gms.location.LocationCallback
@@ -60,6 +55,7 @@ import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -89,6 +85,8 @@ class CheckInScreen : AppCompatActivity() {
     private var employeeName: String? = null
     private var employeeDesignation: String? = null
     private var otp: String? = null
+    private var imagesString: String? = null
+    private var imagesBitmap: String? = null
     private var siteSelect: String? = null
     private var shiftSelect: String? = null
     private var time: String? = null
@@ -116,6 +114,11 @@ class CheckInScreen : AppCompatActivity() {
         cameraExecutor = Executors.newSingleThreadExecutor()
 
         employeePinDao = EmployeeDB.getInstance(this).employeePinDao()
+        imagesBitmap = intent.getStringExtra("bitmapImage")
+        imagesString = intent.getStringExtra("stringImage")
+
+
+        Log.d("TAGGGGG", "onCreate: thi s is iamaheges $imagesBitmap and na $imagesString")
         otp = intent.getStringExtra("mPIN")
         siteSelect = intent.getStringExtra("siteSelect")
         shiftSelect = intent.getStringExtra("shiftSelect")
@@ -219,7 +222,7 @@ class CheckInScreen : AppCompatActivity() {
                 binding.btnSubmit.setTextColor(resources.getColor(R.color.check_btn))
                 binding.btnSubmit.setBackgroundResource(R.drawable.button_backwhite)
                 binding.btnRetake.isEnabled = true
-                dispatchTakePictureIntent()
+               startActivity(Intent(this@CheckInScreen,FrontCameraSetupScreen::class.java))
             }
         }
         var imeei = getIMEI(this)
@@ -227,48 +230,13 @@ class CheckInScreen : AppCompatActivity() {
         Log.d("TAGGGGGGGGG", "onCreate: thid id mmei $imeei")
 
         binding.bigProfile.setOnClickListener {
+if (checkCameraPermission())
+{
+    startActivity(Intent(this, FrontCameraSetupScreen::class.java))
+}else{
+    requestCameraPermission()
+}
 
-           /* if (checkCameraPermission()) {
-
-                val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
-
-                cameraProviderFuture.addListener({
-                    val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
-
-                    // Create a preview use case
-                    val preview = Preview.Builder()
-                        .build()
-                        .also {
-                            it.setSurfaceProvider(binding.bigProfile.createSurfaceProvider())
-                            // Replace "previewView" with the id of the view where you want to display the camera preview
-                        }
-
-                    // Set up the camera selector to use the front camera
-                    val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
-
-                    try {
-                        // Unbind any existing camera use cases before rebinding
-                        cameraProvider.unbindAll()
-
-                        // Bind the use cases to the camera
-                        cameraProvider.bindToLifecycle(
-                            this,
-                            cameraSelector,
-                            binding.bigProfile
-                        )
-
-                    } catch (exc: Exception) {
-                        Toast.makeText(this, "Unable to open camera", Toast.LENGTH_SHORT).show()
-                    }
-
-                }, ContextCompat.getMainExecutor(this))
-
-                //startActivity(Intent(this@CheckInScreen,FrontCameraSetupScreen::class.java))
-                //dispatchTakePictureIntent()
-            } else {
-                requestCameraPermission()
-            }*/
-            startCamera()
         }
         binding.btnCross.setOnClickListener {
             startActivity(Intent(this, DashBoardScreen::class.java))
@@ -303,35 +271,35 @@ class CheckInScreen : AppCompatActivity() {
     }
 
 
-    private fun dispatchTakePictureIntent() {
-        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+//    private fun dispatchTakePictureIntent() {
+//        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+//
+//        if (takePictureIntent.resolveActivity(packageManager) != null) {
+//            // Specify the camera facing
+//            takePictureIntent.putExtra(
+//                "android.intent.extras.CAMERA_FACING",
+//                2
+//            ) // 1 corresponds to CameraInfo.CAMERA_FACING_FRONT
+//
+//            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+//        }
+//    }
 
-        if (takePictureIntent.resolveActivity(packageManager) != null) {
-            // Specify the camera facing
-            takePictureIntent.putExtra(
-                "android.intent.extras.CAMERA_FACING",
-                2
-            ) // 1 corresponds to CameraInfo.CAMERA_FACING_FRONT
-
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
-            val imageBitmap = data?.extras?.get("data") as Bitmap
-            // Do something with the captured image (e.g., display it in an ImageView)
-           // resizeAndSetBitmap(binding.bigProfile, imageBitmap, 313, 313)
-            imageInString = bitmapToString(imageBitmap)
-            userBitmap = imageBitmap
-            Log.d("TAGGGGGGG", "onActivityResult: this is bitmap $imageBitmap")
-            Log.d("TAGGGGGGG", "onActivityResult: this is string image $imageInString")
-
-
-        }
-    }
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//
+//        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
+//            val imageBitmap = data?.extras?.get("data") as Bitmap
+//            // Do something with the captured image (e.g., display it in an ImageView)
+//           // resizeAndSetBitmap(binding.bigProfile, imageBitmap, 313, 313)
+//            imageInString = bitmapToString(imageBitmap)
+//            userBitmap = imageBitmap
+//            Log.d("TAGGGGGGG", "onActivityResult: this is bitmap $imageBitmap")
+//            Log.d("TAGGGGGGG", "onActivityResult: this is string image $imageInString")
+//
+//
+//        }
+//    }
 
     private fun checkCameraPermission(): Boolean {
         return ContextCompat.checkSelfPermission(
@@ -357,7 +325,7 @@ class CheckInScreen : AppCompatActivity() {
         if (requestCode == CAMERA_PERMISSION_CODE) {
 
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                dispatchTakePictureIntent()
+                startActivity(Intent(this@CheckInScreen, FrontCameraSetupScreen::class.java))
             }
         }
     }
@@ -681,9 +649,9 @@ class CheckInScreen : AppCompatActivity() {
         return Base64.encodeToString(byteArray, Base64.DEFAULT)
     }
 
-   /* fun onOpenCameraButtonClicked(view: android.view.View) {
-        startCamera()
-    }*/
+    /* fun onOpenCameraButtonClicked(view: android.view.View) {
+         startCamera()
+     }*/
 
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
@@ -695,7 +663,7 @@ class CheckInScreen : AppCompatActivity() {
             val preview = Preview.Builder()
                 .build()
                 .also {
-                  //  it.setSurfaceProvider(binding.bigProfile.createSurfaceProvider())
+                    //  it.setSurfaceProvider(binding.bigProfile.createSurfaceProvider())
                     // Replace "previewView" with the id of the view where you want to display the camera preview
                 }
 

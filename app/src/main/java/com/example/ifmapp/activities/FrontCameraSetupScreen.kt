@@ -1,197 +1,154 @@
-package com.example.lenovo.sam.CheckInOut
+package com.example.ifmapp.activities
 
-import android.content.Context
-import android.graphics.Matrix
-import android.hardware.Camera
-import android.hardware.Camera.PictureCallback
-import android.hardware.Camera.ShutterCallback
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
-import android.view.SurfaceHolder
-import android.view.SurfaceView
+import android.view.GestureDetector
+import android.view.MotionEvent
 import android.view.View
-import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
+import androidx.camera.core.Preview
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.PreviewView
+import androidx.core.content.ContextCompat
+import androidx.core.net.toFile
 import com.example.ifmapp.R
-
+import java.io.ByteArrayOutputStream
+import java.nio.ByteBuffer
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+import java.io.File
 class FrontCameraSetupScreen : AppCompatActivity() {
-    private var mCam: Camera? = null
-    private var rawCallback: PictureCallback? = null
-    private var shutterCallback: ShutterCallback? = null
-    private var jpegCallback: PictureCallback? = null
-    var fl: FrameLayout? = null
-    var frnt_facing_cam_id = 0
-    public override fun onCreate(savedInstanceState: Bundle?) {
+
+    private var cameraExecutor: ExecutorService = Executors.newSingleThreadExecutor()
+    private lateinit var previewView: PreviewView
+    private lateinit var imageCapture: ImageCapture
+    private lateinit var clickedImage: ImageView
+
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_front_camera_setup_screen)
-       // fl = findViewById<View>(R.id.camPreview) as FrameLayout
-        openFrontFacingCameraGingerbread()
-        callBacks()
-        addCamera()
-        fl!!.setOnClickListener { mCam!!.takePicture(shutterCallback, rawCallback, jpegCallback) }
+
+        previewView = findViewById(R.id.previewView)
+        clickedImage = findViewById(R.id.clickedImage)
+        clickedImage.visibility = View.GONE
+        startCamera()
     }
 
-    private fun openFrontFacingCameraGingerbread() {
-        try {
-            var cameraCount = 0
-            //            CameraManager manager = (CameraManager) CameraActivity.this.getSystemService(Context.CAMERA_SERVICE);
+    private fun startCamera() {
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
 
-//            Camera cam = null;
-            val cameraInfo = Camera.CameraInfo()
-            cameraCount = Camera.getNumberOfCameras()
-            println("Val of Get al list of cameras $cameraCount")
-            for (camIdx in 0 until cameraCount) {
-                Camera.getCameraInfo(camIdx, cameraInfo)
-                if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-                    frnt_facing_cam_id = camIdx
-                    println("Val of Front facing has num $frnt_facing_cam_id out of total num of cameras are $cameraCount")
+        cameraProviderFuture.addListener({
+            val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
+
+            // Create a preview use case
+            val preview = Preview.Builder()
+                .build()
+                .also {
+                    it.setSurfaceProvider(previewView.surfaceProvider)
+                }
+
+            // Set up the image capture use case
+            imageCapture = ImageCapture.Builder().build()
+
+            // Set up the camera selector to use the front camera
+            val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
+
+            // Set up tap gesture detection
+            val gestureDetector = GestureDetector(this, object : GestureDetector.SimpleOnGestureListener() {
+                override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
+                    captureImage()
+                    return true
+                }
+            })
+
+            previewView.setOnTouchListener { _, event ->
+                gestureDetector.onTouchEvent(event)
+                true
+            }
+
+            try {
+                // Unbind any existing camera use cases before rebinding
+                cameraProvider.unbindAll()
+
+                // Bind the use cases to the camera
+                cameraProvider.bindToLifecycle(
+                    this,
+                    cameraSelector,
+                    preview,
+                    imageCapture
+                )
+
+            } catch (exc: Exception) {
+                Toast.makeText(this, "Unable to open camera", Toast.LENGTH_SHORT).show()
+            }
+
+        }, ContextCompat.getMainExecutor(this))
+    }
+
+    private fun captureImage() {
+        val imageCapture = imageCapture
+
+        // Create a file to save the image
+        val outputOptions = ImageCapture.OutputFileOptions.Builder(createTempFile()).build()
+
+        imageCapture.takePicture(
+            outputOptions,
+            ContextCompat.getMainExecutor(this),
+            object : ImageCapture.OnImageSavedCallback {
+                override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+                    // Process the saved image
+                    val savedUri = outputFileResults.savedUri
+                    val savedFile = File(savedUri?.toFile()?.path ?: "")
+
+                    // Ensure that the file exists before attempting to decode it
+                    if (savedFile.exists()) {
+                        val imageBitmap = BitmapFactory.decodeFile(savedFile.absolutePath)
+                        val imageString = convertBitmapToString(imageBitmap)
+//previewView.visibility = View.GONE
+//                        clickedImage.visibility = View.VISIBLE
+//
+//                        clickedImage.setImageURI(Uri.parse(imageString))
+                        Log.d("TAGGGGGGGG", "onImageSaved: this is the clicked image ${imageString.length}")
+
+                    val intent = Intent(this@FrontCameraSetupScreen,CheckInScreen::class.java)
+                      //  intent.putExtra("bitmapImage",imageBitmap)
+                        intent.putExtra("stringImage",imageString)
+                        startActivity(intent)
+
+                    // Now 'imageString' contains the string representation of the image
+                    } else {
+                        Toast.makeText(applicationContext, "Image file not found", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+
+                override fun onError(exception: ImageCaptureException) {
+                    Toast.makeText(applicationContext, "Image capture failed", Toast.LENGTH_SHORT).show()
                 }
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        )
     }
 
-    private fun startCameraInLayout(layout: FrameLayout?, cameraId: Int) {
-//        System.out.println("Val of Camera id to open is "+cameraId);
-        mCam = Camera.open(cameraId)
-        if (mCam != null) {
-            val mCamPreview: MirrorView = MirrorView(this, mCam!!)
-            layout!!.addView(mCamPreview)
-        }
+    // Function to convert Bitmap to String (you may need to modify this part)
+    private fun convertBitmapToString(bitmap: Bitmap): String {
+        val byteArrayOutputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+        val byteArray: ByteArray = byteArrayOutputStream.toByteArray()
+        return Base64.encodeToString(byteArray, Base64.DEFAULT)
     }
 
-    fun callBacks() {
-        rawCallback =
-            PictureCallback { data, camera -> Log.d("Log", "onPictureTaken - raw") }
-        shutterCallback = ShutterCallback { }
-        jpegCallback = PictureCallback { data, camera ->
-//            Cm.image_checkIn_CheckOut = null
-//            //                BitmapFactory.Options options = new BitmapFactory.Options();
-//            //                options.inMutable = true;
-//            //                Cm.image_checkIn_CheckOut = BitmapFactory.decodeByteArray(data, 0, data.length);
-//            val arrayInputStream = ByteArrayInputStream(data)
-//            Cm.image_checkIn_CheckOut = BitmapFactory.decodeStream(arrayInputStream)
-
-            /*
-                    Matrix matrixMirror = new Matrix();
-                    matrixMirror.preScale(-1.0f, 1.0f);
-                    Cm.image_checkIn_CheckOut = Bitmap.createBitmap(
-                            Cm.image_checkIn_CheckOut,
-                            0,
-                            0,
-                            Cm.image_checkIn_CheckOut.getWidth(),
-                            Cm.image_checkIn_CheckOut.getHeight(),
-                            matrixMirror,
-                            false);
-
-                    Matrix matrix = new Matrix();
-                    matrix.postRotate(90);
-                    Bitmap scaledBitmap = Cm.image_checkIn_CheckOut;
-                    Cm.image_checkIn_CheckOut = Bitmap.createBitmap(scaledBitmap , 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);*/
-            val matrixMirror = Matrix()
-            matrixMirror.postRotate(90f)
-            matrixMirror.preScale(-1.0f, 1.0f)
-            /*Cm.image_checkIn_CheckOut = Bitmap.createBitmap(
-                Cm.image_checkIn_CheckOut,
-                0,
-                0,
-                Cm.image_checkIn_CheckOut.getWidth(),
-                Cm.image_checkIn_CheckOut.getHeight(),
-                matrixMirror,
-                false*/
-            //)
-            try {
-                mCam!!.release()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            } finally {
-                finish()
-            }
-        }
-    }
-
-    fun addCamera() {
-        startCameraInLayout(fl, frnt_facing_cam_id)
-        setCameraDisplayOrientationAndSize()
-    }
-
-    fun setCameraDisplayOrientationAndSize() {
-        val info = Camera.CameraInfo()
-        Camera.getCameraInfo(frnt_facing_cam_id, info)
-        val rotation = windowManager.defaultDisplay.rotation
-        val degrees = rotation * 90
-        var result: Int
-        if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-            result = (info.orientation + degrees) % 360
-            result = (360 - result) % 360
-        } else {
-            result = (info.orientation - degrees + 360) % 360
-        }
-        mCam!!.setDisplayOrientation(result)
-        val previewSize = mCam!!.parameters.previewSize
-      /*  if (result == 90 || result == 270) {
-            mHolder.setFixedSize(previewSize.height, previewSize.width)
-        } else {
-            mHolder.setFixedSize(previewSize.width, previewSize.height)
-        }*/
-    }
-
-    inner class MirrorView(context: Context?, private val mCamera: Camera) :
-        SurfaceView(context), SurfaceHolder.Callback {
-        private val TAG = "Shobhit"
-        private val rawCallback: PictureCallback? = null
-        private val shutterCallback: ShutterCallback? = null
-        private val jpegCallback: PictureCallback? = null
-
-       /* init {
-            mHolder = holder
-            mHolder.addCallback(this)
-            mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS)
-        }
-*/
-        override fun surfaceCreated(holder: SurfaceHolder) {
-            try {
-                mCamera.setPreviewDisplay(holder)
-                mCamera.startPreview()
-            } catch (error: Exception) {
-                Log.d(
-                    TAG,
-                    "Error starting mPreviewLayout: " + error.message
-                )
-            }
-        }
-
-        override fun surfaceDestroyed(holder: SurfaceHolder) {}
-        override fun surfaceChanged(
-            holder: SurfaceHolder, format: Int, w: Int,
-            h: Int
-        ) {
-           /* if (mHolder.surface == null) {
-                return
-            }*/
-            // can't make changes while mPreviewLayout is active
-            try {
-                mCamera.stopPreview()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-            try {
-                // start up the mPreviewLayout
-             //   mCamera.setPreviewDisplay(mHolder)
-                mCamera.startPreview()
-            } catch (error: Exception) {
-                Log.d(TAG, "Error starting mPreviewLayout: " + error.message)
-            }
-        }
-    }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-        try {
-            mCam!!.release()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+    override fun onDestroy() {
+        super.onDestroy()
+        cameraExecutor.shutdown()
     }
 }

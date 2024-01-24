@@ -67,10 +67,7 @@ class MobileRegisterScreen : AppCompatActivity() {
 
         //getPhoneRead()
 
-        if (!checked.isChecked) {
-            checked.isChecked = true
-            checkReceiverData()
-        }
+
 
 
 /*
@@ -487,13 +484,7 @@ class MobileRegisterScreen : AppCompatActivity() {
         return false
     }
 
-    private fun checkReceiverData() {
-        employeePinDao.getAllEmployeeDetails().observe(this@MobileRegisterScreen) {
-            if (it.isNotEmpty()) {
-                startActivity(Intent(this@MobileRegisterScreen, DashBoardScreen::class.java))
-            }
-        }
-    }
+
 
     private fun getPhoneRead() {
         // Check if the permission is already granted

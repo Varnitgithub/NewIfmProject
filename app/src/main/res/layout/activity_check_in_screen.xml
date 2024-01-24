@@ -283,12 +283,13 @@
                             android:layout_marginTop="10dp"
                             android:gravity="center">
 
-                            <androidx.camera.view.PreviewView
+                            <ImageView
                                 android:id="@+id/big_profile"
                                 android:layout_width="313dp"
                                 android:layout_height="313dp"
+                                android:src="@drawable/big_profile"
                                 android:padding="3dp">
-                            </androidx.camera.view.PreviewView>
+                            </ImageView>
                         </LinearLayout>
 
 
