@@ -68,6 +68,8 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment-ktx:2.6.0")
     implementation("androidx.navigation:navigation-ui-ktx:2.6.0")
     implementation("androidx.room:room-common:2.6.1")
+    implementation("androidx.camera:camera-lifecycle:1.3.1")
+    implementation("androidx.camera:camera-view:1.3.1")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
@@ -107,8 +109,13 @@ dependencies {
     // Optional: Kotlin Extensions and Coroutines support for Room
     implementation("androidx.room:room-ktx:2.6.1")
 
+    //implementation ("androidx.camera:camera-camera2:1.1.0")
+    //implementation ("androidx.camera:camera-lifecycle:1.1.0")
+
+    implementation ("com.github.appsfeature:otp-view:1.0")
+    implementation ("androidx.camera:camera-core:1.1.0")
     implementation ("androidx.camera:camera-camera2:1.1.0")
-    implementation ("androidx.camera:camera-lifecycle:1.1.0")
+
 
 
 

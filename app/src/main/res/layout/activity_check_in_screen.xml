@@ -277,17 +277,18 @@
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
                         <LinearLayout
+                            android:id="@+id/StartCamera"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="10dp"
                             android:gravity="center">
 
-                            <ImageView
+                            <androidx.camera.view.PreviewView
                                 android:id="@+id/big_profile"
                                 android:layout_width="313dp"
                                 android:layout_height="313dp"
-                                android:padding="3dp"
-                                android:src="@drawable/big_profile" />
+                                android:padding="3dp">
+                            </androidx.camera.view.PreviewView>
                         </LinearLayout>
 
 

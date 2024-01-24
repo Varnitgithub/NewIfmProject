@@ -130,7 +130,7 @@
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/pin_backs"
+                        android:background="@drawable/dashboard_back"
                         android:paddingStart="14dp"
                         android:paddingTop="14dp"
                         android:paddingEnd="14dp"
@@ -185,7 +185,7 @@
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
-                        <LinearLayout
+                        <!--<LinearLayout
                             android:id="@+id/Pin_edt_LL"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -338,7 +338,32 @@
                             </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-                        </LinearLayout>
+                        </LinearLayout>-->
+                        <com.otpview.OTPTextView
+                            android:id="@+id/otp_view"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@android:color/black"
+                            app:otp_text_size="20dp"
+                            app:bar_enabled="true"
+                            app:bar_error_color="@color/red"
+                            app:bar_active_color="@color/black"
+                            app:bar_inactive_color="@android:color/darker_gray"
+                            app:hide_otp_drawable="@drawable/bg_otp_box_hide"
+                            app:bar_success_color="#33cc33"
+                            app:bar_margin_bottom="0dp"
+                            app:bar_margin_left="2dp"
+                            app:bar_margin_right="2dp"
+                            app:bar_height="1.5dp"
+                            app:box_margin="0dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/enterPin_txt"
+                            app:height="40dp"
+                            app:width="40dp"
+                            app:hide_otp="true"
+                            app:length="4"
+                            app:otp=""/>
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -347,7 +372,7 @@
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@id/Pin_edt_LL">
+                            app:layout_constraintTop_toBottomOf="@id/otp_view">
 
                             <TextView
                                 android:id="@+id/forgotPin"

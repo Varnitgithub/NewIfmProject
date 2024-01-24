@@ -3,21 +3,23 @@ package com.example.ifmapp.activities
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.hardware.Camera
 import android.location.Address
 import android.location.Geocoder
 import android.os.Build
+import android.graphics.Bitmap
+import android.util.Base64
+import java.io.ByteArrayOutputStream
 import android.os.Bundle
 import android.os.Handler
+import android.provider.MediaStore
 import android.provider.Settings
 import android.telephony.TelephonyManager
-import android.util.Base64
 import android.util.Log
+import android.view.SurfaceView
 import android.view.View
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
@@ -27,6 +29,9 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.Preview
+import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -40,6 +45,7 @@ import com.example.ifmapp.databinding.ActivityCheckInScreenBinding
 import com.example.ifmapp.modelclasses.attendance_response.AttendanceResponse
 import com.example.ifmapp.modelclasses.geomappedsite_model.GeoMappedResponse
 import com.example.ifmapp.utils.IMEIGetter
+import com.example.lenovo.sam.CheckInOut.FrontCameraSetupScreen
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationAvailability
 import com.google.android.gms.location.LocationCallback
@@ -54,13 +60,13 @@ import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 class CheckInScreen : AppCompatActivity() {
 
@@ -73,6 +79,7 @@ class CheckInScreen : AppCompatActivity() {
     private var myaddress: String? = null
     private var mLatitude: String? = null
     private var mLongitude: String? = null
+    private lateinit var cameraExecutor: ExecutorService
     private var mAltitude: String? = null
     private var userBitmap: Bitmap? = null
     private val REQUEST_IMAGE_CAPTURE = 1
@@ -87,7 +94,6 @@ class CheckInScreen : AppCompatActivity() {
     private var time: String? = null
     private var locationAutoID: String? = null
     private var empNumber: String? = null
-    private lateinit var mCamera: Camera
     private lateinit var retrofitInstance: ApiInterface
     private lateinit var formattedDate: String
     private var currenTtime: String? = null
@@ -106,6 +112,8 @@ class CheckInScreen : AppCompatActivity() {
         binding.finalLayoutCL.visibility = View.GONE
         currentDate = Date()
         formattedDate = getFormattedDate(currentDate)
+
+        cameraExecutor = Executors.newSingleThreadExecutor()
 
         employeePinDao = EmployeeDB.getInstance(this).employeePinDao()
         otp = intent.getStringExtra("mPIN")
@@ -211,21 +219,56 @@ class CheckInScreen : AppCompatActivity() {
                 binding.btnSubmit.setTextColor(resources.getColor(R.color.check_btn))
                 binding.btnSubmit.setBackgroundResource(R.drawable.button_backwhite)
                 binding.btnRetake.isEnabled = true
-                openFrontFacingCamera()
-
-                // dispatchTakePictureIntent()
+                dispatchTakePictureIntent()
             }
         }
         var imeei = getIMEI(this)
 
         Log.d("TAGGGGGGGGG", "onCreate: thid id mmei $imeei")
+
         binding.bigProfile.setOnClickListener {
 
-            if (checkCameraPermission()) {
-                openFrontFacingCamera()
+           /* if (checkCameraPermission()) {
+
+                val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
+
+                cameraProviderFuture.addListener({
+                    val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
+
+                    // Create a preview use case
+                    val preview = Preview.Builder()
+                        .build()
+                        .also {
+                            it.setSurfaceProvider(binding.bigProfile.createSurfaceProvider())
+                            // Replace "previewView" with the id of the view where you want to display the camera preview
+                        }
+
+                    // Set up the camera selector to use the front camera
+                    val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
+
+                    try {
+                        // Unbind any existing camera use cases before rebinding
+                        cameraProvider.unbindAll()
+
+                        // Bind the use cases to the camera
+                        cameraProvider.bindToLifecycle(
+                            this,
+                            cameraSelector,
+                            binding.bigProfile
+                        )
+
+                    } catch (exc: Exception) {
+                        Toast.makeText(this, "Unable to open camera", Toast.LENGTH_SHORT).show()
+                    }
+
+                }, ContextCompat.getMainExecutor(this))
+
+                //startActivity(Intent(this@CheckInScreen,FrontCameraSetupScreen::class.java))
+                //dispatchTakePictureIntent()
             } else {
                 requestCameraPermission()
-            }
+            }*/
+            startCamera()
         }
         binding.btnCross.setOnClickListener {
             startActivity(Intent(this, DashBoardScreen::class.java))
@@ -260,35 +303,35 @@ class CheckInScreen : AppCompatActivity() {
     }
 
 
-    /*  private fun dispatchTakePictureIntent() {
-          val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+    private fun dispatchTakePictureIntent() {
+        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
 
-          if (takePictureIntent.resolveActivity(packageManager) != null) {
-              // Specify the camera facing
-              takePictureIntent.putExtra(
-                  "android.intent.extras.CAMERA_FACING",
-                  2
-              ) // 1 corresponds to CameraInfo.CAMERA_FACING_FRONT
+        if (takePictureIntent.resolveActivity(packageManager) != null) {
+            // Specify the camera facing
+            takePictureIntent.putExtra(
+                "android.intent.extras.CAMERA_FACING",
+                2
+            ) // 1 corresponds to CameraInfo.CAMERA_FACING_FRONT
 
-              startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
-          }
-      }
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+        }
+    }
 
-      override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-          super.onActivityResult(requestCode, resultCode, data)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
 
-          if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
-              val imageBitmap = data?.extras?.get("data") as Bitmap
-              // Do something with the captured image (e.g., display it in an ImageView)
-              resizeAndSetBitmap(binding.bigProfile, imageBitmap, 313, 313)
-               imageInString = bitmapToString(imageBitmap)
-              userBitmap = imageBitmap
-              Log.d("TAGGGGGGG", "onActivityResult: this is bitmap $imageBitmap")
-              Log.d("TAGGGGGGG", "onActivityResult: this is string image $imageInString")
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
+            val imageBitmap = data?.extras?.get("data") as Bitmap
+            // Do something with the captured image (e.g., display it in an ImageView)
+            resizeAndSetBitmap(binding.bigProfile, imageBitmap, 313, 313)
+            imageInString = bitmapToString(imageBitmap)
+            userBitmap = imageBitmap
+            Log.d("TAGGGGGGG", "onActivityResult: this is bitmap $imageBitmap")
+            Log.d("TAGGGGGGG", "onActivityResult: this is string image $imageInString")
 
 
-          }
-      }*/
+        }
+    }
 
     private fun checkCameraPermission(): Boolean {
         return ContextCompat.checkSelfPermission(
@@ -314,7 +357,7 @@ class CheckInScreen : AppCompatActivity() {
         if (requestCode == CAMERA_PERMISSION_CODE) {
 
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                openFrontFacingCamera()//   dispatchTakePictureIntent()
+                dispatchTakePictureIntent()
             }
         }
     }
@@ -362,6 +405,12 @@ class CheckInScreen : AppCompatActivity() {
             }
         }
 
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        removeLocationUpdates()
+        cameraExecutor.shutdown()
     }
 
 
@@ -632,59 +681,43 @@ class CheckInScreen : AppCompatActivity() {
         return Base64.encodeToString(byteArray, Base64.DEFAULT)
     }
 
-    private fun openFrontFacingCamera() {
-        for (camNo in 0 until Camera.getNumberOfCameras()) {
-            val camInfo = Camera.CameraInfo()
-            Camera.getCameraInfo(camNo, camInfo)
+   /* fun onOpenCameraButtonClicked(view: android.view.View) {
+        startCamera()
+    }*/
 
-            if (camInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-                mCamera = Camera.open(camNo)
+    private fun startCamera() {
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
+
+        cameraProviderFuture.addListener({
+            val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
+
+            // Create a preview use case
+            val preview = Preview.Builder()
+                .build()
+                .also {
+                    it.setSurfaceProvider(binding.bigProfile.createSurfaceProvider())
+                    // Replace "previewView" with the id of the view where you want to display the camera preview
+                }
+
+            // Set up the camera selector to use the front camera
+            val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
+
+            try {
+                // Unbind any existing camera use cases before rebinding
+                cameraProvider.unbindAll()
+
+                // Bind the use cases to the camera
+                cameraProvider.bindToLifecycle(
+                    this,
+                    cameraSelector,
+                    preview
+                )
+
+            } catch (exc: Exception) {
+                Toast.makeText(this, "Unable to open camera", Toast.LENGTH_SHORT).show()
             }
-        }
 
+        }, ContextCompat.getMainExecutor(this))
 
-        // no front-facing camera, use the first back-facing camera instead.
-        // you may instead wish to inform the user of an error here...
-        if (!::mCamera.isInitialized) {
-            // no front-facing camera, use the first back-facing camera instead.
-            // you may instead wish to inform the user of an error here...
-            mCamera = Camera.open()
-        }
-
-
-        // Assuming the following code is inside a click listener for capturing the picture
-        mCamera?.takePicture(null, null, pictureCallback)
-    }
-
-    private val pictureCallback = Camera.PictureCallback { data, _ ->
-        // Decode the byte array to a Bitmap
-        val bitmap = BitmapFactory.decodeByteArray(data, 0, data.size)
-
-        // Convert the Bitmap to a Base64-encoded string
-        val encodedImage = bitmapToBase64(bitmap)
-
-        // Log or use the encodedImage as needed
-        Log.d("CameraActivity", "Base64 Image: $encodedImage")
-
-        // Pass the encodedImage back to the calling activity (if needed)
-        val resultIntent = Intent()
-        resultIntent.putExtra("encodedImage", encodedImage)
-        setResult(RESULT_OK, resultIntent)
-        finish()
-    }
-
-    private fun bitmapToBase64(bitmap: Bitmap): String {
-        val outputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-        val imageBytes = outputStream.toByteArray()
-
-        return Base64.encodeToString(imageBytes, Base64.DEFAULT)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        // Release the camera in onDestroy to avoid memory leaks
-        mCamera?.release()
-        removeLocationUpdates()
     }
 }

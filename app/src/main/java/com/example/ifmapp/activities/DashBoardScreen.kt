@@ -38,12 +38,16 @@ import com.example.ifmapp.fragments.MustersFragment
 import com.example.ifmapp.modelclasses.AddAccountModel
 import com.example.ifmapp.modelclasses.loginby_pin.LoginByPINResponseItem
 import com.example.ifmapp.services.LocationService
+import com.otpview.OTPListener
+import com.otpview.OTPTextView
 
 class DashBoardScreen : AppCompatActivity() ,AddAccountAdapter.OnClickedInterface{
     private lateinit var binding: ActivityDashBoardScreenBinding
     private lateinit var employeePinDao: EmployeePinDao
     private lateinit var otpLiveData: MutableLiveData<String>
     var otp: String? = null
+    private lateinit var otpTextView : OTPTextView
+
     private lateinit var addAccountAdapter: AddAccountAdapter
     private var mobileNumber: String? = null
     private var empNumber: String? = null
@@ -57,11 +61,11 @@ class DashBoardScreen : AppCompatActivity() ,AddAccountAdapter.OnClickedInterfac
         employeePinDao = EmployeeDB.getInstance(this).employeePinDao()
         val mobileNumber = intent.getStringExtra("usermobileNumber")
         val pin = intent.getStringExtra("PIN")
-
+        otpTextView = findViewById(R.id.otp_view) as OTPTextView
         Log.d("TAGGGGGGGGG", "onCreate: $pin and $mobileNumber")
         /////////////////////////////////////////////////
-otpLiveData = MutableLiveData()
-        addAccountAdapter = AddAccountAdapter(this,this)
+        otpLiveData = MutableLiveData()
+        addAccountAdapter = AddAccountAdapter(this, this)
         binding.accountsRecyclerView.layoutManager =
             GridLayoutManager(this, 1, GridLayoutManager.HORIZONTAL, true)
         binding.accountsRecyclerView.adapter = addAccountAdapter
@@ -106,117 +110,41 @@ otpLiveData = MutableLiveData()
 
         }
 
-        binding.forgotPin.paintFlags = binding.forgotPin.paintFlags or Paint.UNDERLINE_TEXT_FLAG
-        val editTexts = listOf(binding.otp1, binding.otp2, binding.otp3, binding.otp4)
+//        binding.forgotPin.paintFlags = binding.forgotPin.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+//        val editTexts = listOf(binding.otp1, binding.otp2, binding.otp3, binding.otp4)
+        otpTextView.otpListener = object : OTPListener {
+            override fun onInteractionListener() {
 
+            }
 
-        for (i in 0 until editTexts.size) {
-            editTexts[i].addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(
-                    s: CharSequence?,
-                    start: Int,
-                    count: Int,
-                    after: Int
-                ) {
-                }
+            override fun onOTPComplete(otp: String) {
+                employeePinDao.getcurrentEmployeeDetails(otp)
+                    .observe(this@DashBoardScreen) {
+                        if (it != null) {
+                            if ( it.MessageID.toInt() == 1){
+                                Log.d("TAGGGGGG", "onTextChanged:it is not null")
+                                val intent =
+                                    Intent(this@DashBoardScreen, MainActivity::class.java)
 
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                                intent.putExtra("mPIN", otpTextView.otp)
+                                intent.putExtra("empNumber", empNumber)
+                                startActivity(intent)
+                            }
+                            else {
+                                Toast.makeText(
+                                    this@DashBoardScreen,
+                                    "You entered wrong pin!",
+                                    Toast.LENGTH_SHORT
+                                ).show()
 
-
-                    editTexts[i].inputType =
-                        InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD
-                   /* val currentEditText = editTexts[i]
-                    val previousEditText = if (i > 0) editTexts[i - 1] else null
-
-                    if (previousEditText != null && previousEditText.text.isEmpty()) {
-                        // Clear the current EditText and prevent further input
-                        currentEditText.text.clear()
-                        currentEditText.isFocusableInTouchMode = false
-                        currentEditText.isFocusable = false
-                    } else {
-                        // Allow input in the current EditText
-                        currentEditText.isFocusableInTouchMode = true
-                        currentEditText.isFocusable = true
-*/
-                        if (editTexts[3].text.toString().isNotEmpty()) {
-                            editTexts[i].inputType =
-                                InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD
-                            otp = binding.otp1.text.toString().trim() + binding.otp2.text.toString()
-                                .trim() +
-                                    binding.otp3.text.toString()
-                                        .trim() + binding.otp4.text.toString()
-                                .trim()
-
-
-
-                            employeePinDao.getcurrentEmployeeDetails(otp.toString())
-                                .observe(this@DashBoardScreen) {
-
-                                    if (it != null && it.MessageID.toInt() == 1) {
-                                        Log.d("TAGGGGGG", "onTextChanged:it is not null")
-                                        val intent =
-                                            Intent(this@DashBoardScreen, MainActivity::class.java)
-
-                                        intent.putExtra("mPIN", otp)
-                                        intent.putExtra("empNumber", empNumber)
-                                        startActivity(intent)
-                                        Log.d(
-                                            "TAGGGGGGGGGG",
-                                            "onCreateView: $otp is the otp from dashboard"
-                                        )
-                                        binding.otp1.text.clear()
-                                        binding.otp2.text.clear()
-                                        binding.otp3.text.clear()
-                                        binding.otp4.text.clear()
-
-
-                                    } else {
-                                        Toast.makeText(
-                                            this@DashBoardScreen,
-                                            "You entered wrong pin!",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                        binding.otp1.text.clear()
-                                        binding.otp2.text.clear()
-                                        binding.otp3.text.clear()
-                                        binding.otp4.text.clear()
-                                    }
-                                }
-                        }
-                   // }
-                    binding.otp1.requestFocus()
-
-                    // Show the keyboard after setting focus
-                    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                    imm.showSoftInput(binding.otp1, InputMethodManager.SHOW_IMPLICIT)
-                }
-                override fun afterTextChanged(s: Editable?) {
-
-                }
-            })
-
-            editTexts[i].setOnKeyListener { _, keyCode, event ->
-                if (keyCode == KeyEvent.KEYCODE_DEL && event.action == KeyEvent.ACTION_DOWN) {
-                    // If backspace is pressed, move the focus to the previous EditText
-                    if (i > 0) {
-                        editTexts[i - 1].requestFocus()
+                            }
+                            }
                     }
-                    true
-                } else {
-                    false
-                }
             }
         }
-        setupOtpEditTextListeners()
-////////////////////////////////////////////////////////
+    }
 
-    }
-    private fun setupOtpEditTextListeners() {
-        binding.otp1.addTextChangedListener(createOtpTextWatcher(binding.otp2))
-        binding.otp2.addTextChangedListener(createOtpTextWatcher(binding.otp3))
-        binding.otp3.addTextChangedListener(createOtpTextWatcher(binding.otp4))
-        binding.otp4.addTextChangedListener(createOtpTextWatcher(null))
-    }
+
 
     private fun createOtpTextWatcher(nextEditText: EditText?): TextWatcher {
         return object : TextWatcher {
