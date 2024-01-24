@@ -4,10 +4,11 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.example.ifmapp.modelclasses.ShiftTimingDetails
 import com.example.ifmapp.modelclasses.loginby_pin.LoginByPINResponseItem
 
 
-@Database(entities = [LoginByPINResponseItem::class], version = 1, exportSchema = false)
+@Database(entities = [LoginByPINResponseItem::class,ShiftTimingDetails::class], version = 1, exportSchema = false)
 abstract class EmployeeDB :RoomDatabase() {
 
     abstract fun employeePinDao():EmployeePinDao
@@ -22,7 +23,7 @@ abstract class EmployeeDB :RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     EmployeeDB::class.java,
-                    "EmployeeDataBase"
+                    "User_Database"
                 ).build()
                 INSTANCE = instance
                 instance

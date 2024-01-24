@@ -12,6 +12,7 @@
         android:layout_height="match_parent"
         tools:context=".fragments.HomeFragment">
 
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -22,371 +23,222 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:layout_marginTop="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent"
+                >
+
+                <ImageView
+                    android:id="@+id/profile_pic"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="10dp"
+                    android:src="@drawable/profile_icon"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/user_LL"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:gravity="center"
-                    android:orientation="horizontal"
+                    android:id="@+id/user_LL"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_margin="3dp"
+                    android:orientation="vertical"
+                    android:weightSum="2"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/profile_pic"
                     app:layout_constraintTop_toTopOf="parent">
 
-
-                    <ImageView
-                        android:id="@+id/profile_pic"
-                        android:layout_width="wrap_content"
+                    <TextView
+                        android:id="@+id/user_name"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:layout_marginEnd="10dp"
-                        android:src="@drawable/profile_icon"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@id/user_LL"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/roboto"
+                        android:text="Cameron Williamson"
+                        android:textColor="@color/black"
+                        android:textSize="15sp"
 
-                    <LinearLayout
-                        android:id="@+id/user_LL"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_margin="3dp"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@id/profile_pic"
-                        app:layout_constraintTop_toTopOf="parent">
+                        android:textStyle="bold" />
 
-                        <TextView
-                            android:id="@+id/user_name"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:fontFamily="@font/roboto"
-                            android:lineHeight="18sp"
-                            android:text="Hi, Cameron Williamson"
-                            android:textColor="@color/black"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/designation"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/roboto"
+                        android:text="Security Guard"
+                        android:textColor="#5E5D5D"
 
-                        <!--<TextView
-                            android:id="@+id/designation"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_weight="1"
-                            android:fontFamily="@font/roboto"
-                            android:text="Security Guard"
-                            android:textColor="#5E5D5D"
-
-                            android:textSize="15sp" />-->
-                    </LinearLayout>
-
+                        android:textSize="15sp" />
                 </LinearLayout>
+
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/pin_cardview"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/Selection_CL"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                app:cardCornerRadius="12dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
+                android:layout_margin="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/user_CL">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
+                <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/pin_backs"
-                    android:paddingStart="14dp"
-                    android:paddingTop="14dp"
-                    android:paddingEnd="14dp"
+                    android:layout_height="match_parent"
+                    app:cardCornerRadius="8dp"
+                    android:padding="4dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
-                    android:paddingBottom="26dp">
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:id="@+id/enterPin_txt"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
+                        android:background="@drawable/main_deshboard_back"
+                        android:orientation="vertical"
+                        android:padding="12dp">
+
+                        <TextView
+                            android:id="@+id/txt_selectSite"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginStart="8dp"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/roboto"
+                            android:padding="4dp"
+                            android:text="Select Site"
+                            android:textColor="#121212"
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            app:layout_constraintBottom_toTopOf="@id/spinner_select_site"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="3dp"
+                            android:background="@drawable/site_selection_back"
+                            app:layout_constraintBaseline_toTopOf="@id/txt_selectShift"
+                            app:layout_constraintBottom_toTopOf="@id/txt_selectShift"
+                            app:layout_constraintEnd_toEndOf="@id/txt_selectSite"
+                            app:layout_constraintStart_toStartOf="@id/txt_selectSite"
+                            app:layout_constraintTop_toBottomOf="@id/txt_selectSite">
+
+                            <Spinner
+                                android:id="@+id/spinner_select_site"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                />
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                        <TextView
+                            android:id="@+id/txt_selectShift"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:fontFamily="@font/roboto"
+                            android:padding="8dp"
+                            android:text="Select Shift"
+                            android:textColor="#121212"
+                            android:textSize="15sp"
+
+                            android:textStyle="bold"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="@+id/txt_selectSite"
+                            tools:layout_editor_absoluteY="60dp" />
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="3dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            android:background="@drawable/site_selection_back"
+                            app:layout_constraintEnd_toEndOf="@id/txt_selectSite"
+                            app:layout_constraintStart_toStartOf="@id/txt_selectSite"
+                            app:layout_constraintTop_toBottomOf="@id/txt_selectShift"
+                            >
+                            <Spinner
+                                android:id="@+id/spinner_select_shift"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+
+                                />
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:gravity="center"
+                            app:layout_constraintStart_toStartOf="@id/Selection_CL"
+                            app:layout_constraintEnd_toEndOf="@id/Selection_CL"
+                            app:layout_constraintTop_toBottomOf="@id/Selection_CL"
                             android:orientation="horizontal"
-                            android:paddingTop="14dp"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent">
+                            android:gravity="center"
+                            android:padding="6dp"
+                            android:layout_marginTop="16dp"
+                            android:paddingBottom="10dp"
+                            android:weightSum="2">
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/roboto"
-                                android:letterSpacing="0.01"
-                                android:lineHeight="28dp"
-                                android:lineSpacingExtra="2sp"
-                                android:text="Enter your 4 digit login Pin"
-                                android:textColor="@color/white"
-                                android:textSize="17sp"
-                                android:textStyle="bold"
-                                android:translationY="-1.11sp"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
 
-                            <ImageView
-                                android:layout_width="wrap_content"
+                            <Button
+                                android:id="@+id/checkIn_Btn"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="4dp"
-                                android:src="@drawable/lockbtn"
-                                app:layout_constraintTop_toTopOf="parent" />
+                                android:text="Check in"
+                                android:layout_marginEnd="10dp"
+                                android:textAllCaps="false"
+                                android:layout_marginBottom="3dp"
+                                android:textColor="#ffffff"
+                                android:background="@drawable/button_back"
+
+                                android:layout_weight="1" />
+
+                            <Button
+                                android:id="@+id/checkout_Btn"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textAllCaps="false"
+                                android:textColor="#6C6B6B"
+                                android:layout_marginBottom="3dp"
+                                android:background="@drawable/button_backwhite"
+                                android:layout_marginStart="10dp"
+                                android:text="Check out"
+                                android:layout_weight="1" />
 
 
                         </LinearLayout>
 
-
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-
-                    <LinearLayout
-                        android:id="@+id/Pin_edt_LL"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="18dp"
-                        android:gravity="center"
-                        android:orientation="horizontal"
-                        android:paddingStart="6dp"
-                        android:paddingEnd="6dp"
-                        android:weightSum="4"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
-
-                        <androidx.constraintlayout.widget.ConstraintLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content">
-
-                            <View
-                                android:layout_width="40dp"
-                                android:layout_height="1dp"
-                                android:layout_marginStart="4dp"
-                                android:layout_marginEnd="4dp"
-                                android:layout_marginBottom="7dp"
-                                android:background="@color/white"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toStartOf="parent" />
-
-                            <EditText
-                                android:id="@+id/otp_1"
-                                android:layout_width="40dp"
-                                android:layout_height="match_parent"
-                                android:layout_marginEnd="3dp"
-                                android:layout_weight="1"
-                                android:inputType="number|numberPassword"
-                                android:maxLength="1"
-                                android:gravity="center"
-                                android:textColorHint="@color/white"
-                                android:textColor="@color/white"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
-
-                        </androidx.constraintlayout.widget.ConstraintLayout>
-
-                        <androidx.constraintlayout.widget.ConstraintLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content">
-
-                            <View
-                                android:layout_width="40dp"
-                                android:layout_height="1dp"
-                                android:layout_marginStart="4dp"
-                                android:layout_marginEnd="4dp"
-                                android:layout_marginBottom="7dp"
-                                android:background="@color/white"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toStartOf="parent" />
-
-                            <EditText
-                                android:id="@+id/otp_2"
-                                android:layout_width="40dp"
-                                android:layout_height="wrap_content"
-                                android:layout_marginEnd="3dp"
-                                android:layout_weight="1"
-                                android:inputType="number|numberPassword"
-                                android:maxLength="1"
-                                android:gravity="center"
-
-                                android:textColorHint="@color/white"
-                                android:textColor="@color/white"
-
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
-
-                        </androidx.constraintlayout.widget.ConstraintLayout>
-
-                        <androidx.constraintlayout.widget.ConstraintLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content">
-
-                            <View
-                                android:layout_width="40dp"
-                                android:layout_height="1dp"
-                                android:layout_marginStart="4dp"
-                                android:layout_marginEnd="4dp"
-                                android:layout_marginBottom="7dp"
-                                android:background="@color/white"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toStartOf="parent" />
-
-                            <EditText
-                                android:id="@+id/otp_3"
-                                android:layout_width="40dp"
-                                android:layout_height="wrap_content"
-                                android:layout_marginEnd="3dp"
-                                android:layout_weight="1"
-                                android:inputType="number|numberPassword"
-                                android:maxLength="1"
-                                android:gravity="center"
-
-                                android:textColorHint="@color/white"
-                                android:textColor="@color/white"
-
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
-
-                        </androidx.constraintlayout.widget.ConstraintLayout>
-
-                        <androidx.constraintlayout.widget.ConstraintLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content">
-
-                            <View
-                                android:layout_width="40dp"
-                                android:layout_height="1dp"
-                                android:layout_marginStart="4dp"
-                                android:layout_marginEnd="4dp"
-                                android:layout_marginBottom="7dp"
-                                android:background="@color/white"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toStartOf="parent" />
-
-                            <EditText
-                                android:id="@+id/otp_4"
-                                android:layout_width="40dp"
-                                android:layout_height="wrap_content"
-                                android:layout_marginEnd="3dp"
-                                android:layout_weight="1"
-                                android:textColor="@color/white"
-                                android:inputType="number|numberPassword"
-                                android:maxLength="1"
-                                android:gravity="center"
-
-                                android:textColorHint="@color/white"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
-
-                        </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingBottom="10dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/Pin_edt_LL">
-
-                        <TextView
-                            android:id="@+id/forgotPin"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-
-                            android:layout_marginTop="25dp"
-                            android:gravity="center"
-                            android:text="Forgot Pin?"
-                            android:textColor="@color/white"
-                            android:textSize="12sp" />
-
                     </LinearLayout>
 
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
-            </androidx.cardview.widget.CardView>
+                </androidx.cardview.widget.CardView>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/accounts_recyclerView"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                tools:listitem="@layout/add_account_layout"
-                tools:itemCount="1"
-                android:layout_marginEnd="10dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/addAccount_LL"
-                app:layout_constraintBottom_toBottomOf="@id/addAccount_LL"
-                app:layout_constraintEnd_toStartOf="@id/addAccount_LL"
-                />
-
-
-
-            <LinearLayout
-                android:id="@+id/addAccount_LL"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="80dp"
-                android:gravity="center"
-                android:orientation="horizontal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/pin_cardview">
-
-
-
-                <LinearLayout
-                    android:id="@+id/addAccount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/addaccountout_back"
-                    android:padding="20dp">
-
-                    <ImageView
-                        android:id="@+id/addAccount_"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/addaccount_back"
-                        android:padding="6dp"
-                        android:src="@drawable/baseline_add_24" />
-
-                </LinearLayout>
-
-
-            </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

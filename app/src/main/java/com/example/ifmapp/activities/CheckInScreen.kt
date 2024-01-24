@@ -3,20 +3,20 @@ package com.example.ifmapp.activities
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.hardware.Camera
 import android.location.Address
-import android.provider.Settings
 import android.location.Geocoder
-import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
-import android.provider.MediaStore
+import android.provider.Settings
 import android.telephony.TelephonyManager
+import android.util.Base64
 import android.util.Log
 import android.view.View
 import android.view.animation.AlphaAnimation
@@ -30,9 +30,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
-import com.example.ifmapp.Locationmodel
 import com.example.ifmapp.R
 import com.example.ifmapp.RetrofitInstance
 import com.example.ifmapp.apiinterface.ApiInterface
@@ -41,7 +39,7 @@ import com.example.ifmapp.databasedb.EmployeePinDao
 import com.example.ifmapp.databinding.ActivityCheckInScreenBinding
 import com.example.ifmapp.modelclasses.attendance_response.AttendanceResponse
 import com.example.ifmapp.modelclasses.geomappedsite_model.GeoMappedResponse
-import com.example.ifmapp.modelclasses.shift_selection_model.ShiftSelectionResponse
+import com.example.ifmapp.utils.IMEIGetter
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationAvailability
 import com.google.android.gms.location.LocationCallback
@@ -56,12 +54,13 @@ import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Currency
 import java.util.Date
 import java.util.Locale
+
 
 class CheckInScreen : AppCompatActivity() {
 
@@ -78,6 +77,8 @@ class CheckInScreen : AppCompatActivity() {
     private var userBitmap: Bitmap? = null
     private val REQUEST_IMAGE_CAPTURE = 1
     private val CAMERA_PERMISSION_CODE = 101
+    private lateinit var imeiGetter: IMEIGetter
+    private var imageInString: String? = null
     private var employeeName: String? = null
     private var employeeDesignation: String? = null
     private var otp: String? = null
@@ -86,20 +87,21 @@ class CheckInScreen : AppCompatActivity() {
     private var time: String? = null
     private var locationAutoID: String? = null
     private var empNumber: String? = null
+    private lateinit var mCamera: Camera
     private lateinit var retrofitInstance: ApiInterface
-
-
     private lateinit var formattedDate: String
-private var currenTtime:String?=null
+    private var currenTtime: String? = null
     private lateinit var currentDate: Date
     private lateinit var employeePinDao: EmployeePinDao
+
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_check_in_screen)
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_check_in_screen)
         retrofitInstance = RetrofitInstance.apiInstance
-
+        imeiGetter = IMEIGetter(this)
         binding.checkinCL.visibility = View.VISIBLE
         binding.finalLayoutCL.visibility = View.GONE
         currentDate = Date()
@@ -110,6 +112,8 @@ private var currenTtime:String?=null
         siteSelect = intent.getStringExtra("siteSelect")
         shiftSelect = intent.getStringExtra("shiftSelect")
         empNumber = intent.getStringExtra("empNumber")
+
+        Log.d("TAGGGGGGG", "onCreate: this is $empNumber")
 
 
         time = getCurrentTime()
@@ -166,7 +170,7 @@ private var currenTtime:String?=null
             binding.btnRetake.setTextColor(resources.getColor(R.color.check_btn))
             binding.btnRetake.setBackgroundResource(R.drawable.button_backwhite)
 
-            if (userBitmap != null && mLatitude != null && mLongitude != null) {
+            if (imageInString != null && mLatitude != null && mLongitude != null) {
 
                 getGeoMappedSites("sams", locationAutoID!!, mLatitude!!, mLongitude!!)
 
@@ -174,7 +178,7 @@ private var currenTtime:String?=null
 
                 startBlinkAnimation()
 
-                val delayMillis = 15000L
+                val delayMillis = 6000L
                 Handler().postDelayed({
                     finish()
                     Log.d("TAGGGGGG", "onCreate:sssssss $shiftSelect is shift $time is time")
@@ -196,24 +200,29 @@ private var currenTtime:String?=null
             }
 
         }
+
         Log.d("TAGGGGGG", "onCreate: $shiftSelect is shift $time is time")
 
         binding.btnRetake.setOnClickListener {
-            if (userBitmap != null) {
+            if (imageInString != null) {
 
                 binding.btnRetake.setTextColor(resources.getColor(R.color.white))
                 binding.btnRetake.setBackgroundResource(R.drawable.button_back)
                 binding.btnSubmit.setTextColor(resources.getColor(R.color.check_btn))
                 binding.btnSubmit.setBackgroundResource(R.drawable.button_backwhite)
                 binding.btnRetake.isEnabled = true
-                dispatchTakePictureIntent()
+                openFrontFacingCamera()
+
+                // dispatchTakePictureIntent()
             }
         }
+        var imeei = getIMEI(this)
 
+        Log.d("TAGGGGGGGGG", "onCreate: thid id mmei $imeei")
         binding.bigProfile.setOnClickListener {
 
             if (checkCameraPermission()) {
-                dispatchTakePictureIntent()
+                openFrontFacingCamera()
             } else {
                 requestCameraPermission()
             }
@@ -236,7 +245,8 @@ private var currenTtime:String?=null
                 if (!addresses.isNullOrEmpty()) {
                     var address: Address = addresses[0]
                     withContext(Dispatchers.Main) {
-myaddress = "${address.locality} ${address.subLocality} ${address.adminArea} ${address.subAdminArea}"
+                        myaddress =
+                            "${address.locality} ${address.subLocality} ${address.adminArea} ${address.subAdminArea}"
                         binding.locationName.text =
                             "${address.locality} ${address.subLocality} ${address.adminArea} ${address.subAdminArea}"
                         binding.address.text =
@@ -250,32 +260,35 @@ myaddress = "${address.locality} ${address.subLocality} ${address.adminArea} ${a
     }
 
 
-    private fun dispatchTakePictureIntent() {
-        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+    /*  private fun dispatchTakePictureIntent() {
+          val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
 
-        if (takePictureIntent.resolveActivity(packageManager) != null) {
-            // Specify the camera facing
-            takePictureIntent.putExtra(
-                "android.intent.extras.CAMERA_FACING",
-                2
-            ) // 1 corresponds to CameraInfo.CAMERA_FACING_FRONT
+          if (takePictureIntent.resolveActivity(packageManager) != null) {
+              // Specify the camera facing
+              takePictureIntent.putExtra(
+                  "android.intent.extras.CAMERA_FACING",
+                  2
+              ) // 1 corresponds to CameraInfo.CAMERA_FACING_FRONT
 
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
-        }
-    }
+              startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+          }
+      }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
+      override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+          super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
-            val imageBitmap = data?.extras?.get("data") as Bitmap
-            // Do something with the captured image (e.g., display it in an ImageView)
-            resizeAndSetBitmap(binding.bigProfile, imageBitmap, 313, 313)
-            userBitmap = imageBitmap
+          if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
+              val imageBitmap = data?.extras?.get("data") as Bitmap
+              // Do something with the captured image (e.g., display it in an ImageView)
+              resizeAndSetBitmap(binding.bigProfile, imageBitmap, 313, 313)
+               imageInString = bitmapToString(imageBitmap)
+              userBitmap = imageBitmap
+              Log.d("TAGGGGGGG", "onActivityResult: this is bitmap $imageBitmap")
+              Log.d("TAGGGGGGG", "onActivityResult: this is string image $imageInString")
 
 
-        }
-    }
+          }
+      }*/
 
     private fun checkCameraPermission(): Boolean {
         return ContextCompat.checkSelfPermission(
@@ -301,7 +314,7 @@ myaddress = "${address.locality} ${address.subLocality} ${address.adminArea} ${a
         if (requestCode == CAMERA_PERMISSION_CODE) {
 
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                dispatchTakePictureIntent()
+                openFrontFacingCamera()//   dispatchTakePictureIntent()
             }
         }
     }
@@ -349,11 +362,6 @@ myaddress = "${address.locality} ${address.subLocality} ${address.adminArea} ${a
             }
         }
 
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        removeLocationUpdates()
     }
 
 
@@ -490,14 +498,19 @@ myaddress = "${address.locality} ${address.subLocality} ${address.adminArea} ${a
 
                         val emp = response.body()?.get(0)
                         Log.d("TAGGGGGGG", "onResponse: this is $mAltitude")
-                        if ( myaddress!=null){
-                            Log.d("TAGGGGG", "onResponse:1${time} \n2 ${getIMEI(this@CheckInScreen)}\n" +
-                                    "3${empNumber} 4${emp?.AsmtID} 5${mLatitude.toString()} 6 ${mLongitude.toString()}" +
-                                    "7${mAltitude.toString()} 8${userBitmap.toString()} 9${emp?.LocationAutoID} 10${emp?.ClientCode}" +
-                                    "11${siteSelect} 12${shiftSelect} 13${myaddress}")
+                        if (myaddress != null) {
+
+                            var imeiPhone = imeiGetter.getIMEI()
+                            Log.d(
+                                "TAGGGGG",
+                                "onResponse:1${time} \n2 ${imeiPhone}\n" +
+                                        "3${empNumber} 4${emp?.AsmtID} 5${mLatitude.toString()} 6 ${mLongitude.toString()}" +
+                                        "7${mAltitude.toString()} 8${imageInString} 9${emp?.LocationAutoID} 10${emp?.ClientCode}" +
+                                        "11${siteSelect} 12${shiftSelect} 13${myaddress}"
+                            )
                             insertAttendance(
                                 "sams",
-                                "",
+                                imeiPhone,
                                 empNumber.toString(),
                                 emp?.AsmtID.toString(),
                                 empNumber.toString(),
@@ -506,7 +519,7 @@ myaddress = "${address.locality} ${address.subLocality} ${address.adminArea} ${a
                                 latitude = mLatitude.toString(),
                                 mLongitude.toString(),
                                 mAltitude.toString(),
-                                userBitmap.toString(),
+                                imageInString!!,
                                 emp?.LocationAutoID.toString(),
                                 emp?.ClientCode.toString(),
                                 siteSelect.toString(),
@@ -519,55 +532,67 @@ myaddress = "${address.locality} ${address.subLocality} ${address.adminArea} ${a
                     }
                 }
 
-                                override fun onFailure(
-                                    call: Call<GeoMappedResponse?>,
-                                    t: Throwable
-                                ) {
-                                    Log.d("TAGGGGGGGGGG", "onFailure: falied")
-                                }
-                            })
+                override fun onFailure(
+                    call: Call<GeoMappedResponse?>,
+                    t: Throwable
+                ) {
+                    Log.d("TAGGGGGGGGGG", "onFailure: falied")
+                }
+            })
 
-                    }
+    }
 
-                    /* setFinalDialog(
-                     userBitmap!!,
-                     mLatitude.toString(),
-                     mLongitude.toString(),
-                     address.toString()
-                 )*/
-
+    /* setFinalDialog(
+     userBitmap!!,
+     mLatitude.toString(),
+     mLongitude.toString(),
+     address.toString()
+ )*/
 
 
     fun insertAttendance(
-        connectionKey: String, IMEI: String?, userId: String, AsmtID: String, employeeNumber: String,
-        InOutStatus: String, DutyDateTime: String, latitude: String,
-        longitude: String, altitude: String, employeeImageBase64: String,
-        LocationAutoId: String, ClientCode: String, ShiftCode: String, LocationName: String
+        connectionKey: String,
+        IMEI: String?,
+        userId: String,
+        AsmtID: String,
+        employeeNumber: String,
+        InOutStatus: String,
+        DutyDateTime: String,
+        latitude: String,
+        longitude: String,
+        altitude: String,
+        employeeImageBase64: String,
+        LocationAutoId: String,
+        ClientCode: String,
+        ShiftCode: String,
+        LocationName: String
     ) {
 
-        if (IMEI != null) {
-            retrofitInstance.insertAttendance(
-                connectionKey, IMEI, userId, AsmtID, employeeNumber, InOutStatus,
-                DutyDateTime, latitude, longitude, altitude, employeeImageBase64,
-                LocationAutoId, ClientCode, ShiftCode, LocationName
-            ).enqueue(object : Callback<AttendanceResponse?> {
-                override fun onResponse(
-                    call: Call<AttendanceResponse?>,
-                    response: Response<AttendanceResponse?>
-                ) {
-                    if (response.isSuccessful){
-                        Log.d("TAGGGGGGGG", "onResponse: attendance inserted")
-                        Toast.makeText(this@CheckInScreen, "attendance marked", Toast.LENGTH_SHORT).show()
-                    }else{
-                        Log.d("TAGGGGGGGG", "onResponse:error ${response.errorBody()}")
-                    }
-                }
 
-                override fun onFailure(call: Call<AttendanceResponse?>, t: Throwable) {
-                    Log.d("TAGGGGGGGGGGG", "onFailure: attendance failed")
+        retrofitInstance.insertAttendance(
+            connectionKey, IMEI ?: "", userId, AsmtID, employeeNumber, InOutStatus,
+            DutyDateTime, latitude, longitude, altitude, employeeImageBase64,
+            LocationAutoId, ClientCode, ShiftCode, LocationName
+        ).enqueue(object : Callback<AttendanceResponse?> {
+            override fun onResponse(
+                call: Call<AttendanceResponse?>,
+                response: Response<AttendanceResponse?>
+            ) {
+                if (response.isSuccessful) {
+                    Log.d("TAGGGGGGGG", "onResponse: attendance inserted")
+                    Toast.makeText(this@CheckInScreen, "attendance marked", Toast.LENGTH_SHORT)
+                        .show()
+                    setFinalDialog(userBitmap!!, mLatitude!!, mLongitude!!, myaddress!!)
+                } else {
+                    Log.d("TAGGGGGGGG", "onResponse:error ${response.errorBody()}")
                 }
-            })
-        }
+            }
+
+            override fun onFailure(call: Call<AttendanceResponse?>, t: Throwable) {
+                Log.d("TAGGGGGGGGGGG", "onFailure: attendance failed")
+            }
+        })
+
     }
 
 
@@ -587,15 +612,79 @@ myaddress = "${address.locality} ${address.subLocality} ${address.adminArea} ${a
                         android.Manifest.permission.READ_PHONE_STATE
                     ) == PackageManager.PERMISSION_GRANTED
                 ) {
-                    telephonyManager.imei ?: "IMEI not available"
+                    Log.d("TAGGGGGGG", "getIMEI: this is imei no : ${telephonyManager.imei}")
+                    telephonyManager.imei ?: ""
                 } else {
-                    "Permission not granted for READ_PHONE_STATE"
+                    ""
                 }
             } else {
-                telephonyManager.imei ?: "IMEI not available"
+                telephonyManager.imei ?: ""
             }
         } else {
-            return "Permission not granted for READ_PHONE_STATE"
+            return ""
         }
+    }
+
+    private fun bitmapToString(bitmap: Bitmap): String {
+        val byteArrayOutputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+        val byteArray = byteArrayOutputStream.toByteArray()
+        return Base64.encodeToString(byteArray, Base64.DEFAULT)
+    }
+
+    private fun openFrontFacingCamera() {
+        for (camNo in 0 until Camera.getNumberOfCameras()) {
+            val camInfo = Camera.CameraInfo()
+            Camera.getCameraInfo(camNo, camInfo)
+
+            if (camInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                mCamera = Camera.open(camNo)
+            }
+        }
+
+
+        // no front-facing camera, use the first back-facing camera instead.
+        // you may instead wish to inform the user of an error here...
+        if (!::mCamera.isInitialized) {
+            // no front-facing camera, use the first back-facing camera instead.
+            // you may instead wish to inform the user of an error here...
+            mCamera = Camera.open()
+        }
+
+
+        // Assuming the following code is inside a click listener for capturing the picture
+        mCamera?.takePicture(null, null, pictureCallback)
+    }
+
+    private val pictureCallback = Camera.PictureCallback { data, _ ->
+        // Decode the byte array to a Bitmap
+        val bitmap = BitmapFactory.decodeByteArray(data, 0, data.size)
+
+        // Convert the Bitmap to a Base64-encoded string
+        val encodedImage = bitmapToBase64(bitmap)
+
+        // Log or use the encodedImage as needed
+        Log.d("CameraActivity", "Base64 Image: $encodedImage")
+
+        // Pass the encodedImage back to the calling activity (if needed)
+        val resultIntent = Intent()
+        resultIntent.putExtra("encodedImage", encodedImage)
+        setResult(RESULT_OK, resultIntent)
+        finish()
+    }
+
+    private fun bitmapToBase64(bitmap: Bitmap): String {
+        val outputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+        val imageBytes = outputStream.toByteArray()
+
+        return Base64.encodeToString(imageBytes, Base64.DEFAULT)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // Release the camera in onDestroy to avoid memory leaks
+        mCamera?.release()
+        removeLocationUpdates()
     }
 }

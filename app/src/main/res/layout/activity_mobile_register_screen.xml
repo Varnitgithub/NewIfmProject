@@ -133,7 +133,41 @@
 
         </LinearLayout>
 
+       <!-- <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="4"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="@id/top_icons_CL"
+            app:layout_constraintStart_toStartOf="@id/top_icons_CL"
+            app:layout_constraintTop_toBottomOf="@id/id_icons">
 
+            <TextView
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="#ACACAC"
+                android:gravity="end"
+                android:text="Already registered ?"/>
+
+            <TextView
+                android:id="@+id/move_to_signup"
+                android:layout_weight="3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#000000"
+                android:layout_marginStart="3dp"
+                android:text="Click here"/>
+
+        </LinearLayout>
+-->
         <LinearLayout
             android:id="@+id/otp_section_LL"
             android:layout_width="0dp"
@@ -371,13 +405,14 @@
             android:text="Resend OTP"
             android:layout_marginStart="16dp"
             android:padding="3dp"
+            android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@id/otp_section_LL"
             app:layout_constraintStart_toStartOf="parent"
             android:textColor="#dc133f"
             android:textSize="15sp"
             android:textStyle="bold" />
 
-        <LinearLayout
+      <!--  <LinearLayout
             android:id="@+id/don_t_have_LL"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -418,7 +453,7 @@
                 app:layout_constraintStart_toEndOf="@id/txt_signin"
                 app:layout_constraintTop_toTopOf="parent" />
 
-        </LinearLayout>
+        </LinearLayout>-->
 
 
         <Button
@@ -432,7 +467,8 @@
             android:textAllCaps="false"
             android:textColor="#acacac"
             android:textSize="15sp"
-            app:layout_constraintBottom_toTopOf="@id/don_t_have_LL"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="20dp"
             app:layout_constraintEnd_toEndOf="@id/top_icons_CL"
             app:layout_constraintStart_toStartOf="@id/top_icons_CL" />
 

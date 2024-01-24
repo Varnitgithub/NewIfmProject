@@ -1,0 +1,24 @@
+package com.example.ifmapp.activities
+
+import android.content.Intent
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.widget.Button
+import com.example.ifmapp.R
+
+class LoginCheckedScreen : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_login_checked_screen)
+
+        var loginByPhone: Button = findViewById(R.id.loginByPhoneAndPin)
+        var loginByCompanyCode: Button = findViewById(R.id.loginByCompanyCode)
+
+        loginByPhone.setOnClickListener {
+            startActivity(Intent(this,LoginByPinMobileScreen::class.java))
+        }
+        loginByCompanyCode.setOnClickListener {
+            startActivity(Intent(this,SignUpScreen::class.java))
+        }
+    }
+}

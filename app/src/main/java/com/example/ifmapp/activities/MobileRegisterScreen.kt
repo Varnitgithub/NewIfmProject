@@ -1,7 +1,12 @@
 package com.example.ifmapp.activities
 
+import android.Manifest
+import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Paint
+import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -13,16 +18,21 @@ import android.view.KeyEvent
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import com.example.ifmapp.MainActivity
 import com.example.ifmapp.R
 import com.example.ifmapp.RetrofitInstance
 import com.example.ifmapp.apiinterface.ApiInterface
+import com.example.ifmapp.checked
+import com.example.ifmapp.databasedb.EmployeeDB
+import com.example.ifmapp.databasedb.EmployeePinDao
 import com.example.ifmapp.databinding.ActivityMobileRegisterScreenBinding
 import com.example.ifmapp.modelclasses.verifymobile.InputMobileRegister
 import com.example.ifmapp.modelclasses.verifymobile.OtpSend
 import com.example.ifmapp.modelclasses.verifymobile.OtpSendItem
 import com.example.ifmapp.modelclasses.verifymobile.VerifyOtpResponse
+import com.example.ifmapp.utils.IMEIGetter
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -32,23 +42,44 @@ class MobileRegisterScreen : AppCompatActivity() {
     private var mobileNumber: String? = null
     private var otp: String? = null
     private lateinit var retrofitInstance: ApiInterface
-
-    private lateinit var countDownTimer: CountDownTimer
+    private val LOCATION_PERMISSION_REQUEST_CODE = 123
+    private val READ_PHONE_PERMISSION = 123
+    private val BACKGROUND_LOCATION_CODE = 111
+    private var countDownTimer: CountDownTimer?=null
     private val initialTimeMillis: Long = 60000 // 60 seconds
     private val countDownIntervalMillis: Long = 1000 // 1 second
+    private lateinit var employeePinDao: EmployeePinDao
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // setContentView(R.layout.activity_mobile_register_screen)
         retrofitInstance = RetrofitInstance.apiInstance
         binding = DataBindingUtil.setContentView(this, R.layout.activity_mobile_register_screen)
-
-        binding.otpSectionLL.visibility = View.GONE
         binding.resentOtp.visibility = View.GONE
+        binding.otpSectionLL.visibility = View.GONE
 
+        employeePinDao = EmployeeDB.getInstance(this).employeePinDao()
+        if (checkPermission()) {
+
+        } else {
+            requestPermission()
+        }
+
+        //getPhoneRead()
+
+        if (!checked.isChecked) {
+            checked.isChecked = true
+            checkReceiverData()
+        }
+
+
+/*
+        binding.moveToSignup.setOnClickListener {
+            startActivity(Intent(this, LoginByPinMobileScreen::class.java))
+        }
         binding.wayToSignup.setOnClickListener {
             startActivity(Intent(this, SignUpScreen::class.java))
-        }
+        }*/
 
         binding.btnContinue.setOnClickListener {
             startCountdownTimer()
@@ -129,7 +160,6 @@ class MobileRegisterScreen : AppCompatActivity() {
         }
         setupOtpEditTextListeners()
 
-
     }
 
     private fun setupOtpEditTextListeners() {
@@ -164,8 +194,9 @@ class MobileRegisterScreen : AppCompatActivity() {
                     binding.time.text = "00:$secondsRemaining"
                 } else {
                     binding.time.text = "00:0$secondsRemaining"
-                }
 
+                }
+               // binding.resentOtp.visibility = View.VISIBLE
 
             }
 
@@ -176,13 +207,13 @@ class MobileRegisterScreen : AppCompatActivity() {
         }
 
         // Start the countdown timer
-        countDownTimer.start()
+        countDownTimer?.start()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         // Cancel the countdown timer to avoid leaks
-        countDownTimer.cancel()
+        countDownTimer?.cancel()
     }
 
     private fun sendOTP() {
@@ -197,8 +228,8 @@ class MobileRegisterScreen : AppCompatActivity() {
                         call: Call<VerifyOtpResponse?>,
                         response: Response<VerifyOtpResponse?>
                     ) {
-                        if (response.isSuccessful  ) {
-                            if (response.body()?.get(0)?.MessageID?.toInt()==1) {
+                        if (response.isSuccessful) {
+                            if (response.body()?.get(0)?.MessageID?.toInt() == 1) {
 
 
                                 Log.d("TAGGGGGGGG", "onResponse: user is valid")
@@ -331,18 +362,21 @@ class MobileRegisterScreen : AppCompatActivity() {
                                     }
 
                                 }
+                            } else {
+                                Toast.makeText(
+                                    this@MobileRegisterScreen,
+                                    "${response.body()?.get(0)?.MessageString}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
-                            else{
-                                Toast.makeText(this@MobileRegisterScreen, "${response.body()?.get(0)?.MessageString}", Toast.LENGTH_SHORT).show()
-                            }
 
 
-                        }
-
-
-
-                        else {
-                            Toast.makeText(this@MobileRegisterScreen, "user is not valid", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(
+                                this@MobileRegisterScreen,
+                                "user is not valid",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
 
@@ -364,5 +398,130 @@ class MobileRegisterScreen : AppCompatActivity() {
 
 
     }
+
+    private fun checkPermission(): Boolean {
+        return ActivityCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun requestPermission() {
+
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ),
+            LOCATION_PERMISSION_REQUEST_CODE
+        )
+
+    }
+
+    //    override fun onRequestPermissionsResult(
+//        requestCode: Int,
+//        permissions: Array<out String>,
+//        grantResults: IntArray
+//    ) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+//        when (requestCode) {
+//            IMEIGetter.PERMISSION_REQUEST_READ_PHONE_STATE -> {
+//                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                    // Permission granted, you can now proceed with the logic
+//                    // For example, you might call getIMEI() here
+//                    val imeiGetter = IMEIGetter(this)
+//                    val imei = imeiGetter.getIMEI()
+//                    // Do something with the IMEI
+//                } else {
+//                    // Permission denied, handle accordingly
+//                    // For example, inform the user or take appropriate action
+//                    // You can also check if shouldShowRequestPermissionRationale(Manifest.permission.READ_PHONE_STATE)
+//                    // is true to show a rationale to the user
+//                    Toast.makeText(
+//                        this,
+//                        "Permission denied for READ_PHONE_STATE",
+//                        Toast.LENGTH_SHORT
+//                    ).show()
+//                }
+//            }
+//            // Handle other permission requests if needed
+//        }
+//    }
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (!isMockLocation()) {
+                    Log.d("TAGGGGGGGGGG", "onRequestPermissionsResult: getting location")
+                } else {
+                    Toast.makeText(
+                        this,
+                        "mock location is enabled please disable it",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                //Permission Granted
+
+
+            }
+        }
+    }
+
+    private fun isMockLocation(): Boolean {
+        try {
+            val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+            return location?.isFromMockProvider ?: false
+        } catch (e: SecurityException) {
+            e.printStackTrace()
+        }
+        return false
+    }
+
+    private fun checkReceiverData() {
+        employeePinDao.getAllEmployeeDetails().observe(this@MobileRegisterScreen) {
+            if (it.isNotEmpty()) {
+                startActivity(Intent(this@MobileRegisterScreen, DashBoardScreen::class.java))
+            }
+        }
+    }
+
+    private fun getPhoneRead() {
+        // Check if the permission is already granted
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_PHONE_STATE
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            // Permission is already granted
+            // You can proceed with the logic that requires this permission
+            // For example, you might call getIMEI() here
+            val imeiGetter = IMEIGetter(this)
+            val imei = imeiGetter.getIMEI()
+            // Do something with the IMEI
+        } else {
+            // Permission is not granted, request it
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.READ_PHONE_STATE),
+                READ_PHONE_PERMISSION
+            )
+        }
+    }
+
+    // Handle the result of the permission request
+    override fun onPause() {
+        super.onPause()
+    }
+
 
 }
