@@ -323,7 +323,7 @@ class CheckInScreen : AppCompatActivity() {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
             val imageBitmap = data?.extras?.get("data") as Bitmap
             // Do something with the captured image (e.g., display it in an ImageView)
-            resizeAndSetBitmap(binding.bigProfile, imageBitmap, 313, 313)
+           // resizeAndSetBitmap(binding.bigProfile, imageBitmap, 313, 313)
             imageInString = bitmapToString(imageBitmap)
             userBitmap = imageBitmap
             Log.d("TAGGGGGGG", "onActivityResult: this is bitmap $imageBitmap")
@@ -695,7 +695,7 @@ class CheckInScreen : AppCompatActivity() {
             val preview = Preview.Builder()
                 .build()
                 .also {
-                    it.setSurfaceProvider(binding.bigProfile.createSurfaceProvider())
+                  //  it.setSurfaceProvider(binding.bigProfile.createSurfaceProvider())
                     // Replace "previewView" with the id of the view where you want to display the camera preview
                 }
 

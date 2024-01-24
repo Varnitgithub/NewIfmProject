@@ -65,7 +65,7 @@
                 android:letterSpacing="0.01"
                 android:lineHeight="28dp"
                 android:lineSpacingExtra="2sp"
-                android:text="Enter your Phone no to \n Sign in your Account!"
+                android:text="Enter your Phone no to \n Sign up your Account!"
                 android:textColor="@color/black"
                 android:textSize="22sp"
                 android:textStyle="bold"

@@ -235,7 +235,7 @@ getLastLocation()
 
 
         val adapterSelectionSite = ArrayAdapter(
-            requireContext(),
+            requireActivity(),
             com.google.android.material.R.layout.support_simple_spinner_dropdown_item,
             site
         )

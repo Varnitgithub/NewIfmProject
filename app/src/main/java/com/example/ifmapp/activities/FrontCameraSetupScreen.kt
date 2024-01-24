@@ -24,7 +24,7 @@ class FrontCameraSetupScreen : AppCompatActivity() {
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_front_camera_setup_screen)
-        fl = findViewById<View>(R.id.camPreview) as FrameLayout
+       // fl = findViewById<View>(R.id.camPreview) as FrameLayout
         openFrontFacingCameraGingerbread()
         callBacks()
         addCamera()

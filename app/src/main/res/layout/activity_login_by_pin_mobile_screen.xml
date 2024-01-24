@@ -43,7 +43,7 @@
             android:layout_width="0dp"
             android:layout_marginTop="20dp"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@id/companycode_LL"
+            app:layout_constraintBottom_toTopOf="@id/employeeid_LL"
 
             app:layout_constraintEnd_toEndOf="@id/top_icons_CL"
             app:layout_constraintStart_toStartOf="@id/top_icons_CL"
@@ -56,7 +56,7 @@
                 android:letterSpacing="0.01"
                 android:lineHeight="28dp"
                 android:lineSpacingExtra="2sp"
-                android:text="Enter your Employee id to \n Sign Up your Account!"
+                android:text="Enter your Employee id to \n Sign in your Account!"
                 android:textColor="@color/black"
                 android:textSize="22sp"
                 android:textStyle="bold"

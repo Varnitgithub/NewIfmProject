@@ -129,6 +129,7 @@ class DashBoardScreen : AppCompatActivity() ,AddAccountAdapter.OnClickedInterfac
                                 intent.putExtra("mPIN", otpTextView.otp)
                                 intent.putExtra("empNumber", empNumber)
                                 startActivity(intent)
+                                otpTextView.setOTP("")
                             }
                             else {
                                 Toast.makeText(
@@ -138,7 +139,15 @@ class DashBoardScreen : AppCompatActivity() ,AddAccountAdapter.OnClickedInterfac
                                 ).show()
 
                             }
-                            }
+                            }else {
+                            Toast.makeText(
+                                this@DashBoardScreen,
+                                "You entered wrong pin!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            otpTextView.setOTP("")
+
+                        }
                     }
             }
         }
