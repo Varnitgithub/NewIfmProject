@@ -105,7 +105,7 @@ class LoginByPinMobileScreen : AppCompatActivity() {
                                     "onResponse: data saved successfully successfully in login mob screen"
                                 )
                                 val intent =
-                                    Intent(this@LoginByPinMobileScreen, MainActivity::class.java)
+                                    Intent(this@LoginByPinMobileScreen, DashBoardScreen::class.java)
 
                                 intent.putExtra(
                                     "mPIN",
