@@ -226,7 +226,7 @@ class CheckInScreen : AppCompatActivity() {
 
         binding.bigProfile.setOnClickListener {
             if (checkCameraPermission()) {
-                startActivity(Intent(this, FrontCameraSetupScreen::class.java))
+                startCameraActivity()
             } else {
                 requestCameraPermission()
             }
@@ -683,9 +683,7 @@ class CheckInScreen : AppCompatActivity() {
         shiftSelect = sharedPref2.getString("shiftSelect", "")
         empNumber = sharedPref2.getString("empNumber", "")
 
-        val bytearray = intent.getStringExtra("imageOfBitmap")
 
-        Log.d("TAGGGGGGGG", "onStart: ${bytearray.toString()} is the bitmap image")
         time = getCurrentTime()
 
         if (otp.toString().isNotEmpty()) {
@@ -728,8 +726,22 @@ class CheckInScreen : AppCompatActivity() {
         super.onRestart()
         Log.d("TAGGGGGGGG", "onRestart: i am called")
     }
-    fun startCameraActivity() {
-        val intent = Intent(this, CameraActivity::class.java)
+    private fun startCameraActivity() {
+        val intent = Intent(this, FrontCameraSetupScreen::class.java)
         startActivityForResult(intent, CAMERA_REQUEST_CODE)
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK) {
+            // Get the Bitmap from CameraActivity
+            val bitmap: Bitmap? = data?.getParcelableExtra("capturedBitmap")
+
+            if (bitmap != null) {
+                // Do something with the captured Bitmap
+                // For example, display it in an ImageView
+                Log.d("TAGGGGGGGGGG", "onActivityResult: this is the getting bitmap is $bitmap")
+            }
+        }
     }
 }

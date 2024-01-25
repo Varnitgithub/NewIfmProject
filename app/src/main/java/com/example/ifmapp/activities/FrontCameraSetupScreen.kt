@@ -1,5 +1,6 @@
 package com.example.ifmapp.activities
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -133,7 +134,7 @@ class FrontCameraSetupScreen : AppCompatActivity() {
         binding.imageview.visibility = View.VISIBLE
         base64Image = encodeImageToBase64(photoFile)
 
-        val decodedBytes = Base64.decode(base64Image, android.util.Base64.DEFAULT)
+        val decodedBytes = Base64.decode(base64Image, Base64.DEFAULT)
 
         val bitmap = android.graphics.BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
         val exif = ExifInterface(photoFile.absolutePath)
@@ -149,9 +150,12 @@ class FrontCameraSetupScreen : AppCompatActivity() {
         editor.apply()
        val base64image = bitmapToBase64(rotatedBitmap!!)
 
-        val intent = Intent(this@FrontCameraSetupScreen, CheckInScreen::class.java)
-       // intent.putExtra("imageOfBitmap",base64image)
-        startActivity(intent)
+        val resultIntent = Intent()
+        resultIntent.putExtra("capturedBitmap", base64image)
+        setResult(Activity.RESULT_OK, resultIntent)
+
+        // Close CameraActivity
+        finish()
     }
 
     private fun encodeImageToBase64(imageFile: File): String {
