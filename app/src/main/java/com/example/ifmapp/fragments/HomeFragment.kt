@@ -42,7 +42,10 @@ import com.example.ifmapp.modelclasses.geomappedsite_model.GeoMappedResponse
 import com.example.ifmapp.modelclasses.loginby_pin.LoginByPINResponse
 import com.example.ifmapp.modelclasses.loginby_pin.LoginByPINResponseItem
 import com.example.ifmapp.modelclasses.shift_selection_model.ShiftSelectionResponse
+import com.example.ifmapp.modelclasses.usermodel_sharedpreference.UserListModel
 import com.example.ifmapp.shared_preference.MyPreferences
+import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
+import com.example.ifmapp.shared_preference.shared_preference_models.CurrentUserShiftsDetails
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -54,18 +57,16 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class HomeFragment(private var context: Context, private var otp: String) : Fragment(),
+class HomeFragment(
+    private var context: Context,
+    private var otp: String, private var mobileNumber: String,
+    private var empNumber: String
+) : Fragment(),
     AddAccountAdapter.OnClickedInterface {
     private lateinit var binding: FragmentHomeBinding
-    private lateinit var retrofitInstance: ApiInterface
-    private lateinit var employeeDB: EmployeeDB
-    private lateinit var otpLiveData: MutableLiveData<String>
+    private var retrofitInstance: ApiInterface = RetrofitInstance.apiInstance
     private lateinit var addAccountAdapter: AddAccountAdapter
-    private var mobileNumber: String? = null
-    private var empNumber: String? = null
-    private lateinit var myPreferences: MyPreferences
-    private lateinit var employeePinDao: EmployeePinDao
-    private lateinit var retrofitInstace: ApiInterface
+
     private lateinit var shiftList: ArrayList<String>
     private lateinit var shiftTimingList: ArrayList<String>
     private lateinit var siteList: ArrayList<String>
@@ -79,25 +80,22 @@ class HomeFragment(private var context: Context, private var otp: String) : Frag
     private var mLongitude: String? = null
     private var mAltitude: String? = null
     private lateinit var hashMap: HashMap<String, String>
+    private var currentUser: UserListModel? = null
 
-    private lateinit var sharedPref2: SharedPreferences
-    private val sharedPrefFile2 = "com.example.myapp.PREFERENCE_FILE_KEY2"
-    private lateinit var sharedPref3: SharedPreferences
-    private val sharedPrefFile3= "com.example.myapp.PREFERENCE_FILE_KEY3"
+    private var empDesignation: String? = null
+
+    private var empName: String? = null
+
+    private var locationAutoId: String? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        sharedPref2 = requireActivity().getSharedPreferences(sharedPrefFile2, Context.MODE_PRIVATE)
-        sharedPref3 = requireActivity().getSharedPreferences(sharedPrefFile3, Context.MODE_PRIVATE)
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
-        Log.d("TAGGGGGGGGGG", "onCreateView: $otp is the otppppppppp")
-        employeePinDao = EmployeeDB.getInstance(requireContext()).employeePinDao()
-        retrofitInstance = RetrofitInstance.apiInstance
-        employeeDB = EmployeeDB.getInstance(context)
+
         addAccountAdapter = AddAccountAdapter(requireContext(), this)
-        otpLiveData = MutableLiveData()
-        myPreferences = MyPreferences(requireContext())
         hashMap = HashMap()
+
     }
 
     override fun onCreateView(
@@ -107,10 +105,15 @@ class HomeFragment(private var context: Context, private var otp: String) : Frag
 
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false)
+
+        currentUser = SaveUsersInSharedPreference.getUserByPin(requireContext(), otp)
+        getCurrentEmployee(otp, mobileNumber)
+
+        binding.userName.text = currentUser?.userName
+
         createLocationRequest()
         binding.checkoutBtn.isEnabled = false
-        employeePinDao = EmployeeDB.getInstance(requireContext()).employeePinDao()
-        retrofitInstace = RetrofitInstance.apiInstance
+        retrofitInstance = RetrofitInstance.apiInstance
 
         siteList = ArrayList()
         shiftList = ArrayList()
@@ -124,19 +127,25 @@ class HomeFragment(private var context: Context, private var otp: String) : Frag
             binding.checkInBtn.setTextColor(resources.getColor(R.color.white))
             binding.checkInBtn.setBackgroundResource(R.drawable.button_back)
 
-            val intent = Intent(requireContext(), CheckInScreen::class.java)
-            intent.putExtra("mPIN", otp)
-            intent.putExtra("siteSelect", siteSelect)
-            intent.putExtra("shiftSelect", shiftSelect)
-            intent.putExtra("empNumber", empNumber)
-            val editor = sharedPref2.edit()
-            editor.putString("mPIN", otp)
-            editor.putString("siteSelect", siteSelect)
-            editor.putString("shiftSelect", shiftSelect)
-            editor.putString("empNumber", empNumber)
+            val currentUserShiftList = ArrayList<CurrentUserShiftsDetails>()
 
-            editor.apply()
-            startActivity(intent)
+            val currentUserShift = CurrentUserShiftsDetails(
+                shiftSelect.toString(),
+                siteSelect.toString(),
+                otp,
+                empNumber,empDesignation.toString(),empName.toString(),locationAutoId.toString()
+            )
+            currentUserShiftList.add(currentUserShift)
+            SaveUsersInSharedPreference.saveCurrentUserShifts(
+                requireContext(),
+                currentUserShiftList
+            )
+
+            Log.d(
+                "TAGGGGGG",
+                "onCreateView: 1111111 saved successfullly"
+            )
+            startActivity(Intent(requireContext(), CheckInScreen::class.java))
         }
 
 
@@ -154,31 +163,9 @@ class HomeFragment(private var context: Context, private var otp: String) : Frag
     }
 
 
-    private fun getEmployee(otp: String) {
-
-        employeePinDao.getcurrentEmployeeDetails(otp)
-            .observe(requireActivity()) {
-                if (it != null) {
-                    Log.d("TAGGGGGG", "onTextChanged:it is not nulllll")
-
-                    binding.userName.text = it.EmpName
-                    binding.designation.text = it.Designation
-                    empNumber = it.EmpNumber
-
-                    if (mLatitude != null && mLongitude != null) {
-                        shiftSelections(it.LocationAutoID)
-
-                        Log.d("TAGG", "getEmployee: aaaaaaaaaaaaaa")
-                    }
-                } else {
-                    Log.d("TAGG", "getEmployee: ")
-                }
-            }
-    }
-
     private fun shiftSelections(locationAutoid: String) {
         Log.d("TAGGGGGGGGGGGGG", "shiftSelections: $locationAutoid is location id")
-        retrofitInstace.shiftSelectionApi("sams", locationAutoid)
+        retrofitInstance.shiftSelectionApi("sams", locationAutoid)
             .enqueue(object : Callback<ShiftSelectionResponse?> {
                 override fun onResponse(
                     call: Call<ShiftSelectionResponse?>,
@@ -186,7 +173,7 @@ class HomeFragment(private var context: Context, private var otp: String) : Frag
                 ) {
                     if (response.isSuccessful) {
                         Log.d("TAGGGGGGG", "onResponse: responseeeee is success")
-                        var size = response.body()?.size?.minus(1)
+                        val size = response.body()?.size?.minus(1)
                         for (i in 0..size!!) {
                             shiftList.add(response.body()!!.get(i).ShiftCode)
                             shiftTimingList.add(response.body()!!.get(i).ShiftDetails)
@@ -194,7 +181,7 @@ class HomeFragment(private var context: Context, private var otp: String) : Frag
                             val value = response.body()!!.get(i).ShiftDetails
                             hashMap.put(key, value)
 
-                            retrofitInstace.getGeoMappedSites(
+                            retrofitInstance.getGeoMappedSites(
                                 "sams", locationAutoid, "28.4062994",
                                 "77.0685759"
                             ).enqueue(object : Callback<GeoMappedResponse?> {
@@ -233,12 +220,10 @@ class HomeFragment(private var context: Context, private var otp: String) : Frag
 
 
                     } else {
-                        Log.d("TAGGGGGG", "onResponse: not getting successful response")
                     }
                 }
 
                 override fun onFailure(call: Call<ShiftSelectionResponse?>, t: Throwable) {
-                    Log.d("TAGGGGGG", "onFailure: response failed")
 
                 }
             })
@@ -300,18 +285,6 @@ class HomeFragment(private var context: Context, private var otp: String) : Frag
 
                     val shiftTiming = hashMap[selectedItem]
 
-                    // shift code = selected item
-                    // shift timing = shiftTiming
-
-                    CoroutineScope(Dispatchers.IO).launch {
-                        employeePinDao.insertShiftTiming(
-                            ShiftTimingDetails(
-                                id = 1,
-                                shiftCode = selectedItem,
-                                shiftTiming = shiftTiming
-                            )
-                        )
-                    }
 
                 }
 
@@ -349,30 +322,22 @@ class HomeFragment(private var context: Context, private var otp: String) : Frag
             }
         }
     }
+
     @SuppressLint("MissingPermission")
     private fun getLastLocation() {
-        Log.d("TAGGGG", "getLastLocation: i got location")
         fusedLocationProviderClient?.lastLocation
             ?.addOnSuccessListener { location: Location? ->
                 // Got last known location
                 location?.let {
                     mLatitude = location.latitude.toString()
                     mLongitude = location.longitude.toString()
-                    Log.d("TAGGGGGGG", "getLastLocation: $mLatitude $mLongitude asasas")
+                    mAltitude = location.altitude.toString()
 
-                    val editor = sharedPref3.edit()
-                    editor.putString("mLatitude", mLatitude)
-                    editor.putString("mLongitude", mLongitude)
-                    editor.apply()
-                    if (otp.isNotEmpty()) {
-
-                        getEmployee(otp)
-
-                    }
                 }
             }
 
     }
+
     override fun onDestroy() {
         super.onDestroy()
         removeLocationUpdates()
@@ -382,7 +347,36 @@ class HomeFragment(private var context: Context, private var otp: String) : Frag
 
 
     override fun onclick(employeeModel: LoginByPINResponseItem, position: Int) {
-        TODO("Not yet implemented")
+
+    }
+
+    private fun getCurrentEmployee(otp: String, mobileNumber: String) {
+        retrofitInstance.loginByPIN("sams", mobileNumber, otp)
+            .enqueue(object : Callback<LoginByPINResponse?> {
+                override fun onResponse(
+                    call: Call<LoginByPINResponse?>,
+                    response: Response<LoginByPINResponse?>
+                ) {
+                    if (response.isSuccessful) {
+                        if (response.body()?.get(0)?.MessageID.toString().toInt() == 1) {
+
+                            locationAutoId = response.body()?.get(0)?.LocationAutoID
+                            binding.userName.text = response.body()?.get(0)?.EmpName
+                            binding.designation.text = response.body()?.get(0)?.Designation
+
+                            empDesignation = response.body()?.get(0)?.Designation
+                            empName = response.body()?.get(0)?.EmpName
+                            shiftSelections(locationAutoId.toString())
+                        }
+                    } else {
+                        Log.d("TAGGGGGG", "onResponse: response id not successful")
+                    }
+                }
+
+                override fun onFailure(call: Call<LoginByPINResponse?>, t: Throwable) {
+
+                }
+            })
     }
 
 

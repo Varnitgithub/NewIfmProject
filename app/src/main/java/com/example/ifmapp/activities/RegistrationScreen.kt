@@ -14,22 +14,21 @@ import com.example.ifmapp.R
 import com.example.ifmapp.checked
 import com.example.ifmapp.databasedb.EmployeeDB
 import com.example.ifmapp.databasedb.EmployeePinDao
+import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
 
 class RegistrationScreen : AppCompatActivity() {
-    private lateinit var employeePinDao: EmployeePinDao
     private var LOCATION_PERMISSION_REQUEST_CODE = 111
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        employeePinDao = EmployeeDB.getInstance(this).employeePinDao()
-        setContentView(R.layout.activity_registration_screen)
         if (!checked.isChecked) {
-            checked.isChecked = true
-            val newRegistration: Button = findViewById(R.id.new_Registration)
-            val alreadyRegistered: Button = findViewById(R.id.already_Registered)
+       checkDatabaseUsers()
+        }
+        setContentView(R.layout.activity_registration_screen)
 
-
+        val newRegistration: Button = findViewById(R.id.new_Registration)
+        val alreadyRegistered: Button = findViewById(R.id.already_Registered)
             if (checkPermission()) {
-                checkReceiverData()
+
             } else {
                 requestPermission()
             }
@@ -46,14 +45,10 @@ class RegistrationScreen : AppCompatActivity() {
             }
         }
 
-
-    }
-
-    private fun checkReceiverData() {
-        employeePinDao.getAllEmployeeDetails().observe(this@RegistrationScreen) {
-            if (it.isNotEmpty()) {
-                startActivity(Intent(this@RegistrationScreen, DashBoardScreen::class.java))
-            }
+    private fun checkDatabaseUsers() {
+      val allUsers = SaveUsersInSharedPreference.getList(this)
+        if (allUsers.isNotEmpty() ){
+            startActivity(Intent(this@RegistrationScreen,DashBoardScreen::class.java))
         }
     }
 
@@ -89,11 +84,11 @@ class RegistrationScreen : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                checkReceiverData()
+
             } else {
                 Toast.makeText(
                     this,
-                    "mock location is enabled please disable it",
+                    "please allow for location",
                     Toast.LENGTH_SHORT
                 ).show()
             }

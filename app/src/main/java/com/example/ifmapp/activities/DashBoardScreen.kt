@@ -29,6 +29,7 @@ import com.example.ifmapp.MainActivity
 import com.example.ifmapp.R
 import com.example.ifmapp.adapters.AddAccountAdapter
 import com.example.ifmapp.apiinterface.ApiInterface
+import com.example.ifmapp.checked
 import com.example.ifmapp.databasedb.EmployeeDB
 import com.example.ifmapp.databasedb.EmployeePinDao
 import com.example.ifmapp.databinding.ActivityDashBoardScreenBinding
@@ -38,35 +39,43 @@ import com.example.ifmapp.fragments.MenuFragment
 import com.example.ifmapp.fragments.MustersFragment
 import com.example.ifmapp.modelclasses.AddAccountModel
 import com.example.ifmapp.modelclasses.loginby_pin.LoginByPINResponseItem
+import com.example.ifmapp.modelclasses.usermodel_sharedpreference.UserListModel
 import com.example.ifmapp.services.LocationService
+import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
 import com.otpview.OTPListener
 import com.otpview.OTPTextView
 
-class DashBoardScreen : AppCompatActivity() ,AddAccountAdapter.OnClickedInterface{
+class DashBoardScreen : AppCompatActivity(), AddAccountAdapter.OnClickedInterface {
     private lateinit var binding: ActivityDashBoardScreenBinding
-    private val LOCATION_PERMISSION_REQUEST_CODE =111
-    private lateinit var employeePinDao: EmployeePinDao
-    private lateinit var otpLiveData: MutableLiveData<String>
-    var otp: String? = null
-    private lateinit var otpTextView : OTPTextView
+    private val LOCATION_PERMISSION_REQUEST_CODE = 111
+    private lateinit var otpTextView: OTPTextView
 
     private lateinit var addAccountAdapter: AddAccountAdapter
+
+
     private var mobileNumber: String? = null
     private var empNumber: String? = null
-
+    private var empName: String? = null
+    var empPin: String? = null
+    var currentEmployee: UserListModel? = null
+    private lateinit var currentUser: UserListModel
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dash_board_screen)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dash_board_screen)
-        employeePinDao = EmployeeDB.getInstance(this).employeePinDao()
-        val mobileNumber = intent.getStringExtra("usermobileNumber")
-        val pin = intent.getStringExtra("PIN")
-        otpTextView = findViewById(R.id.otp_view) as OTPTextView
-        Log.d("TAGGGGGGGGG", "onCreate: $pin and $mobileNumber")
-        /////////////////////////////////////////////////
-        otpLiveData = MutableLiveData()
+
+        currentUser = SaveUsersInSharedPreference.getList(this)[0]
+
+        binding.userName.text = "Hi, ${currentUser.userName}"
+
+        empNumber = currentUser.empId
+        mobileNumber = currentUser.mobileNumber
+
+        otpTextView = findViewById(R.id.otp_view)
+
+
         addAccountAdapter = AddAccountAdapter(this, this)
         binding.accountsRecyclerView.layoutManager =
             GridLayoutManager(this, 1, GridLayoutManager.HORIZONTAL, true)
@@ -74,94 +83,35 @@ class DashBoardScreen : AppCompatActivity() ,AddAccountAdapter.OnClickedInterfac
         val employeesList = ArrayList<AddAccountModel>()
 
 
-        employeePinDao.getFirstEmployeeDetails().observe(this) { employeeDetails ->
-            employeeDetails?.let {
-                binding.userName.text = "Hi, ${it.EmpName}"
-                empNumber = employeeDetails.EmpNumber
-            }
-        }
-
-        employeePinDao.getAllEmployeeDetails().observe(this) {
-            val list = ArrayList<LoginByPINResponseItem>()
-            list.remove(it[0])
-            addAccountAdapter.updateList(list)
-        }
-
-
-        otpLiveData.observe(this) {
-            otp + it
-            Log.d("TAGGGGGGGGGGG", "onCreateView: pinnnn $otp")
-            if (otp?.length == 4) {
-
-//
-            }
-        }
-
-
-
-
-
-
-
         binding.forgotPin.setOnClickListener {
             startActivity(Intent(this, GnereratePinCodeScreen::class.java))
         }
 
         binding.addAccount.setOnClickListener {
+            checked.isChecked = true
             startActivity(Intent(this, RegistrationScreen::class.java))
 
         }
 
-//        binding.forgotPin.paintFlags = binding.forgotPin.paintFlags or Paint.UNDERLINE_TEXT_FLAG
-//        val editTexts = listOf(binding.otp1, binding.otp2, binding.otp3, binding.otp4)
         otpTextView.otpListener = object : OTPListener {
             override fun onInteractionListener() {
 
             }
 
             override fun onOTPComplete(otp: String) {
-                employeePinDao.getcurrentEmployeeDetails(otp)
-                    .observe(this@DashBoardScreen) {
-                        if (it != null) {
-                            if ( it.MessageID.toInt() == 1){
-                                if (checkPermission()){
-                                    Log.d("TAGGGGGG", "onTextChanged:it is not null")
-                                    val intent =
-                                        Intent(this@DashBoardScreen, MainActivity::class.java)
 
-                                    intent.putExtra("mPIN", otpTextView.otp)
-                                    intent.putExtra("empNumber", empNumber)
-                                    startActivity(intent)
-                                }else{
-                                    requestPermission()
-                                }
+                val intent = Intent(this@DashBoardScreen, MainActivity::class.java)
+                intent.putExtra("mPIN", otp)
+                intent.putExtra("mobileNumber", mobileNumber)
+                intent.putExtra("empId", empNumber)
+                startActivity(intent)
 
-
-                            }
-                            else {
-                                Toast.makeText(
-                                    this@DashBoardScreen,
-                                    "You entered wrong pin!",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-
-                            }
-                            }else {
-                            Toast.makeText(
-                                this@DashBoardScreen,
-                                "You entered wrong pin!",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            otpTextView.setOTP("")
-
-                        }
-                    }
             }
         }
     }
 
-    override fun onPause() {
-        super.onPause()
+    override fun onStop() {
+        super.onStop()
         otpTextView.setOTP("")
     }
 
@@ -220,34 +170,23 @@ class DashBoardScreen : AppCompatActivity() ,AddAccountAdapter.OnClickedInterfac
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Log.d("TAGGGGGG", "onTextChanged:it is not null")
-                val intent =
-                    Intent(this@DashBoardScreen, MainActivity::class.java)
-
-                intent.putExtra("mPIN", otpTextView.otp)
-                intent.putExtra("empNumber", empNumber)
-                startActivity(intent)
-                } else {
-                    Toast.makeText(
-                        this,
-                        "mock location is enabled please disable it",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-                //Permission Granted
-
-
+            } else {
+                requestPermission()
             }
+            //Permission Granted
+
+
         }
     }
+}
 
-  /*//  private fun checkMockLocation(): Boolean {
-        // Check if mock locations are enabled
-        return Settings.Secure.getString(
-            contentResolver,
-            Settings.Secure.ALLOW_MOCK_LOCATION
-        ) != "0"
-    }
+/*//  private fun checkMockLocation(): Boolean {
+      // Check if mock locations are enabled
+      return Settings.Secure.getString(
+          contentResolver,
+          Settings.Secure.ALLOW_MOCK_LOCATION
+      ) != "0"
+  }
 }*/
 
 

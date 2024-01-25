@@ -17,6 +17,8 @@ import com.example.ifmapp.databasedb.EmployeePinDao
 import com.example.ifmapp.databinding.ActivityLoginByPinMobileScreenBinding
 import com.example.ifmapp.modelclasses.loginby_pin.LoginByPINResponse
 import com.example.ifmapp.modelclasses.loginby_pin.LoginByPINResponseItem
+import com.example.ifmapp.modelclasses.usermodel_sharedpreference.UserListModel
+import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -46,15 +48,15 @@ class LoginByPinMobileScreen : AppCompatActivity() {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-             if (binding.employeeMobileEdt.text.toString().length==10&&s?.length==4){
+                if (binding.employeeMobileEdt.text.toString().length == 10 && s?.length == 4) {
 
-                 binding.btnContinue.setTextColor(resources.getColor(R.color.white))
-                 binding.btnContinue.setBackgroundResource(R.drawable.button_back)
+                    binding.btnContinue.setTextColor(resources.getColor(R.color.white))
+                    binding.btnContinue.setBackgroundResource(R.drawable.button_back)
 
-             }else{
-                 binding.btnContinue.setTextColor(resources.getColor(R.color.check_btn))
-                 binding.btnContinue.setBackgroundResource(R.drawable.button_backwhite)
-             }
+                } else {
+                    binding.btnContinue.setTextColor(resources.getColor(R.color.check_btn))
+                    binding.btnContinue.setBackgroundResource(R.drawable.button_backwhite)
+                }
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -80,49 +82,29 @@ class LoginByPinMobileScreen : AppCompatActivity() {
                         call: Call<LoginByPINResponse?>,
                         response: Response<LoginByPINResponse?>
                     ) {
-                        if (response.isSuccessful&& response.body()?.get(0)?.MessageID?.toInt()==1) {
-                            Log.d(
-                                "TAGGGGGGGGGGG",
-                                "onResponse: response getting successfully in login mob screen"
+                        if (response.isSuccessful && response.body()
+                                ?.get(0)?.MessageID?.toInt() == 1
+                        ) {
+                            val userPin =binding.employeepinEdt.text.toString().trim()
+                            val usersList =
+                                UserListModel(
+                                    response.body()!![0].EmpName,
+                                    userPin,
+                                    response.body()!![0].EmpNumber,
+                                    binding.employeeMobileEdt.text.toString().trim()
+
                             )
 
-                            val emp: LoginByPINResponseItem? = response.body()?.get(0)
-                            val loginByPINResponseItem =
-                                LoginByPINResponseItem(
-                                    Designation = emp?.Designation ?: "",
-                                    EmpName = emp?.EmpName ?: "",
-                                    EmpNumber = emp?.EmpNumber ?: "",
-                                    LocationAutoID = emp?.LocationAutoID ?: "",
-                                    MessageID = emp?.MessageID ?: "",
-                                    MessageString = emp?.MessageString ?: "",
-                                    pin = binding.employeepinEdt.text.toString().trim(),
-                                    mobileNumber = binding.employeeMobileEdt.text.toString().trim()
-                                )
-                            CoroutineScope(Dispatchers.IO).launch {
-                                employeePinDao.insertEmployeeDetails(loginByPINResponseItem)
-                                Log.d(
-                                    "TAGGGGGGGGGGG",
-                                    "onResponse: data saved successfully successfully in login mob screen"
-                                )
-                                val intent =
-                                    Intent(this@LoginByPinMobileScreen, DashBoardScreen::class.java)
+                            SaveUsersInSharedPreference.addUserIfNotExists(this@LoginByPinMobileScreen,usersList)
 
-                                intent.putExtra(
-                                    "mPIN",
-                                    binding.employeepinEdt.text.toString().trim()
-                                )
-                                intent.putExtra(
-                                    "empNumber",
-                                    binding.employeeMobileEdt.text.toString().trim()
-                                )
-                                startActivity(intent)
+                            startActivity(Intent(this@LoginByPinMobileScreen,DashBoardScreen::class.java))
 
-                            }
-
-                        }
-
-                        else {
-                            Toast.makeText(this@LoginByPinMobileScreen, "you does not have valid pin", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(
+                                this@LoginByPinMobileScreen,
+                                "you does not have valid pin",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
 

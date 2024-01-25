@@ -11,7 +11,7 @@ class LoginCheckedScreen : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login_checked_screen)
 
-        var loginByPhone: Button = findViewById(R.id.loginByPhoneAndPin)
+        val loginByPhone: Button = findViewById(R.id.loginByPhoneAndPin)
         var loginByCompanyCode: Button = findViewById(R.id.loginByCompanyCode)
 
         loginByPhone.setOnClickListener {

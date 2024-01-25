@@ -52,11 +52,7 @@
             android:exported="true"
             android:windowSoftInputMode="adjustResize" >
 
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".activities.LoginByPinMobileScreen"
@@ -109,7 +105,14 @@
         <activity
             android:name=".activities.CheckInScreen"
             android:exported="true"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustResize" >
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <!--
 <activity
             android:name=".activities.CheckInScreen"

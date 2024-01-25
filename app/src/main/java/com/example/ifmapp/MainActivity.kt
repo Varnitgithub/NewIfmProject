@@ -45,42 +45,36 @@ import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: MainActivityBinding
-    private lateinit var employeePinDao: EmployeePinDao
-    private var otp: String? = null
-    private lateinit var retrofitInstace: ApiInterface
-    private lateinit var shiftList: ArrayList<String>
-    private lateinit var shiftTimingList: ArrayList<String>
-    private lateinit var siteList: ArrayList<String>
-    private var shiftSelect: String? = null
-    private var shiftSelectTiming: String? = null
-    private var siteSelect: String? = null
-    private var empNumber: String? = null
-    private var fusedLocationProviderClient: FusedLocationProviderClient? = null
-    private var locationCallback: LocationCallback? = null
-    private var locationRequest: LocationRequest? = null
-    private var mLatitude: String? = null
-    private var mLongitude: String? = null
-    private var mAltitude: String? = null
+
     private lateinit var hashMap: HashMap<String, String>
     private lateinit var homeFragment: HomeFragment
     private lateinit var mustersFragment: MustersFragment
     private lateinit var docsfragment: DocsFragment
     private lateinit var menuFragment: MenuFragment
 
+    private var otp: String? = null
+
+    private var mobileNumber: String? = null
+
+    private var empNumber: String? = null
+
+    private var locationAutoId: String? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         otp = intent.getStringExtra("mPIN")
-
+        mobileNumber = intent.getStringExtra("mobileNumber")
+        empNumber = intent.getStringExtra("empId")
 
 
 
         binding = DataBindingUtil.setContentView(this, R.layout.main_activity)
 
 
-        homeFragment = otp?.let { HomeFragment(this, it) }!!
+        homeFragment = HomeFragment(this, otp.toString(), mobileNumber.toString(),empNumber.toString())
         val bundle = Bundle()
-        bundle.putString("mPin", otp)
+        bundle.putString("mPIN", otp)
         homeFragment.arguments = bundle
         addFragment(homeFragment)
 
@@ -128,4 +122,5 @@ class MainActivity : AppCompatActivity() {
             .commit()
 
     }
+
 }

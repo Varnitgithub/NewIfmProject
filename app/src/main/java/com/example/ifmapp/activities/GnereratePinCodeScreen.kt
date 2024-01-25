@@ -18,7 +18,9 @@ import com.example.ifmapp.databasedb.EmployeePinDao
 import com.example.ifmapp.databinding.ActivityGnereratePinCodeScreenBinding
 import com.example.ifmapp.modelclasses.loginby_pin.LoginByPINResponse
 import com.example.ifmapp.modelclasses.loginby_pin.LoginByPINResponseItem
+import com.example.ifmapp.modelclasses.usermodel_sharedpreference.UserListModel
 import com.example.ifmapp.modelclasses.verifymobile.VerifyOtpResponse
+import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -102,24 +104,22 @@ class GnereratePinCodeScreen : AppCompatActivity() {
                                 call: Call<LoginByPINResponse?>,
                                 response: Response<LoginByPINResponse?>
                             ) {
-                                if (response.isSuccessful&&response.body()!=null) {
-                                    CoroutineScope(Dispatchers.IO).launch {
+                                if (response.isSuccessful && response.body() != null) {
 
-                                        val employeeDetails = LoginByPINResponseItem(
-                                            Designation = response.body()!![0].Designation,
-                                            EmpName = response.body()!![0].EmpName,
-                                            EmpNumber = response.body()!![0].EmpNumber,
-                                            LocationAutoID = response.body()!![0].LocationAutoID,
-                                            MessageID = response.body()!![0].MessageID,
-                                            MessageString = response.body()!![0].MessageString,
-                                            pin =  binding.edtEnterPinCode.text.toString().trim(),
-                                            mobileNumber = mobileNumber?:"",
-                                        )
-                                        employeePinDao.insertEmployeeDetails(
-                                            employeeDetails
-                                        )
+                                    val user = UserListModel(
+                                        response.body()?.get(0)?.EmpName.toString(),
+                                        binding.edtEnterPinCode.text.toString().trim(),
+                                        response.body()?.get(0)?.EmpNumber.toString(),
+                                        mobileNumber.toString()
+                                    )
 
-                                    }
+                                    SaveUsersInSharedPreference.addUserIfNotExists(
+                                        this@GnereratePinCodeScreen,
+                                        user
+                                    )
+                                    startActivity(Intent(this@GnereratePinCodeScreen,DashBoardScreen::class.java))
+
+
                                     Log.d(
                                         "TAGGGGGG",
                                         "onResponse: data called and saved successful"

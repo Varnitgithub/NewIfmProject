@@ -59,7 +59,7 @@
                         android:layout_gravity="center"
                         android:layout_weight="1"
                         android:fontFamily="@font/roboto"
-                        android:text="Cameron Williamson"
+                        tools:text="Cameron Williamson"
                         android:textColor="@color/black"
                         android:textSize="15sp"
 
@@ -72,7 +72,7 @@
                         android:layout_gravity="center"
                         android:layout_weight="1"
                         android:fontFamily="@font/roboto"
-                        android:text="Security Guard"
+                        tools:text="Security Guard"
                         android:textColor="#5E5D5D"
 
                         android:textSize="15sp" />
@@ -213,8 +213,8 @@
                                 android:layout_marginEnd="10dp"
                                 android:textAllCaps="false"
                                 android:layout_marginBottom="3dp"
-                                android:textColor="#ffffff"
-                                android:background="@drawable/button_back"
+                                android:textColor="#6C6B6B"
+                                android:background="@drawable/button_backwhite"
 
                                 android:layout_weight="1" />
 

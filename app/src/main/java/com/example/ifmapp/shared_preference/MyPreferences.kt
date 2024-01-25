@@ -8,11 +8,12 @@ class MyPreferences(context: Context) {
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
 
-    fun saveUserData(name: String, mobileNumber: String, pin: String) {
+    fun saveUserData(name: String, mobileNumber: String, pin: String,locationAutoId:String) {
         with(sharedPreferences.edit()) {
             putString("NAME", name)
             putString("MOBILE_NUMBER", mobileNumber)
             putString("PIN", pin)
+            putString("LOCATION_AUTOID", pin)
             apply()
         }
 
