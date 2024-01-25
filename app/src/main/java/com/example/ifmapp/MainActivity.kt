@@ -80,7 +80,7 @@ class MainActivity : AppCompatActivity() {
 
         homeFragment = otp?.let { HomeFragment(this, it) }!!
         val bundle = Bundle()
-        bundle.putString("key", otp)
+        bundle.putString("mPin", otp)
         homeFragment.arguments = bundle
         addFragment(homeFragment)
 

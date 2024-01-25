@@ -64,14 +64,11 @@ class SignUpScreen : AppCompatActivity() {
         }
 
         otpLiveData.observe(this) {
-            if (binding.otp4.text.toString().isNotEmpty()) {
                 binding.btnContinue.setBackgroundResource(R.drawable.button_back)
                 binding.btnContinue.setTextColor(resources.getColor(R.color.white))
-            } else {
                 binding.btnContinue.setBackgroundResource(R.drawable.site_selection_back)
                 binding.btnContinue.setTextColor(resources.getColor(R.color.btn_continue))
 
-            }
         }
 
         binding.employeeidEdt.addTextChangedListener(object : TextWatcher {
@@ -86,42 +83,13 @@ class SignUpScreen : AppCompatActivity() {
             }
         })
 
-        binding.otp4.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                val currentLength = s?.length ?: 0
-                otpLiveData.postValue(currentLength)
-            }
 
-            override fun afterTextChanged(s: Editable?) {
-            }
-        })
-
-        setupOtpEditTextListeners()
     }
 
-    private fun setupOtpEditTextListeners() {
-        binding.otp1.addTextChangedListener(createOtpTextWatcher(binding.otp2))
-        binding.otp2.addTextChangedListener(createOtpTextWatcher(binding.otp3))
-        binding.otp3.addTextChangedListener(createOtpTextWatcher(binding.otp4))
-        binding.otp4.addTextChangedListener(createOtpTextWatcher(null))
-    }
 
-    private fun createOtpTextWatcher(nextEditText: EditText?): TextWatcher {
-        return object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (s?.length == 1) {
-                    nextEditText?.requestFocus()
-                }
-            }
 
-            override fun afterTextChanged(s: Editable?) {}
-        }
-    }
 
 
 

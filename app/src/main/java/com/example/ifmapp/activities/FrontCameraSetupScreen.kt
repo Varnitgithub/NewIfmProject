@@ -1,16 +1,16 @@
 package com.example.ifmapp.activities
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.graphics.Matrix
+import android.media.ExifInterface
 import android.net.Uri
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
-import android.view.GestureDetector
-import android.view.MotionEvent
 import android.view.View
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
@@ -18,31 +18,47 @@ import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
-import androidx.core.net.toFile
+import androidx.databinding.DataBindingUtil
+import com.bumptech.glide.Glide
 import com.example.ifmapp.R
+import com.example.ifmapp.databinding.ActivityFrontCameraSetupScreenBinding
 import java.io.ByteArrayOutputStream
-import java.nio.ByteBuffer
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import java.io.File
+
 class FrontCameraSetupScreen : AppCompatActivity() {
-
-    private var cameraExecutor: ExecutorService = Executors.newSingleThreadExecutor()
-    private lateinit var previewView: PreviewView
+    private lateinit var binding: ActivityFrontCameraSetupScreenBinding
     private lateinit var imageCapture: ImageCapture
-    private lateinit var clickedImage: ImageView
-
+    private var cameraExecutor: ExecutorService = Executors.newSingleThreadExecutor()
+    private lateinit var photoFile: File
+    private val sharedPrefFile = "com.example.myapp.PREFERENCE_FILE_KEY"
+    private lateinit var sharedPref: SharedPreferences
+    private var base64Image: String? = null
+    private var rotatedBitmap: Bitmap? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_front_camera_setup_screen)
+        imageCapture = ImageCapture.Builder().build()
+        sharedPref = getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
 
-        previewView = findViewById(R.id.previewView)
-        clickedImage = findViewById(R.id.clickedImage)
-        clickedImage.visibility = View.GONE
+        //setContentView(R.layout.activity_front_camera_setup_screen)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_front_camera_setup_screen)
+        binding.okBtn.visibility = View.GONE
+
         startCamera()
+        binding.previewView.setOnClickListener {
+            takePhoto()
+        }
+
+
+        binding.okBtn.setOnClickListener {
+        }
     }
+
 
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
@@ -54,27 +70,16 @@ class FrontCameraSetupScreen : AppCompatActivity() {
             val preview = Preview.Builder()
                 .build()
                 .also {
-                    it.setSurfaceProvider(previewView.surfaceProvider)
+                    it.setSurfaceProvider(binding.previewView.surfaceProvider)
                 }
 
             // Set up the image capture use case
-            imageCapture = ImageCapture.Builder().build()
+            imageCapture = ImageCapture.Builder()
+                .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
+                .build()
 
             // Set up the camera selector to use the front camera
             val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
-
-            // Set up tap gesture detection
-            val gestureDetector = GestureDetector(this, object : GestureDetector.SimpleOnGestureListener() {
-                override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
-                    captureImage()
-                    return true
-                }
-            })
-
-            previewView.setOnTouchListener { _, event ->
-                gestureDetector.onTouchEvent(event)
-                true
-            }
 
             try {
                 // Unbind any existing camera use cases before rebinding
@@ -95,60 +100,83 @@ class FrontCameraSetupScreen : AppCompatActivity() {
         }, ContextCompat.getMainExecutor(this))
     }
 
-    private fun captureImage() {
-        val imageCapture = imageCapture
+    private fun takePhoto() {
+        // Create a timestamped file to save the image
+        val photoFileName = "IMG_${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())}"
+        val storageDirectory = getExternalFilesDir(null)
+        photoFile = File.createTempFile(photoFileName, ".jpg", storageDirectory)
 
-        // Create a file to save the image
-        val outputOptions = ImageCapture.OutputFileOptions.Builder(createTempFile()).build()
+        // Create output options object to configure ImageCapture
+        val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
 
+        // Capture the image
         imageCapture.takePicture(
             outputOptions,
             ContextCompat.getMainExecutor(this),
             object : ImageCapture.OnImageSavedCallback {
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                    // Process the saved image
-                    val savedUri = outputFileResults.savedUri
-                    val savedFile = File(savedUri?.toFile()?.path ?: "")
-
-                    // Ensure that the file exists before attempting to decode it
-                    if (savedFile.exists()) {
-                        val imageBitmap = BitmapFactory.decodeFile(savedFile.absolutePath)
-                        val imageString = convertBitmapToString(imageBitmap)
-//previewView.visibility = View.GONE
-//                        clickedImage.visibility = View.VISIBLE
-//
-//                        clickedImage.setImageURI(Uri.parse(imageString))
-                        Log.d("TAGGGGGGGG", "onImageSaved: this is the clicked image ${imageString.length}")
-
-                    val intent = Intent(this@FrontCameraSetupScreen,CheckInScreen::class.java)
-                      //  intent.putExtra("bitmapImage",imageBitmap)
-                        intent.putExtra("stringImage",imageString)
-                        startActivity(intent)
-
-                    // Now 'imageString' contains the string representation of the image
-                    } else {
-                        Toast.makeText(applicationContext, "Image file not found", Toast.LENGTH_SHORT).show()
-                    }
+                    // Image is saved, now process the image
+                    processImage(photoFile)
                 }
 
-
                 override fun onError(exception: ImageCaptureException) {
-                    Toast.makeText(applicationContext, "Image capture failed", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(applicationContext, "Error capturing image", Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
         )
     }
 
-    // Function to convert Bitmap to String (you may need to modify this part)
-    private fun convertBitmapToString(bitmap: Bitmap): String {
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
-        val byteArray: ByteArray = byteArrayOutputStream.toByteArray()
-        return Base64.encodeToString(byteArray, Base64.DEFAULT)
+    private fun processImage(photoFile: File) {
+
+        binding.previewView.visibility = View.GONE
+        binding.imageview.visibility = View.VISIBLE
+        base64Image = encodeImageToBase64(photoFile)
+
+        val decodedBytes = Base64.decode(base64Image, android.util.Base64.DEFAULT)
+
+        val bitmap = android.graphics.BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+        val exif = ExifInterface(photoFile.absolutePath)
+        val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED)
+         rotatedBitmap = rotateBitmap(bitmap, orientation)
+
+        binding.imageview.setImageBitmap(rotatedBitmap)
+      //  Glide.with(this).load(base64Image).into(binding.imageview)
+        val editor = sharedPref.edit()
+        editor.putString("photoInStringUrl", base64Image)
+
+
+        editor.apply()
+       val base64image = bitmapToBase64(rotatedBitmap!!)
+
+        val intent = Intent(this@FrontCameraSetupScreen, CheckInScreen::class.java)
+       // intent.putExtra("imageOfBitmap",base64image)
+        startActivity(intent)
+    }
+
+    private fun encodeImageToBase64(imageFile: File): String {
+        val bytes = imageFile.readBytes()
+        return Base64.encodeToString(bytes, Base64.DEFAULT)
+    }
+    private fun rotateBitmap(bitmap: Bitmap, orientation: Int): Bitmap {
+        val matrix = Matrix()
+        when (orientation) {
+            ExifInterface.ORIENTATION_ROTATE_90 -> matrix.postRotate(90f)
+            ExifInterface.ORIENTATION_ROTATE_180 -> matrix.postRotate(180f)
+            ExifInterface.ORIENTATION_ROTATE_270 -> matrix.postRotate(270f)
+        }
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         cameraExecutor.shutdown()
+    }
+
+    private fun bitmapToBase64(bitmap: Bitmap): String {
+        val byteArrayOutputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+        val byteArray: ByteArray = byteArrayOutputStream.toByteArray()
+        return Base64.encodeToString(byteArray, Base64.DEFAULT)
     }
 }

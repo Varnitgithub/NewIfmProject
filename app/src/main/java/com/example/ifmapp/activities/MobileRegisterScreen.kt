@@ -10,6 +10,7 @@ import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.provider.Settings
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
@@ -418,6 +419,14 @@ class MobileRegisterScreen : AppCompatActivity() {
             LOCATION_PERMISSION_REQUEST_CODE
         )
 
+    }
+
+    private fun checkMockLocation(): Boolean {
+        // Check if mock locations are enabled
+        return Settings.Secure.getString(
+            contentResolver,
+            Settings.Secure.ALLOW_MOCK_LOCATION
+        ) != "0"
     }
 
     //    override fun onRequestPermissionsResult(

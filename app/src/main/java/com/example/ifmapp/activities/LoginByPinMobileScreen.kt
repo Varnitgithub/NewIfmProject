@@ -51,7 +51,6 @@ class LoginByPinMobileScreen : AppCompatActivity() {
                  binding.btnContinue.setTextColor(resources.getColor(R.color.white))
                  binding.btnContinue.setBackgroundResource(R.drawable.button_back)
 
-
              }else{
                  binding.btnContinue.setTextColor(resources.getColor(R.color.check_btn))
                  binding.btnContinue.setBackgroundResource(R.drawable.button_backwhite)

@@ -8,6 +8,7 @@ import android.content.res.ColorStateList
 import android.graphics.Paint
 import android.location.LocationManager
 import android.os.Bundle
+import android.provider.Settings
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
@@ -43,6 +44,7 @@ import com.otpview.OTPTextView
 
 class DashBoardScreen : AppCompatActivity() ,AddAccountAdapter.OnClickedInterface{
     private lateinit var binding: ActivityDashBoardScreenBinding
+    private val LOCATION_PERMISSION_REQUEST_CODE =111
     private lateinit var employeePinDao: EmployeePinDao
     private lateinit var otpLiveData: MutableLiveData<String>
     var otp: String? = null
@@ -122,14 +124,19 @@ class DashBoardScreen : AppCompatActivity() ,AddAccountAdapter.OnClickedInterfac
                     .observe(this@DashBoardScreen) {
                         if (it != null) {
                             if ( it.MessageID.toInt() == 1){
-                                Log.d("TAGGGGGG", "onTextChanged:it is not null")
-                                val intent =
-                                    Intent(this@DashBoardScreen, MainActivity::class.java)
+                                if (checkPermission()){
+                                    Log.d("TAGGGGGG", "onTextChanged:it is not null")
+                                    val intent =
+                                        Intent(this@DashBoardScreen, MainActivity::class.java)
 
-                                intent.putExtra("mPIN", otpTextView.otp)
-                                intent.putExtra("empNumber", empNumber)
-                                startActivity(intent)
-                                otpTextView.setOTP("")
+                                    intent.putExtra("mPIN", otpTextView.otp)
+                                    intent.putExtra("empNumber", empNumber)
+                                    startActivity(intent)
+                                }else{
+                                    requestPermission()
+                                }
+
+
                             }
                             else {
                                 Toast.makeText(
@@ -153,6 +160,10 @@ class DashBoardScreen : AppCompatActivity() ,AddAccountAdapter.OnClickedInterfac
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        otpTextView.setOTP("")
+    }
 
 
     private fun createOtpTextWatcher(nextEditText: EditText?): TextWatcher {
@@ -176,7 +187,68 @@ class DashBoardScreen : AppCompatActivity() ,AddAccountAdapter.OnClickedInterfac
     override fun onclick(employeeModel: LoginByPINResponseItem, position: Int) {
         Log.d("TAGGGGGGGGGGG", "onclick: current user = ${employeeModel.mobileNumber}")
     }
-}
+
+    private fun checkPermission(): Boolean {
+        return ActivityCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun requestPermission() {
+
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ),
+            LOCATION_PERMISSION_REQUEST_CODE
+        )
+
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.d("TAGGGGGG", "onTextChanged:it is not null")
+                val intent =
+                    Intent(this@DashBoardScreen, MainActivity::class.java)
+
+                intent.putExtra("mPIN", otpTextView.otp)
+                intent.putExtra("empNumber", empNumber)
+                startActivity(intent)
+                } else {
+                    Toast.makeText(
+                        this,
+                        "mock location is enabled please disable it",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                //Permission Granted
+
+
+            }
+        }
+    }
+
+  /*//  private fun checkMockLocation(): Boolean {
+        // Check if mock locations are enabled
+        return Settings.Secure.getString(
+            contentResolver,
+            Settings.Secure.ALLOW_MOCK_LOCATION
+        ) != "0"
+    }
+}*/
 
 
 

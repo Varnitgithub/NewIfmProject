@@ -3,6 +3,7 @@ package com.example.ifmapp.fragments
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Paint
 import android.location.Location
 import android.os.Bundle
@@ -53,7 +54,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class HomeFragment(private var context: Context,private var otp:String) : Fragment(),
+class HomeFragment(private var context: Context, private var otp: String) : Fragment(),
     AddAccountAdapter.OnClickedInterface {
     private lateinit var binding: FragmentHomeBinding
     private lateinit var retrofitInstance: ApiInterface
@@ -79,8 +80,15 @@ class HomeFragment(private var context: Context,private var otp:String) : Fragme
     private var mAltitude: String? = null
     private lateinit var hashMap: HashMap<String, String>
 
+    private lateinit var sharedPref2: SharedPreferences
+    private val sharedPrefFile2 = "com.example.myapp.PREFERENCE_FILE_KEY2"
+    private lateinit var sharedPref3: SharedPreferences
+    private val sharedPrefFile3= "com.example.myapp.PREFERENCE_FILE_KEY3"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        sharedPref2 = requireActivity().getSharedPreferences(sharedPrefFile2, Context.MODE_PRIVATE)
+        sharedPref3 = requireActivity().getSharedPreferences(sharedPrefFile3, Context.MODE_PRIVATE)
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
         Log.d("TAGGGGGGGGGG", "onCreateView: $otp is the otppppppppp")
         employeePinDao = EmployeeDB.getInstance(requireContext()).employeePinDao()
@@ -89,7 +97,7 @@ class HomeFragment(private var context: Context,private var otp:String) : Fragme
         addAccountAdapter = AddAccountAdapter(requireContext(), this)
         otpLiveData = MutableLiveData()
         myPreferences = MyPreferences(requireContext())
-    hashMap = HashMap()
+        hashMap = HashMap()
     }
 
     override fun onCreateView(
@@ -99,7 +107,7 @@ class HomeFragment(private var context: Context,private var otp:String) : Fragme
 
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false)
-
+        createLocationRequest()
         binding.checkoutBtn.isEnabled = false
         employeePinDao = EmployeeDB.getInstance(requireContext()).employeePinDao()
         retrofitInstace = RetrofitInstance.apiInstance
@@ -108,7 +116,7 @@ class HomeFragment(private var context: Context,private var otp:String) : Fragme
         shiftList = ArrayList()
         shiftTimingList = ArrayList()
 
-getLastLocation()
+        getLastLocation()
 
         binding.checkInBtn.setOnClickListener {
             binding.checkoutBtn.setTextColor(resources.getColor(R.color.check_btn))
@@ -121,9 +129,16 @@ getLastLocation()
             intent.putExtra("siteSelect", siteSelect)
             intent.putExtra("shiftSelect", shiftSelect)
             intent.putExtra("empNumber", empNumber)
+            val editor = sharedPref2.edit()
+            editor.putString("mPIN", otp)
+            editor.putString("siteSelect", siteSelect)
+            editor.putString("shiftSelect", shiftSelect)
+            editor.putString("empNumber", empNumber)
+
+            editor.apply()
             startActivity(intent)
         }
-        // createLocationRequest()
+
 
         binding.checkoutBtn.setOnClickListener {
             binding.checkoutBtn.isEnabled = false
@@ -135,9 +150,6 @@ getLastLocation()
             startActivity(Intent(requireContext(), CheckInScreen::class.java))
 
         }
-
-
-
         return binding.root
     }
 
@@ -155,6 +167,8 @@ getLastLocation()
 
                     if (mLatitude != null && mLongitude != null) {
                         shiftSelections(it.LocationAutoID)
+
+                        Log.d("TAGG", "getEmployee: aaaaaaaaaaaaaa")
                     }
                 } else {
                     Log.d("TAGG", "getEmployee: ")
@@ -292,7 +306,7 @@ getLastLocation()
                     CoroutineScope(Dispatchers.IO).launch {
                         employeePinDao.insertShiftTiming(
                             ShiftTimingDetails(
-                                id=1,
+                                id = 1,
                                 shiftCode = selectedItem,
                                 shiftTiming = shiftTiming
                             )
@@ -334,17 +348,10 @@ getLastLocation()
                 fusedLocationProviderClient?.removeLocationUpdates(it)
             }
         }
-
     }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        removeLocationUpdates()
-    }
-
     @SuppressLint("MissingPermission")
     private fun getLastLocation() {
-
+        Log.d("TAGGGG", "getLastLocation: i got location")
         fusedLocationProviderClient?.lastLocation
             ?.addOnSuccessListener { location: Location? ->
                 // Got last known location
@@ -352,15 +359,27 @@ getLastLocation()
                     mLatitude = location.latitude.toString()
                     mLongitude = location.longitude.toString()
                     Log.d("TAGGGGGGG", "getLastLocation: $mLatitude $mLongitude asasas")
-                    if (otp.toString().isNotEmpty()) {
 
-                        otp?.let { getEmployee(it) }
+                    val editor = sharedPref3.edit()
+                    editor.putString("mLatitude", mLatitude)
+                    editor.putString("mLongitude", mLongitude)
+                    editor.apply()
+                    if (otp.isNotEmpty()) {
+
+                        getEmployee(otp)
 
                     }
                 }
             }
 
     }
+    override fun onDestroy() {
+        super.onDestroy()
+        removeLocationUpdates()
+    }
+
+    @SuppressLint("MissingPermission")
+
 
     override fun onclick(employeeModel: LoginByPINResponseItem, position: Int) {
         TODO("Not yet implemented")

@@ -14,7 +14,6 @@ import com.example.ifmapp.R
 import com.example.ifmapp.RetrofitInstance
 import com.example.ifmapp.apiinterface.ApiInterface
 import com.example.ifmapp.databasedb.EmployeeDB
-import com.example.ifmapp.databasedb.EmployeePin
 import com.example.ifmapp.databasedb.EmployeePinDao
 import com.example.ifmapp.databinding.ActivityGnereratePinCodeScreenBinding
 import com.example.ifmapp.modelclasses.loginby_pin.LoginByPINResponse
