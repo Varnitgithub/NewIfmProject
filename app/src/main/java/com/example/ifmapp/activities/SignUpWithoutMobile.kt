@@ -33,7 +33,7 @@ class SignUpWithoutMobile : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_sign_up_without_mobile)
         retrofitInstance = RetrofitInstance.apiInstance
 
-
+        binding.btnGenerate.isEnabled = false
 
 
         binding.btnGenerate.setOnClickListener {
@@ -68,8 +68,8 @@ class SignUpWithoutMobile : AppCompatActivity() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
 
-
-                if (binding.employeepinEdt.text.toString().length == 4) {
+                Log.d("TAGGGGGGGGGG", "onTextChanged: onChangeee")
+                if (binding.employeeidEdt.text.toString().length == 6) {
                     validateEmployeeId(binding.employeeidEdt.text.toString().trim())
                 }
 
@@ -86,6 +86,7 @@ class SignUpWithoutMobile : AppCompatActivity() {
 
 
     private fun validateEmployeeId(empId: String) {
+        Log.d("TAGGGGGG", "validateEmployeeId: validate employee tag")
         retrofitInstance.validateEmployeeId("sams", empId)
             .enqueue(object : Callback<VerifyOtpResponse?> {
                 override fun onResponse(
@@ -99,14 +100,15 @@ class SignUpWithoutMobile : AppCompatActivity() {
 
                             Toast.makeText(
                                 this@SignUpWithoutMobile,
-                                "this is valied employee id",
+                                "this is valied employee id, Please Generate your pin",
                                 Toast.LENGTH_SHORT
                             ).show()
+                            binding.btnGenerate.isEnabled = true
 
                         } else {
                             Toast.makeText(
                                 this@SignUpWithoutMobile,
-                                "Already created employee id",
+                                "Invalid employee Id",
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
@@ -118,7 +120,7 @@ class SignUpWithoutMobile : AppCompatActivity() {
                 }
 
                 override fun onFailure(call: Call<VerifyOtpResponse?>, t: Throwable) {
-
+                    Log.d("TAGGGGGGGG", "onFailure: this is falied msg....................")
                 }
             })
     }
@@ -181,7 +183,7 @@ class SignUpWithoutMobile : AppCompatActivity() {
                             )
 
                             SaveUsersInSharedPreference.addUserIfNotExists(
-                                this@SignUpWithoutMobile,user
+                                this@SignUpWithoutMobile, user
                             )
 
                             startActivity(

@@ -132,7 +132,7 @@
             android:exported="true"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".activities.SignUpScreen"
+            android:name=".activities.SignInScreen"
             android:exported="true"
             android:windowSoftInputMode="adjustResize" />
         <activity

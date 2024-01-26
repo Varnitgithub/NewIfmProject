@@ -1,18 +1,12 @@
 package com.example.ifmapp.activities
 
 import android.content.Intent
-import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.widget.EditText
-import android.widget.Toast
-import androidx.core.app.ActivityCompat
-import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.MutableLiveData
 import com.example.ifmapp.R
 import com.example.ifmapp.RetrofitInstance
 import com.example.ifmapp.apiinterface.ApiInterface
@@ -24,7 +18,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class SignUpScreen : AppCompatActivity() {
+class SignInScreen : AppCompatActivity() {
 
     private lateinit var retrofitInstance: ApiInterface
     private lateinit var binding: ActivitySignUpScreenBinding
@@ -35,10 +29,13 @@ class SignUpScreen : AppCompatActivity() {
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_sign_up_screen)
 
+        binding.btnContinue.isEnabled = false
 
         binding.btnContinue.setOnClickListener {
-loginByEmployeeId("sams",binding.employeeidEdt.text.toString().trim(),
-    binding.employeepinEdt.text.toString().trim())
+loginByEmployeeId(
+    binding.employeeidEdt.text.toString().trim(),
+    binding.employeepinEdt.text.toString().trim()
+)
 
         }
         binding.employeepinEdt.addTextChangedListener(object : TextWatcher {
@@ -46,9 +43,10 @@ loginByEmployeeId("sams",binding.employeeidEdt.text.toString().trim(),
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (binding.employeeidEdt.text.toString().trim().length == 4
+                if (binding.employeeidEdt.text.toString().trim().length == 6
                     && binding.employeepinEdt.text.toString().trim().length == 4
                 ) {
+                    binding.btnContinue.isEnabled = true
 
                     binding.btnContinue.setBackgroundResource(R.drawable.button_back)
                     binding.btnContinue.setTextColor(resources.getColor(R.color.white))
@@ -64,9 +62,9 @@ loginByEmployeeId("sams",binding.employeeidEdt.text.toString().trim(),
     }
 
 
-    private fun loginByEmployeeId(connectionKey: String, empId: String, pin: String) {
+    private fun loginByEmployeeId(empId: String, pin: String) {
 
-        retrofitInstance.loginByemployeeId(connectionKey, empId, pin)
+        retrofitInstance.loginByemployeeId("sams", empId, pin)
             .enqueue(object : Callback<LoginByPINResponse?> {
                 override fun onResponse(
                     call: Call<LoginByPINResponse?>,
@@ -83,17 +81,18 @@ loginByEmployeeId("sams",binding.employeeidEdt.text.toString().trim(),
                             )
 
                             SaveUsersInSharedPreference.addUserIfNotExists(
-                                this@SignUpScreen, user
+                                this@SignInScreen, user
                             )
+                            Log.d("TAGGGGGGGGG", "onResponse: user saved successfully")
 
                             startActivity(
                                 Intent(
-                                    this@SignUpScreen,
+                                    this@SignInScreen,
                                     DashBoardScreen::class.java
                                 )
                             )
                         } else {
-
+                            Log.d("TAGGGGGGGGG", "onResponse: User does not exists")
                         }
 
                     } else {

@@ -18,7 +18,7 @@ class LoginCheckedScreen : AppCompatActivity() {
             startActivity(Intent(this,LoginByPinMobileScreen::class.java))
         }
         loginByCompanyCode.setOnClickListener {
-            startActivity(Intent(this,SignUpScreen::class.java))
+            startActivity(Intent(this,SignInScreen::class.java))
         }
     }
 }

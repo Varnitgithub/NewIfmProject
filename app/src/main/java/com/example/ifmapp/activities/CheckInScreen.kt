@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.location.Address
 import android.location.Geocoder
 import android.location.Location
@@ -57,6 +58,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileInputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -79,6 +81,7 @@ class CheckInScreen : AppCompatActivity() {
     private var myaddress: String? = null
     private var mLatitude: String? = null
     private var mLongitude: String? = null
+    private val LOCATION_REQUEST_CODE=111
 
     private var rotatedBitmap: Bitmap? = null
 
@@ -97,7 +100,7 @@ class CheckInScreen : AppCompatActivity() {
     private var otp: String? = null
     private var base64Image: String? = null
     private var imagesString: String? = null
-    private var imagesBitmap: String? = null
+    private var imagesBitmap: Bitmap? = null
     private var siteSelect: String? = null
     private var shiftSelect: String? = null
     private var time: String? = null
@@ -147,11 +150,7 @@ class CheckInScreen : AppCompatActivity() {
         Log.d("TAGGGGGGGG", "onCreate: this is $locationAutoID")
         time = getCurrentTime()
 
-        if (otp.toString().isNotEmpty()) {
 
-            otp?.let { getEmployee(otp = it) }
-
-        }
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         locationRequest =
             LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000).setIntervalMillis(500)
@@ -161,7 +160,11 @@ class CheckInScreen : AppCompatActivity() {
 
         binding.finalLayoutCL.visibility = View.GONE
         binding.checkinCL.visibility = View.VISIBLE
+
+
         getLastLocation()
+
+
         binding.btnSubmit.setOnClickListener {
 
             binding.btnSubmit.setTextColor(resources.getColor(R.color.white))
@@ -169,7 +172,7 @@ class CheckInScreen : AppCompatActivity() {
             binding.btnRetake.setTextColor(resources.getColor(R.color.check_btn))
             binding.btnRetake.setBackgroundResource(R.drawable.button_backwhite)
 
-            if (base64Image != null && mLatitude != null && mLongitude != null &&locationAutoID!=null) {
+            if (base64Image != null && mLatitude != null && mLongitude != null && locationAutoID != null) {
                 Log.d("TAGGGGGGGG", "onCreate:;llllll $locationAutoID")
                 getGeoMappedSites(
                     "sams",
@@ -216,6 +219,7 @@ class CheckInScreen : AppCompatActivity() {
             }
         }
         val imeei = getIMEI(this)
+
         binding.bigProfile.setOnClickListener {
             if (checkCameraPermission()) {
                 startCamera()
@@ -315,6 +319,13 @@ class CheckInScreen : AppCompatActivity() {
                 // Permission denied, show a message to the user
                 Toast.makeText(this, "Please Allow Camera permission", Toast.LENGTH_SHORT).show()
             }
+        }else if(requestCode==LOCATION_REQUEST_CODE){
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                getLastLocation()
+            } else {
+                Toast.makeText(this, "Please Allow Camera permission", Toast.LENGTH_SHORT).show()
+            }
+
         }
 
     }
@@ -388,25 +399,6 @@ class CheckInScreen : AppCompatActivity() {
     }
 
 
-    private fun resizeAndSetBitmap(
-        imageView: ImageView,
-        bitmap: Bitmap?,
-        targetWidth: Int,
-        targetHeight: Int
-    ) {
-        if (bitmap == null) return
-
-        val scaleFactor =
-            calculateScaleFactor(bitmap.width, bitmap.height, targetWidth, targetHeight)
-
-        val newWidth = (bitmap.width * scaleFactor).toInt()
-        val newHeight = (bitmap.height * scaleFactor).toInt()
-
-        val resizedBitmap = Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true)
-
-        imageView.setImageBitmap(resizedBitmap)
-
-    }
 
     private fun calculateScaleFactor(
         originalWidth: Int,
@@ -422,21 +414,6 @@ class CheckInScreen : AppCompatActivity() {
         } else {
             widthScale
         }
-    }
-
-    private fun getEmployee(otp: String) {
-
-
-        /*      binding.userName.text = it.EmpName
-              binding.designation.text = it.Designation
-              binding.shifts.text = shiftSelect
-              employeeName = it.EmpName
-              //binding.locationName.text = address
-              employeeDesignation = it.Designation
-              locationAutoID = it.LocationAutoID
-*/
-
-
     }
 
     private fun getFormattedDate(date: Date): String {
@@ -472,7 +449,9 @@ class CheckInScreen : AppCompatActivity() {
                     call: Call<GeoMappedResponse?>,
                     response: Response<GeoMappedResponse?>
                 ) {
-                    if (response.isSuccessful&& response.body()?.get(0)?.MessageID.toString().toInt()==1) {
+                    if (response.isSuccessful && response.body()?.get(0)?.MessageID.toString()
+                            .toInt() == 1
+                    ) {
 
                         Log.d("TAGGGGGGGGGG", "onResponse: response Successfulllll")
 
@@ -526,13 +505,6 @@ class CheckInScreen : AppCompatActivity() {
             })
 
     }
-
-    /* setFinalDialog(
-     userBitmap!!,
-     mLatitude.toString(),
-     mLongitude.toString(),
-     address.toString()
- )*/
 
 
     fun insertAttendance(
@@ -687,9 +659,11 @@ class CheckInScreen : AppCompatActivity() {
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                     // Image is saved, now process the image
                     base64Image = imageToBase64(photoFile)
-
+                    imagesBitmap = fileToBitmap(photoFile)
                     binding.cameraPreviewView.visibility = View.GONE
                     binding.allLayout.visibility = View.VISIBLE
+
+                    binding.bigProfile.setImageBitmap(imagesBitmap)
 
                 }
 
@@ -716,38 +690,47 @@ class CheckInScreen : AppCompatActivity() {
         }
     }
 
-    /*
-        private fun processImage(photoFile: File) {
 
 
-            // Decode the image file into a bitmap
-            val bitmap = BitmapFactory.decodeFile(photoFile.absolutePath)
-            val base64image = bitmapToBase64(bitmap)
-            base64Image = base64image
-            binding.cameraPreviewView.visibility = View.GONE
-            binding.allLayout.visibility = View.VISIBLE
-            // Convert bitmap to base64
-            //binding.bigProfile.setImageBitmap(bitmap)
-            // Get orientation from Exif
-            val exif = ExifInterface(photoFile.absolutePath)
-            val orientation =
-                exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED)
 
-    //        // Update UI
-    //        binding.cameraPreviewView.visibility = View.GONE
-    //        binding.allLayout.visibility = View.VISIBLE
-           // binding.bigProfile.setImageBitmap(bitmap)
+    fun fileToBitmap(imageFile: File): Bitmap? {
+        try {
+            // Decode the file into a Bitmap
+            var bitmap = BitmapFactory.decodeFile(imageFile.path)
 
-            finish()
+            // Get Exif orientation information
+            val exif = android.media.ExifInterface(FileInputStream(imageFile))
+            val orientation = exif.getAttributeInt(android.media.ExifInterface.TAG_ORIENTATION, 1)
+
+            // Rotate the Bitmap based on the Exif orientation
+            val matrix = Matrix()
+            when (orientation) {
+                3 -> matrix.postRotate(180f)
+                6 -> matrix.postRotate(90f)
+                8 -> matrix.postRotate(270f)
+            }
+
+            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+
+            return bitmap
+        } catch (e: Exception) {
+            println("Error converting file to Bitmap: ${e.message}")
+            return null
         }
+    }
 
-        private fun bitmapToBase64(bitmap: Bitmap): String {
-            val byteArrayOutputStream = ByteArrayOutputStream()
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
-            val byteArray: ByteArray = byteArrayOutputStream.toByteArray()
-            return Base64.encodeToString(byteArray, Base64.DEFAULT)
-        }
-    */
 
+    private fun checkLocationPermission(): Boolean {
+        return (ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_FINE_LOCATION)
+                ==PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this,
+            android.Manifest.permission.ACCESS_COARSE_LOCATION)==PackageManager.PERMISSION_GRANTED)
+    }
+
+    private fun requestLocationPermission(){
+        ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION,
+            android.Manifest.permission.ACCESS_COARSE_LOCATION),LOCATION_REQUEST_CODE)
+    }
 
 }
+
