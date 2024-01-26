@@ -105,7 +105,7 @@ class SaveUsersInSharedPreference {
             val json: String? = preferences.getString(KEY_FINAL_CHECKOUT_DETAILS, "")
 
             val gson = Gson()
-            val type: Type = object : TypeToken<List<CurrentUserShiftsDetails>>() {}.type
+            val type: Type = object : TypeToken<List<CheckOutModel>>() {}.type
             return gson.fromJson(json, type) ?: ArrayList()
         }
 

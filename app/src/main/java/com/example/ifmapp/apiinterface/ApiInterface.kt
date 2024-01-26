@@ -23,6 +23,27 @@ interface ApiInterface {
     ): Call<VerifyOtpResponse>
 
     @FormUrlEncoded
+    @POST("ValidateEmployeeByEmployeeID")
+    fun validateEmployeeId(
+        @Field("connectionKey") connectionKey: String,
+        @Field("EmpId") EmpId: String
+    ): Call<VerifyOtpResponse>
+
+    @FormUrlEncoded
+    @POST("PinGenerationByEmpID")
+    fun pinGenerationByEmpId(
+        @Field("connectionKey") connectionKey: String,
+        @Field("EmpID") EmpID: String,
+        @Field("PIN") PIN:String):Call<VerifyOtpResponse>
+
+    @FormUrlEncoded
+    @POST("LoginByEmpID")
+    fun loginByemployeeId(
+        @Field("connectionKey") connectionKey: String,
+        @Field("EmpID") EmpID: String,
+        @Field("PIN") PIN:String):Call<LoginByPINResponse>
+
+    @FormUrlEncoded
     @POST("SendOTP")
     fun registeredMobileNumber(
         @Field("connectionKey") connectionKey: String,

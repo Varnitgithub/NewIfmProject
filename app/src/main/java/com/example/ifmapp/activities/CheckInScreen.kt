@@ -3,14 +3,11 @@ package com.example.ifmapp.activities
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Matrix
 import android.location.Address
 import android.location.Geocoder
 import android.location.Location
@@ -23,10 +20,6 @@ import android.telephony.TelephonyManager
 import android.util.Base64
 import android.util.Log
 import android.view.View
-import android.view.animation.AlphaAnimation
-import android.view.animation.Animation
-import android.view.animation.AnimationSet
-import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -43,8 +36,6 @@ import com.example.ifmapp.R
 import com.example.ifmapp.RetrofitInstance
 import com.example.ifmapp.animation.AnimationClass
 import com.example.ifmapp.apiinterface.ApiInterface
-import com.example.ifmapp.databasedb.EmployeeDB
-import com.example.ifmapp.databasedb.EmployeePinDao
 import com.example.ifmapp.databinding.ActivityCheckInScreenBinding
 import com.example.ifmapp.modelclasses.attendance_response.AttendanceResponse
 import com.example.ifmapp.modelclasses.geomappedsite_model.GeoMappedResponse
@@ -68,12 +59,14 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
-import java.util.ArrayList
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+
+import java.nio.file.Files
+import java.nio.file.Paths
 
 class CheckInScreen : AppCompatActivity() {
     private lateinit var imageCapture: ImageCapture
@@ -87,7 +80,6 @@ class CheckInScreen : AppCompatActivity() {
     private var mLatitude: String? = null
     private var mLongitude: String? = null
 
-    private var base64Image: String? = null
     private var rotatedBitmap: Bitmap? = null
 
     private lateinit var photoFile: File
@@ -103,7 +95,7 @@ class CheckInScreen : AppCompatActivity() {
     private var employeeName: String? = null
     private var employeeDesignation: String? = null
     private var otp: String? = null
-    private var imaggee: String? = null
+    private var base64Image: String? = null
     private var imagesString: String? = null
     private var imagesBitmap: String? = null
     private var siteSelect: String? = null
@@ -152,7 +144,7 @@ class CheckInScreen : AppCompatActivity() {
         locationAutoID = currentUser.locationAutoId
 
 
-
+        Log.d("TAGGGGGGGG", "onCreate: this is $locationAutoID")
         time = getCurrentTime()
 
         if (otp.toString().isNotEmpty()) {
@@ -177,7 +169,8 @@ class CheckInScreen : AppCompatActivity() {
             binding.btnRetake.setTextColor(resources.getColor(R.color.check_btn))
             binding.btnRetake.setBackgroundResource(R.drawable.button_backwhite)
 
-            if (imaggee != null && mLatitude != null && mLongitude != null) {
+            if (base64Image != null && mLatitude != null && mLongitude != null &&locationAutoID!=null) {
+                Log.d("TAGGGGGGGG", "onCreate:;llllll $locationAutoID")
                 getGeoMappedSites(
                     "sams",
                     locationAutoID.toString(),
@@ -251,27 +244,27 @@ class CheckInScreen : AppCompatActivity() {
                     withContext(Dispatchers.Main) {
 
                         if (address.subThoroughfare != null && address.thoroughfare != null) {
-                            binding.locationName.text =
+                            val formattedAdress =
                                 "${address.premises} ${address.subThoroughfare} ${address.thoroughfare} ${address.postalCode} ${address.subLocality} ${address.subAdminArea} ${address.locality}  ${address.adminArea} "
+                            binding.locationName.text = formattedAdress
 
-                            binding.address.text =
-                                "${address.premises} ${address.subThoroughfare} ${address.thoroughfare} ${address.postalCode} ${address.subLocality} ${address.subAdminArea} ${address.locality}  ${address.adminArea} "
 
-                            myaddress =
-                                "${address.premises} ${address.subThoroughfare} ${address.thoroughfare} ${address.subLocality} ${address.subAdminArea} ${address.locality}  ${address.adminArea} "
+                            binding.address.text = formattedAdress
+
+                            myaddress = formattedAdress
 
 
                         } else {
-                            myaddress =
+                            var formatAddress2 =
                                 "${address.premises} ${address.postalCode} ${address.subLocality} ${address.subAdminArea} ${address.locality}  ${address.adminArea} "
+
+                            myaddress = formatAddress2
 
 
                             binding.locationName.text =
-                                "${address.premises} ${address.postalCode} ${address.subLocality} ${address.subAdminArea} ${address.locality}  ${address.adminArea} "
-
+                                formatAddress2
                             binding.address.text =
-                                "${address.premises} ${address.postalCode} ${address.subLocality} ${address.subAdminArea} ${address.locality}  ${address.adminArea} "
-
+                                formatAddress2
 
                         }
 
@@ -339,7 +332,7 @@ class CheckInScreen : AppCompatActivity() {
         binding.designationAtfinal.text = employeeDesignation
         binding.shiftAtfinal.text = "${siteSelect} $shiftSelect $formattedDate"
         binding.latlgTxt.text = "$latitude $longitude"
-        binding.address.text = address
+        binding.address.text = myaddress
 
 
     }
@@ -380,6 +373,7 @@ class CheckInScreen : AppCompatActivity() {
                 location?.let {
                     mLatitude = location.latitude.toString()
                     mLongitude = location.longitude.toString()
+                    mAltitude = location.altitude.toString()
                     getAddressFromLocation(this, mLatitude!!.toDouble(), mLongitude!!.toDouble())
                     binding.checkInlatitude.text = mLatitude
                     binding.checkInlongitude.text = mLongitude
@@ -478,7 +472,7 @@ class CheckInScreen : AppCompatActivity() {
                     call: Call<GeoMappedResponse?>,
                     response: Response<GeoMappedResponse?>
                 ) {
-                    if (response.isSuccessful) {
+                    if (response.isSuccessful&& response.body()?.get(0)?.MessageID.toString().toInt()==1) {
 
                         Log.d("TAGGGGGGGGGG", "onResponse: response Successfulllll")
 
@@ -491,7 +485,12 @@ class CheckInScreen : AppCompatActivity() {
                                 "TAGGGGG",
                                 "onResponse:1${time} \n2 ${imeiPhone}\n" +
                                         "3${empNumber} 4${emp?.AsmtID} 5${mLatitude.toString()} 6 ${mLongitude.toString()}" +
-                                        "7${mAltitude.toString()} 8${imageInString} 9${emp?.LocationAutoID} 10${emp?.ClientCode}" +
+                                        "7${mAltitude.toString()} 8${
+                                            base64Image?.substring(
+                                                1,
+                                                10
+                                            )
+                                        } 9${LocationAutoID} 10${emp?.ClientCode}" +
                                         "11${siteSelect} 12${shiftSelect} 13${myaddress}"
                             )
                             insertAttendance(
@@ -505,7 +504,7 @@ class CheckInScreen : AppCompatActivity() {
                                 latitude = mLatitude.toString(),
                                 mLongitude.toString(),
                                 mAltitude.toString(),
-                                imaggee ?: "",
+                                base64Image ?: "",
                                 emp?.LocationAutoID.toString(),
                                 emp?.ClientCode.toString(),
                                 siteSelect.toString(),
@@ -569,6 +568,8 @@ class CheckInScreen : AppCompatActivity() {
                     Toast.makeText(this@CheckInScreen, "attendance marked", Toast.LENGTH_SHORT)
                         .show()
                     setFinalDialog(mLatitude!!, mLongitude!!, myaddress ?: "")
+
+
                 } else {
                     Log.d("TAGGGGGGGG", "onResponse:error ${response.errorBody()}")
                 }
@@ -682,9 +683,14 @@ class CheckInScreen : AppCompatActivity() {
             outputOptions,
             ContextCompat.getMainExecutor(this),
             object : ImageCapture.OnImageSavedCallback {
+                @RequiresApi(Build.VERSION_CODES.O)
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                     // Image is saved, now process the image
-                    processImage(photoFile)
+                    base64Image = imageToBase64(photoFile)
+
+                    binding.cameraPreviewView.visibility = View.GONE
+                    binding.allLayout.visibility = View.VISIBLE
+
                 }
 
                 override fun onError(exception: ImageCaptureException) {
@@ -698,37 +704,50 @@ class CheckInScreen : AppCompatActivity() {
         )
     }
 
-    private fun processImage(photoFile: File) {
-
-
-        // Decode the image file into a bitmap
-        val bitmap = BitmapFactory.decodeFile(photoFile.absolutePath)
-        val base64Image = bitmapToBase64(bitmap)
-        Log.d("TAGGGGGGG", "processImage: i am here ${base64Image.substring(0,20)}")
-        binding.cameraPreviewView.visibility = View.GONE
-        binding.allLayout.visibility = View.VISIBLE
-        // Convert bitmap to base64
-        //binding.bigProfile.setImageBitmap(bitmap)
-        // Get orientation from Exif
-        val exif = ExifInterface(photoFile.absolutePath)
-        val orientation =
-            exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED)
-
-        // Update UI
-        binding.cameraPreviewView.visibility = View.GONE
-        binding.allLayout.visibility = View.VISIBLE
-        binding.bigProfile.setImageBitmap(bitmap)
-
-        finish()
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun imageToBase64(imageFile: File): String? {
+        try {
+            val imageBytes = Files.readAllBytes(imageFile.toPath())
+            val base64Encoded = Base64.encodeToString(imageBytes, Base64.DEFAULT)
+            return base64Encoded
+        } catch (e: Exception) {
+            println("Error: ${e.message}")
+            return null
+        }
     }
 
-    private fun bitmapToBase64(bitmap: Bitmap): String {
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
-        val byteArray: ByteArray = byteArrayOutputStream.toByteArray()
-        return Base64.encodeToString(byteArray, Base64.DEFAULT)
-    }
+    /*
+        private fun processImage(photoFile: File) {
 
+
+            // Decode the image file into a bitmap
+            val bitmap = BitmapFactory.decodeFile(photoFile.absolutePath)
+            val base64image = bitmapToBase64(bitmap)
+            base64Image = base64image
+            binding.cameraPreviewView.visibility = View.GONE
+            binding.allLayout.visibility = View.VISIBLE
+            // Convert bitmap to base64
+            //binding.bigProfile.setImageBitmap(bitmap)
+            // Get orientation from Exif
+            val exif = ExifInterface(photoFile.absolutePath)
+            val orientation =
+                exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED)
+
+    //        // Update UI
+    //        binding.cameraPreviewView.visibility = View.GONE
+    //        binding.allLayout.visibility = View.VISIBLE
+           // binding.bigProfile.setImageBitmap(bitmap)
+
+            finish()
+        }
+
+        private fun bitmapToBase64(bitmap: Bitmap): String {
+            val byteArrayOutputStream = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+            val byteArray: ByteArray = byteArrayOutputStream.toByteArray()
+            return Base64.encodeToString(byteArray, Base64.DEFAULT)
+        }
+    */
 
 
 }

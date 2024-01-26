@@ -346,7 +346,7 @@ class HomeFragment(
     @SuppressLint("MissingPermission")
 
 
-    override fun onclick(employeeModel: LoginByPINResponseItem, position: Int) {
+    override fun onclick(employeeModel: UserListModel, position: Int) {
 
     }
 

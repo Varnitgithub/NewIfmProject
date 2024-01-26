@@ -59,6 +59,7 @@ class DashBoardScreen : AppCompatActivity(), AddAccountAdapter.OnClickedInterfac
     var empPin: String? = null
     var currentEmployee: UserListModel? = null
     private lateinit var currentUser: UserListModel
+    private lateinit var allUsersList: ArrayList<UserListModel>
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,7 +70,7 @@ class DashBoardScreen : AppCompatActivity(), AddAccountAdapter.OnClickedInterfac
         currentUser = SaveUsersInSharedPreference.getList(this)[0]
 
         binding.userName.text = "Hi, ${currentUser.userName}"
-
+        allUsersList = ArrayList()
         empNumber = currentUser.empId
         mobileNumber = currentUser.mobileNumber
 
@@ -82,6 +83,13 @@ class DashBoardScreen : AppCompatActivity(), AddAccountAdapter.OnClickedInterfac
         binding.accountsRecyclerView.adapter = addAccountAdapter
         val employeesList = ArrayList<AddAccountModel>()
 
+
+        val newlist = SaveUsersInSharedPreference.getList(this).size
+        for (user in 1 until newlist) {
+            allUsersList.add(SaveUsersInSharedPreference.getList(this)[user])
+        }
+
+        addAccountAdapter.updateList(allUsersList)
 
         binding.forgotPin.setOnClickListener {
             startActivity(Intent(this, GnereratePinCodeScreen::class.java))
@@ -134,7 +142,7 @@ class DashBoardScreen : AppCompatActivity(), AddAccountAdapter.OnClickedInterfac
         }
     }
 
-    override fun onclick(employeeModel: LoginByPINResponseItem, position: Int) {
+    override fun onclick(employeeModel: UserListModel, position: Int) {
         Log.d("TAGGGGGGGGGGG", "onclick: current user = ${employeeModel.mobileNumber}")
     }
 
@@ -179,15 +187,6 @@ class DashBoardScreen : AppCompatActivity(), AddAccountAdapter.OnClickedInterfac
         }
     }
 }
-
-/*//  private fun checkMockLocation(): Boolean {
-      // Check if mock locations are enabled
-      return Settings.Secure.getString(
-          contentResolver,
-          Settings.Secure.ALLOW_MOCK_LOCATION
-      ) != "0"
-  }
-}*/
 
 
 

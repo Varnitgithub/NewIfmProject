@@ -1,42 +1,80 @@
 package com.example.ifmapp.activities
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
+import android.view.View
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import com.example.ifmapp.R
+import com.example.ifmapp.RetrofitInstance
+import com.example.ifmapp.apiinterface.ApiInterface
 import com.example.ifmapp.databinding.ActivitySignUpWithoutMobileBinding
+import com.example.ifmapp.modelclasses.loginby_pin.LoginByPINResponse
+import com.example.ifmapp.modelclasses.usermodel_sharedpreference.UserListModel
+import com.example.ifmapp.modelclasses.verifymobile.VerifyOtpResponse
+import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
 
 class SignUpWithoutMobile : AppCompatActivity() {
 
     private lateinit var binding: ActivitySignUpWithoutMobileBinding
+
+    private lateinit var retrofitInstance: ApiInterface
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //setContentView(R.layout.activity_sign_up_without_mobile)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_sign_up_without_mobile)
+        retrofitInstance = RetrofitInstance.apiInstance
 
+
+
+
+        binding.btnGenerate.setOnClickListener {
+            pinGenerationByEmployeeId(
+                "sams",
+                binding.employeeidEdt.text.toString().trim(),
+                binding.employeepinEdt.text.toString().trim()
+            )
+        }
 
         binding.employeepinEdt.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                if (binding.employeepinEdt.text.toString().trim().length == 4) {
+                    binding.btnGenerate.setBackgroundResource(R.drawable.button_back)
+                    binding.btnGenerate.setTextColor(resources.getColor(R.color.white))
+                }
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+            }
+        })
+
+
+        binding.employeeidEdt.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (binding.companycodeEdt.text.toString()
-                        .isNotEmpty() && binding.employeeidEdt.text.toString().length ==4&&
-                    binding.employeepinEdt.text.toString().length ==4
-                ) {
-                    binding.btnGenerate.setBackgroundResource(R.drawable.button_back)
-                binding.btnGenerate.setTextColor(resources.getColor(R.color.white))
-            } else {
-                binding.btnGenerate.setBackgroundResource(R.drawable.site_selection_back)
-                binding.btnGenerate.setTextColor(resources.getColor(R.color.btn_continue))
 
 
-
+                if (binding.employeepinEdt.text.toString().length == 4) {
+                    validateEmployeeId(binding.employeeidEdt.text.toString().trim())
                 }
+
             }
+
 
             override fun afterTextChanged(s: Editable?) {
 
@@ -46,10 +84,127 @@ class SignUpWithoutMobile : AppCompatActivity() {
 
     }
 
-    fun signUpUser(companyCode:String,employeeId:String,employeePin:String){
+
+    private fun validateEmployeeId(empId: String) {
+        retrofitInstance.validateEmployeeId("sams", empId)
+            .enqueue(object : Callback<VerifyOtpResponse?> {
+                override fun onResponse(
+                    call: Call<VerifyOtpResponse?>,
+                    response: Response<VerifyOtpResponse?>
+                ) {
+                    if (response.isSuccessful) {
+                        if (response.body()?.get(0)?.MessageID.toString().toInt() == 1) {
+
+                            binding.employeepinLL.visibility = View.VISIBLE
+
+                            Toast.makeText(
+                                this@SignUpWithoutMobile,
+                                "this is valied employee id",
+                                Toast.LENGTH_SHORT
+                            ).show()
+
+                        } else {
+                            Toast.makeText(
+                                this@SignUpWithoutMobile,
+                                "Already created employee id",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+
+
+                    } else {
+                        Log.d("TAGGGGGGG", "onResponse: response is not successful")
+                    }
+                }
+
+                override fun onFailure(call: Call<VerifyOtpResponse?>, t: Throwable) {
+
+                }
+            })
+    }
+
+    private fun pinGenerationByEmployeeId(connectionKey: String, empId: String, pin: String) {
+
+        retrofitInstance.pinGenerationByEmpId(connectionKey, empId, pin)
+            .enqueue(object : Callback<VerifyOtpResponse?> {
+                override fun onResponse(
+                    call: Call<VerifyOtpResponse?>,
+                    response: Response<VerifyOtpResponse?>
+                ) {
+                    if (response.isSuccessful) {
+
+                        if (response.body()?.get(0)?.MessageID.toString().toInt() == 1) {
+
+                            Toast.makeText(
+                                this@SignUpWithoutMobile,
+                                "Pin generation Successful",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            loginByEmployeeId("sams", empId, pin)
+                        } else {
+                            Toast.makeText(
+                                this@SignUpWithoutMobile,
+                                "Pin generation failed",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+
+                    } else {
+                        Log.d("TAGGGGGG", "onResponse: pin generation is no successful")
+                    }
+                }
+
+                override fun onFailure(call: Call<VerifyOtpResponse?>, t: Throwable) {
+
+                }
+            })
 
 
     }
 
+    private fun loginByEmployeeId(connectionKey: String, empId: String, pin: String) {
+
+        retrofitInstance.loginByemployeeId(connectionKey, empId, pin)
+            .enqueue(object : Callback<LoginByPINResponse?> {
+                override fun onResponse(
+                    call: Call<LoginByPINResponse?>,
+                    response: Response<LoginByPINResponse?>
+                ) {
+                    if (response.isSuccessful) {
+
+                        if (response.body()?.get(0)?.MessageID.toString().toInt() == 1) {
+                            var user = UserListModel(
+                                response.body()?.get(0)?.EmpName.toString(),
+                                pin,
+                                empId,
+                                ""
+                            )
+
+                            SaveUsersInSharedPreference.addUserIfNotExists(
+                                this@SignUpWithoutMobile,user
+                            )
+
+                            startActivity(
+                                Intent(
+                                    this@SignUpWithoutMobile,
+                                    DashBoardScreen::class.java
+                                )
+                            )
+                        } else {
+
+                        }
+
+                    } else {
+                        Log.d("TAGGGGGG", "onResponse: pin generation is no successful")
+                    }
+                }
+
+                override fun onFailure(call: Call<LoginByPINResponse?>, t: Throwable) {
+
+                }
+            })
+
+
+    }
 
 }

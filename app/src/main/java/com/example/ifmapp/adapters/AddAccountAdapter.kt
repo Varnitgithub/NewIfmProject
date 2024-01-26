@@ -14,10 +14,11 @@ import com.example.ifmapp.R
 import com.example.ifmapp.modelclasses.AddAccountModel
 import com.example.ifmapp.modelclasses.DocumentsModel
 import com.example.ifmapp.modelclasses.loginby_pin.LoginByPINResponseItem
+import com.example.ifmapp.modelclasses.usermodel_sharedpreference.UserListModel
 
 class AddAccountAdapter(private var context: Context,private var listener:OnClickedInterface):RecyclerView.Adapter<AddAccountAdapter.DocumentsViewHolder>() {
 
-    private var documentsList=ArrayList<LoginByPINResponseItem>()
+    private var documentsList=ArrayList<UserListModel>()
 
     class DocumentsViewHolder(itemView: View) :RecyclerView.ViewHolder(itemView){
         var addAccountImage:ImageView = itemView.findViewById(R.id.addAccount_imageview)
@@ -44,11 +45,11 @@ class AddAccountAdapter(private var context: Context,private var listener:OnClic
     override fun onBindViewHolder(holder: DocumentsViewHolder, position: Int) {
      val currentItem = documentsList[position]
 
-        holder.addAccountName.text = currentItem.EmpName
+        holder.addAccountName.text = currentItem.userName
 
         Glide.with(context).load(R.drawable.account_user_profile).placeholder(R.drawable.aadhar).into(holder.addAccountImage)
     }
-    fun updateList(newList: List<LoginByPINResponseItem>) {
+    fun updateList(newList: List<UserListModel>) {
         val diffCallback = DocumentsDiffCallback(documentsList, newList)
         val diffResult = DiffUtil.calculateDiff(diffCallback)
 
@@ -59,14 +60,14 @@ class AddAccountAdapter(private var context: Context,private var listener:OnClic
     }
 
     class DocumentsDiffCallback(
-        private val oldList: List<LoginByPINResponseItem>,
-        private val newList: List<LoginByPINResponseItem>
+        private val oldList: List<UserListModel>,
+        private val newList: List<UserListModel>
     ) : DiffUtil.Callback() {
         override fun getOldListSize(): Int = oldList.size
         override fun getNewListSize(): Int = newList.size
 
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldList[oldItemPosition].id == newList[newItemPosition].id
+            return oldList[oldItemPosition].pin == newList[newItemPosition].pin
         }
 
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
@@ -75,6 +76,6 @@ class AddAccountAdapter(private var context: Context,private var listener:OnClic
     }
 
     interface OnClickedInterface{
-       fun onclick(employeeModel:LoginByPINResponseItem,position: Int)
+       fun onclick(employeeModel:UserListModel,position: Int)
     }
 }
