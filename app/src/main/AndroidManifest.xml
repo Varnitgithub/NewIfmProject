@@ -2,8 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-<uses-sdk android:minSdkVersion="24"
-    android:targetSdkVersion="34"/>
+    <uses-sdk
+        android:minSdkVersion="24"
+        android:targetSdkVersion="34" />
+
     <uses-feature
         android:name="android.hardware.camera"
         android:required="true" />
@@ -18,8 +20,10 @@
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
+
     <uses-feature android:name="android.hardware.camera.front" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission
         android:name="android.permission.READ_PRIVILEGED_PHONE_STATE"
         tools:ignore="ProtectedPermissions" />
@@ -34,6 +38,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.IFMApp"
         tools:targetApi="31">
+        <activity
+            android:name=".activities.LauncherScreen"
+            android:exported="true" >
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".activities.FrontCameraSetupScreen"
             android:exported="false" />
@@ -50,13 +64,7 @@
         <activity
             android:name=".activities.RegistrationScreen"
             android:exported="true"
-            android:windowSoftInputMode="adjustResize" >
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:windowSoftInputMode="adjustResize">
 
         </activity>
         <activity
@@ -101,19 +109,14 @@
         <activity
             android:name=".activities.MobileRegisterScreen"
             android:exported="true"
-            android:windowSoftInputMode="adjustResize">
-
-        </activity>
+            android:windowSoftInputMode="adjustResize"/>
         <activity
             android:name=".activities.ScannerScreen"
             android:exported="false" />
         <activity
             android:name=".activities.CheckInScreen"
             android:exported="true"
-            android:windowSoftInputMode="adjustResize" >
-
-
-        </activity>
+            android:windowSoftInputMode="adjustResize"/>
         <!--
 <activity
             android:name=".activities.CheckInScreen"

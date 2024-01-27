@@ -102,6 +102,7 @@
                             android:orientation="vertical"
                             android:paddingTop="8dp"
                             android:paddingBottom="8dp"
+                            android:gravity="center"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent">
@@ -299,17 +300,22 @@
 
                             <LinearLayout
                                 android:id="@+id/StartCamera"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
+                                android:layout_width="313dp"
+                                android:layout_height="313dp"
                                 android:layout_marginTop="10dp"
-                                android:gravity="center">
+                                android:gravity="center"
+                                android:background="@drawable/bigimage_back"
+                                >
 
                                 <ImageView
                                     android:id="@+id/big_profile"
                                     android:layout_width="313dp"
                                     android:layout_height="313dp"
                                     android:src="@drawable/big_profile"
-                                    android:padding="3dp">
+                                    android:padding="3dp"
+                                    android:background="@drawable/bigimage_back"
+                                    android:scaleType="centerCrop"
+                                    >
                                 </ImageView>
                             </LinearLayout>
 

@@ -24,7 +24,6 @@ import java.util.Date
 import java.util.Locale
 
 class CheckOutScreen : AppCompatActivity() {
-    private lateinit var gestureDetector: GestureDetectorCompat
     private var shiftTime: String? = null
     private var currentTime: String? = null
     private var endTime: String? = null
@@ -37,6 +36,9 @@ class CheckOutScreen : AppCompatActivity() {
     private var shiftSelect: String? = null
     private var finalData: CheckOutModel? = null
     private var finalSiteSelectionData: CurrentUserShiftsDetails? = null
+    private var shiftTimingList:List<String>?=null
+    private var shiftStartTiming:String?=null
+    private var shiftEndTiming:String?=null
 
     private lateinit var binding: ActivityCheckOutScreenBinding
 
@@ -49,16 +51,32 @@ class CheckOutScreen : AppCompatActivity() {
 
         employeePinDao = EmployeeDB.getInstance(this).employeePinDao()
 
+        finalData = SaveUsersInSharedPreference.getCurrentUserFinalCheckoutShifts(this)[0]
+        finalSiteSelectionData = SaveUsersInSharedPreference.getCurrentUserShifts(this)[0]
 
-//        finalData = SaveUsersInSharedPreference.getCurrentUserFinalCheckoutShifts(this)[0]
-//        finalSiteSelectionData = SaveUsersInSharedPreference.getCurrentUserShifts(this)[0]
-//
-//        currentTime = finalData?.currentTime
-//        employeeName = finalData?.employeeName
-//        address = finalData?.address
-//        siteSelect = finalSiteSelectionData?.site
-//        shiftSelect = finalSiteSelectionData?.shift
+        currentTime = finalData?.currentTime
+        employeeName = finalData?.employeeName
+        address = finalData?.address
+        siteSelect = finalSiteSelectionData?.site
+        shiftSelect = finalSiteSelectionData?.shift
+        shiftTimingList = finalSiteSelectionData?.shiftTiming
 
+        binding.shifts.text = finalSiteSelectionData?.shift
+
+        binding.userName.text = finalSiteSelectionData?.empName
+
+        binding.designation.text = finalSiteSelectionData?.empDesignation
+
+        binding.currentSiteTxt.text = siteSelect
+
+        for (i in 0 until shiftTimingList?.size!!){
+            if (shiftSelect.toString()== shiftTimingList!![i].substring(0,1)){
+                shiftStartTiming = shiftTimingList!![i].substring(4,9)
+                shiftEndTiming = shiftTimingList!![i].substring(10,15)
+                binding.shiftStartTime.text = shiftStartTiming
+                binding.shiftEndTime.text = shiftEndTiming
+            }
+        }
 
         binding.shiftStartdateText.text = getFormattedDate()
         binding.shiftEnddateText.text = getFormattedDate()
@@ -67,78 +85,19 @@ class CheckOutScreen : AppCompatActivity() {
 
         binding.checkInBtn.isEnabled = false
 
-
-//        val bottomFragment = BottomFragment.newInstance()
-//        bottomFragment.show(supportFragmentManager, "add_photo_dialog_fragment")
-
-//        binding.checkoutBtn.setOnClickListener {
-//
-//            startActivity(Intent(this, CheckInScreen::class.java))
-//        }
-//        binding.joiningTime.text = currentTime?.substring(0, 5)
-//        if (currentTime?.substring(0, 5).toString().substring(0, 2).toInt() < 12) {
-//            binding.joiningAm.text = "AM"
-//            Log.d("TAGGGGGG", "onCreate: this is am")
-//        } else {
-//            binding.joiningAm.text = "PM"
-//            Log.d("TAGGGGGGG", "onCreate: this is pm")
-//
-//        }
-
-//          joinedTime = shiftTime?.substring(4,9)
-//          endTime = shiftTime?.substring(10,16)
-
+        binding.checkoutBtn.setOnClickListener {
+            startActivity(Intent(this, CheckInScreen::class.java))
+        }
+        binding.joiningTime.text = currentTime?.substring(0, 5)
+         joinedTime = shiftTime?.substring(4,9)
+          endTime = shiftTime?.substring(10,16)
     Log.d(
     "TAGGGGG",
     "onCreate: $joinedTime is joined time $endTime is end time $currentTime is current time"
     )
 
-
-    /* binding.shiftStartTime.text = joinedTime
-
-         binding.shiftEndTime.text = endTime*/
-
-    binding.userName.text = employeeName
-    binding.designation.text = employeeDesignation
-    //binding.currentSiteTxt.text = siteSelect
-    //  binding.companyTxt.text = address
-    // binding.shifts.text = shiftSelect?.substring(3,15)
-    //  binding.outTime.text =
-
-
 }
-    private inner class SwipeGestureListener : GestureDetector.SimpleOnGestureListener() {
-        override fun onFling(
-            e1: MotionEvent?,
-            e2: MotionEvent,
-            velocityX: Float,
-            velocityY: Float
-        ): Boolean {
-            val deltaY = e2.y.minus(e1?.y ?: 0F) ?: 0F
 
-            // Check if the swipe is from bottom to top
-            if (deltaY < 0) {
-                // Show the bottom sheet fragment
-//                val bottomFragment = BottomFragment.newInstance()
-//                bottomFragment.show(supportFragmentManager, "bottom_fragment")
-            }
-
-            // Return true to indicate that the event has been consumed
-            return true
-        }
-    }
-
-    private fun getFormattedDate(date: Date): String {
-        val calendar = Calendar.getInstance()
-        calendar.time = date
-
-        val dayOfWeek = SimpleDateFormat("EEEE", Locale.getDefault()).format(date)
-        val dayOfMonth = SimpleDateFormat("d", Locale.getDefault()).format(date)
-        val month = SimpleDateFormat("MMM", Locale.getDefault()).format(date)
-        val year = SimpleDateFormat("yyyy", Locale.getDefault()).format(date)
-
-        return "$dayOfWeek $dayOfMonth $month $year"
-    }
 
     private fun getFormattedDate(): String {
         val currentDate = Calendar.getInstance().time

@@ -77,6 +77,8 @@ class DashBoardScreen : AppCompatActivity(), AddAccountAdapter.OnClickedInterfac
         otpTextView = findViewById(R.id.otp_view)
 
 
+
+
         addAccountAdapter = AddAccountAdapter(this, this)
         binding.accountsRecyclerView.layoutManager =
             GridLayoutManager(this, 1, GridLayoutManager.HORIZONTAL, true)

@@ -81,7 +81,7 @@ class CheckInScreen : AppCompatActivity() {
     private var myaddress: String? = null
     private var mLatitude: String? = null
     private var mLongitude: String? = null
-    private val LOCATION_REQUEST_CODE=111
+    private val LOCATION_REQUEST_CODE = 111
 
     private var rotatedBitmap: Bitmap? = null
 
@@ -118,7 +118,7 @@ class CheckInScreen : AppCompatActivity() {
         setContentView(R.layout.activity_check_in_screen)
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_check_in_screen)
-
+        binding.btnRetake.isEnabled = false
         binding.cameraImageView.visibility = View.GONE
         binding.allLayout.visibility = View.VISIBLE
         binding.cameraPreviewView.visibility = View.GONE
@@ -208,14 +208,13 @@ class CheckInScreen : AppCompatActivity() {
             takePhoto()
         }
         binding.btnRetake.setOnClickListener {
-            if (imageInString != null) {
+            if (imagesBitmap != null) {
 
                 binding.btnRetake.setTextColor(resources.getColor(R.color.white))
                 binding.btnRetake.setBackgroundResource(R.drawable.button_back)
                 binding.btnSubmit.setTextColor(resources.getColor(R.color.check_btn))
                 binding.btnSubmit.setBackgroundResource(R.drawable.button_backwhite)
-                binding.btnRetake.isEnabled = true
-                startActivity(Intent(this@CheckInScreen, FrontCameraSetupScreen::class.java))
+                startCamera()
             }
         }
         val imeei = getIMEI(this)
@@ -259,7 +258,7 @@ class CheckInScreen : AppCompatActivity() {
 
 
                         } else {
-                            var formatAddress2 =
+                            val formatAddress2 =
                                 "${address.premises} ${address.postalCode} ${address.subLocality} ${address.subAdminArea} ${address.locality}  ${address.adminArea} "
 
                             myaddress = formatAddress2
@@ -312,14 +311,13 @@ class CheckInScreen : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == CAMERA_PERMISSION_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission granted, proceed with taking the photo
                 val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                 startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE)
             } else {
                 // Permission denied, show a message to the user
                 Toast.makeText(this, "Please Allow Camera permission", Toast.LENGTH_SHORT).show()
             }
-        }else if(requestCode==LOCATION_REQUEST_CODE){
+        } else if (requestCode == LOCATION_REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 getLastLocation()
             } else {
@@ -398,24 +396,6 @@ class CheckInScreen : AppCompatActivity() {
         cameraExecutor.shutdown()
     }
 
-
-
-    private fun calculateScaleFactor(
-        originalWidth: Int,
-        originalHeight: Int,
-        targetWidth: Int,
-        targetHeight: Int
-    ): Float {
-        val widthScale = targetWidth.toFloat() / originalWidth
-        val heightScale = targetHeight.toFloat() / originalHeight
-
-        return if (widthScale > heightScale) {
-            heightScale
-        } else {
-            widthScale
-        }
-    }
-
     private fun getFormattedDate(date: Date): String {
         val calendar = Calendar.getInstance()
         calendar.time = date
@@ -457,6 +437,7 @@ class CheckInScreen : AppCompatActivity() {
 
                         val emp = response.body()?.get(0)
                         Log.d("TAGGGGGGG", "onResponse: this is $mAltitude")
+
                         if (myaddress != null) {
 
                             val imeiPhone = imeiGetter.getIMEI()
@@ -664,6 +645,7 @@ class CheckInScreen : AppCompatActivity() {
                     binding.allLayout.visibility = View.VISIBLE
 
                     binding.bigProfile.setImageBitmap(imagesBitmap)
+                    binding.btnRetake.isEnabled = true
 
                 }
 
@@ -689,8 +671,6 @@ class CheckInScreen : AppCompatActivity() {
             return null
         }
     }
-
-
 
 
     fun fileToBitmap(imageFile: File): Bitmap? {
@@ -721,15 +701,24 @@ class CheckInScreen : AppCompatActivity() {
 
 
     private fun checkLocationPermission(): Boolean {
-        return (ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_FINE_LOCATION)
-                ==PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this,
-            android.Manifest.permission.ACCESS_COARSE_LOCATION)==PackageManager.PERMISSION_GRANTED)
+        return (ActivityCompat.checkSelfPermission(
+            this,
+            android.Manifest.permission.ACCESS_FINE_LOCATION
+        )
+                == PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(
+            this,
+            android.Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED)
     }
 
-    private fun requestLocationPermission(){
-        ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION,
-            android.Manifest.permission.ACCESS_COARSE_LOCATION),LOCATION_REQUEST_CODE)
+    private fun requestLocationPermission() {
+        ActivityCompat.requestPermissions(
+            this, arrayOf(
+                android.Manifest.permission.ACCESS_FINE_LOCATION,
+                android.Manifest.permission.ACCESS_COARSE_LOCATION
+            ), LOCATION_REQUEST_CODE
+        )
     }
 
 }

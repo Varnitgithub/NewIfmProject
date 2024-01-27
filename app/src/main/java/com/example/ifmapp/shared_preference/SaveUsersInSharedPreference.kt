@@ -65,6 +65,20 @@ class SaveUsersInSharedPreference {
             return null
         }
 
+        fun removeUserByPin(context: Context, pinToRemove: String) {
+            val userList: MutableList<UserListModel> = getList(context).toMutableList()
+
+            val iterator = userList.iterator()
+            while (iterator.hasNext()) {
+                val user = iterator.next()
+                if (user.pin == pinToRemove) {
+                    iterator.remove()
+                    saveList(context, KEY_MY_LIST, userList)
+                    break // Assuming each PIN is unique, we can break after removing the user.
+                }
+            }
+        }
+
           fun saveCurrentUserShifts(context: Context, myList: List<CurrentUserShiftsDetails>) {
             val preferences: SharedPreferences =
                 context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)

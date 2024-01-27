@@ -5,45 +5,41 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.widget.Button
+import android.os.Handler
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
-import com.example.ifmapp.MainActivity
 import com.example.ifmapp.R
 import com.example.ifmapp.checked
-import com.example.ifmapp.databasedb.EmployeeDB
-import com.example.ifmapp.databasedb.EmployeePinDao
 import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
 
-class RegistrationScreen : AppCompatActivity() {
-    private var LOCATION_PERMISSION_REQUEST_CODE = 111
+class LauncherScreen : AppCompatActivity() {
+    private var LOCATION_PERMISSION_REQUEST_CODE=111
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_launcher_screen)
 
-        setContentView(R.layout.activity_registration_screen)
-
-        val newRegistration: Button = findViewById(R.id.new_Registration)
-        val alreadyRegistered: Button = findViewById(R.id.already_Registered)
-            if (checkPermission()) {
-
-            } else {
-                requestPermission()
-            }
-            newRegistration.setOnClickListener {
-                    startActivity(Intent(this, SignUpWaysScreen::class.java))
-
-
-
-            }
-            alreadyRegistered.setOnClickListener {
-                    startActivity(Intent(this, LoginCheckedScreen::class.java))
-
-
-            }
+        if (checkPermission()){
+            val delayMillis = 3000L
+            Handler().postDelayed({
+                finish()
+                checkDatabaseUsers()
+            }, delayMillis)
+        }else{
+            requestPermission()
         }
 
 
+    }
+
+    private fun checkDatabaseUsers() {
+        val allUsers = SaveUsersInSharedPreference.getList(this)
+
+        if (allUsers.isNotEmpty()) {
+            startActivity(Intent(this@LauncherScreen, DashBoardScreen::class.java))
+        } else {
+            startActivity(Intent(this@LauncherScreen, RegistrationScreen::class.java))
+        }
+    }
 
     private fun checkPermission(): Boolean {
         return ActivityCompat.checkSelfPermission(
@@ -78,6 +74,13 @@ class RegistrationScreen : AppCompatActivity() {
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
+                val delayMillis = 3000L
+                Handler().postDelayed({
+                    finish()
+                    checkDatabaseUsers()
+                }, delayMillis)
+
+
             } else {
                 Toast.makeText(
                     this,
@@ -90,5 +93,4 @@ class RegistrationScreen : AppCompatActivity() {
 
         }
     }
-
 }

@@ -59,7 +59,8 @@ import retrofit2.Response
 
 class HomeFragment(
     private var context: Context,
-    private var otp: String, private var mobileNumber: String,
+    private var otp: String,
+    private var mobileNumber: String,
     private var empNumber: String
 ) : Fragment(),
     AddAccountAdapter.OnClickedInterface {
@@ -96,6 +97,8 @@ class HomeFragment(
         addAccountAdapter = AddAccountAdapter(requireContext(), this)
         hashMap = HashMap()
 
+
+        SaveUsersInSharedPreference
     }
 
     override fun onCreateView(
@@ -115,6 +118,10 @@ class HomeFragment(
         binding.checkoutBtn.isEnabled = false
         retrofitInstance = RetrofitInstance.apiInstance
 
+
+        binding.btnLogout.setOnClickListener {
+            SaveUsersInSharedPreference.removeUserByPin(requireContext(),otp)
+        }
         siteList = ArrayList()
         shiftList = ArrayList()
         shiftTimingList = ArrayList()
@@ -134,7 +141,7 @@ class HomeFragment(
                 siteSelect.toString(),
                 otp,
                 empNumber,empDesignation.toString(),empName.toString(),locationAutoId.toString()
-            )
+            ,shiftTimingList)
             currentUserShiftList.add(currentUserShift)
             SaveUsersInSharedPreference.saveCurrentUserShifts(
                 requireContext(),
@@ -177,51 +184,61 @@ class HomeFragment(
                         for (i in 0..size!!) {
                             shiftList.add(response.body()!!.get(i).ShiftCode)
                             shiftTimingList.add(response.body()!!.get(i).ShiftDetails)
-                            val key = response.body()!!.get(i).ShiftCode
-                            val value = response.body()!!.get(i).ShiftDetails
-                            hashMap.put(key, value)
-
-                            retrofitInstance.getGeoMappedSites(
-                                "sams", locationAutoid, "28.4062994",
-                                "77.0685759"
-                            ).enqueue(object : Callback<GeoMappedResponse?> {
-                                override fun onResponse(
-                                    call: Call<GeoMappedResponse?>,
-                                    response: Response<GeoMappedResponse?>
-                                ) {
-                                    if (response.isSuccessful) {
-                                        Log.d(
-                                            "TAGGGGGGG",
-                                            "onResponse:qqqqqqqqqq responseeeee is success"
-                                        )
-
-                                        var sizes = response.body()?.size?.minus(1)
-                                        for (i in 0..sizes!!) {
-                                            siteList.add(response.body()!!.get(i).Clientcodename)
-                                        }
-                                        setSpinner(siteList, shiftList)
-
-
-                                    }
-                                }
-
-                                override fun onFailure(
-                                    call: Call<GeoMappedResponse?>,
-                                    t: Throwable
-                                ) {
-
-                                }
-                            })
-
 
                         }
+                        Log.d(
+                            "TAGGGGGGG",
+                            "onResponse: this is shift timing list ...............${
+                                shiftList
+                            }"
+                        )
+                        Log.d(
+                            "TAGGGGGGG",
+                            "onResponse: this is shift  list ...............${
+                                shiftTimingList
+                            }"
+                        )
+                        retrofitInstance.getGeoMappedSites(
+                            "sams", locationAutoid, "28.4062994",
+                            "77.0685759"
+                        ).enqueue(object : Callback<GeoMappedResponse?> {
+                            override fun onResponse(
+                                call: Call<GeoMappedResponse?>,
+                                response: Response<GeoMappedResponse?>
+                            ) {
+                                if (response.isSuccessful) {
+                                    Log.d(
+                                        "TAGGGGGGG",
+                                        "onResponse:qqqqqqqqqq responseeeee is success"
+                                    )
 
-                        Log.d("TAGGGGGG", "onResponse: site = $siteList and shift = $shiftList")
+                                    var sizes = response.body()?.size?.minus(1)
+                                    for (i in 0..sizes!!) {
+                                        siteList.add(response.body()!!.get(i).Clientcodename)
+                                    }
+                                    setSpinner(siteList, shiftList)
 
 
-                    } else {
+                                }
+                            }
+
+                            override fun onFailure(
+                                call: Call<GeoMappedResponse?>,
+                                t: Throwable
+                            ) {
+
+                            }
+                        })
+
+
                     }
+
+                    Log.d("TAGGGGGG", "onResponse: site = $siteList and shift = $shiftList")
+
+
                 }
+
+
 
                 override fun onFailure(call: Call<ShiftSelectionResponse?>, t: Throwable) {
 
