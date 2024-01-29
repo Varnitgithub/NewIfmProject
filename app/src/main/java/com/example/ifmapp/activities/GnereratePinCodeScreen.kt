@@ -52,6 +52,7 @@ class GnereratePinCodeScreen : AppCompatActivity() {
 
 
         binding.btnGenerate.setOnClickListener {
+            binding.edtEnterPinCode.isEnabled = false
             generatePIN()
 
         }
@@ -102,12 +103,13 @@ class GnereratePinCodeScreen : AppCompatActivity() {
                                         response.body()?.get(0)?.EmpName.toString(),
                                         binding.edtEnterPinCode.text.toString().trim(),
                                         response.body()?.get(0)?.EmpNumber.toString(),
-                                        mobileNumber.toString()
+                                        response.body()?.get(0)?.LocationAutoID.toString(),
+                                        response.body()?.get(0)?.Designation.toString()
                                     )
 
                                     SaveUsersInSharedPreference.addUserIfNotExists(
                                         this@GnereratePinCodeScreen,
-                                        user
+                                        user,binding.edtEnterPinCode.text.toString().trim(),
                                     )
                                     startActivity(Intent(this@GnereratePinCodeScreen,DashBoardScreen::class.java))
 
@@ -137,11 +139,13 @@ class GnereratePinCodeScreen : AppCompatActivity() {
                         Log.d("TAGGGGGG", "onResponse: response is successful")
 
                     } else {
+                        binding.edtEnterPinCode.isEnabled = true
                         Log.d("TAGGGGGG", "onResponse: response is not successful")
                     }
                 }
 
                 override fun onFailure(call: Call<VerifyOtpResponse?>, t: Throwable) {
+                    binding.edtEnterPinCode.isEnabled = true
                     Log.d("TAGGGGGGGG", "onFailure: pin generation failed")
                 }
             })

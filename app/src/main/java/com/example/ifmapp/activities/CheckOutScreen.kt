@@ -27,9 +27,10 @@ class CheckOutScreen : AppCompatActivity() {
     private var shiftSelect: String? = null
     private var finalData: CheckOutModel? = null
     private var finalSiteSelectionData: CurrentUserShiftsDetails? = null
-    private var shiftTimingList:List<String>?=null
-    private var shiftStartTiming:String?=null
-    private var shiftEndTiming:String?=null
+    private var shiftTimingList: List<String>? = null
+    private var shiftStartTiming: String? = null
+    private var shiftEndTiming: String? = null
+    private var outTiming: String? = null
 
     private lateinit var binding: ActivityCheckOutScreenBinding
 
@@ -43,6 +44,41 @@ class CheckOutScreen : AppCompatActivity() {
 
         finalData = SaveUsersInSharedPreference.getCurrentUserFinalCheckoutShifts(this)[0]
         finalSiteSelectionData = SaveUsersInSharedPreference.getCurrentUserShifts(this)[0]
+        outTiming = intent.getStringExtra("inoutStatus")
+        Log.d("TAGGGGGGGGGG", "onCreate: $outTiming is out timing")
+        if (outTiming.toString().isNotEmpty()&&outTiming.toString()=="IN"){
+
+            if (getCurrentTime().substring(0,2).toInt()<12){
+                binding.joiningTime.text = getCurrentTime()
+                binding.joiningAm.text = "AM"
+                SaveUsersInSharedPreference.setShiftJoiningTime(this@CheckOutScreen
+                    , getCurrentTime(),"AM"
+                )
+            }else{
+                binding.joiningTime.text = getCurrentTime()
+                binding.joiningAm.text = "PM"
+                SaveUsersInSharedPreference.setShiftJoiningTime(this@CheckOutScreen
+                    , getCurrentTime(),"PM"
+                )
+            }
+
+        }else{
+
+
+            if (getCurrentTime().substring(0,2).toInt()<12){
+                binding.outTime.text = getCurrentTime()
+                binding.outPm.text = "AM"
+                val _InTime= SaveUsersInSharedPreference.getShiftJoiningTime(this)
+                binding.joiningTime.text = _InTime.toString()
+            }else{
+                binding.outTime.text = getCurrentTime()
+                binding.outPm.text = "PM"
+                val _InTime= SaveUsersInSharedPreference.getShiftJoiningTime(this)
+                binding.joiningTime.text = _InTime.toString()
+            }
+
+
+        }
 
         currentTime = finalData?.currentTime
         employeeName = finalData?.employeeName
@@ -59,15 +95,14 @@ class CheckOutScreen : AppCompatActivity() {
 
         binding.currentSiteTxt.text = siteSelect
 
-        for (i in 0 until shiftTimingList?.size!!){
-            if (shiftSelect.toString()== shiftTimingList!![i].substring(0,1)){
-                shiftStartTiming = shiftTimingList!![i].substring(4,9)
-                shiftEndTiming = shiftTimingList!![i].substring(10,15)
+        for (i in 0 until shiftTimingList?.size!!) {
+            if (shiftSelect.toString() == shiftTimingList!![i].substring(0, 1)) {
+                shiftStartTiming = shiftTimingList!![i].substring(4, 9)
+                shiftEndTiming = shiftTimingList!![i].substring(10, 15)
                 binding.shiftStartTime.text = shiftStartTiming
                 binding.shiftEndTime.text = shiftEndTiming
             }
         }
-
         binding.shiftStartdateText.text = getFormattedDate()
         binding.shiftEnddateText.text = getFormattedDate()
         binding.join.text = getFormattedDate()
@@ -76,27 +111,11 @@ class CheckOutScreen : AppCompatActivity() {
         binding.checkInBtn.isEnabled = false
 
         binding.checkoutBtn.setOnClickListener {
-            startActivity(Intent(this, CheckInScreen::class.java))
+            val intent = Intent(this@CheckOutScreen, CheckInScreen::class.java)
+            intent.putExtra("INOUTStatus", "OUT")
+            startActivity(intent)
         }
-
-        if (currentTime?.substring(0,2)?.toInt()!! <12){
-            binding.joiningTime.text = "${currentTime?.substring(0, 5)}"
-            binding.joiningAm.text = "AM"
-        }else{
-            binding.joiningTime.text = "${currentTime?.substring(0, 5)}"
-            binding.joiningAm.text = "PM"
-        }
-
-         joinedTime = shiftTime?.substring(4,9)
-          endTime = shiftTime?.substring(10,16)
-    Log.d(
-    "TAGGGGG",
-    "onCreate: $joinedTime is joined time $endTime is end time $currentTime is current time"
-    )
-
-}
-
-
+    }
     private fun getFormattedDate(): String {
         val currentDate = Calendar.getInstance().time
         val dateFormat = SimpleDateFormat("EEE d MMM", Locale.getDefault())
@@ -105,6 +124,12 @@ class CheckOutScreen : AppCompatActivity() {
 
     override fun onBackPressed() {
         super.onBackPressed()
-        startActivity(Intent(this@CheckOutScreen,DashBoardScreen::class.java))
+        startActivity(Intent(this@CheckOutScreen, DashBoardScreen::class.java))
+    }
+
+    fun getCurrentTime(): String {
+        val currentTime = Calendar.getInstance().time
+        val dateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+        return dateFormat.format(currentTime)
     }
 }

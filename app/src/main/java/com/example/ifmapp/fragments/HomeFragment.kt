@@ -14,9 +14,11 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.MutableLiveData
 import com.example.ifmapp.R
 import com.example.ifmapp.RetrofitInstance
 import com.example.ifmapp.activities.CheckInScreen
+import com.example.ifmapp.activities.DashBoardScreen
 import com.example.ifmapp.activities.RegistrationScreen
 import com.example.ifmapp.adapters.AddAccountAdapter
 import com.example.ifmapp.apiinterface.ApiInterface
@@ -34,6 +36,9 @@ import com.google.android.gms.location.LocationServices
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 class HomeFragment(
     private var context: Context,
@@ -65,8 +70,14 @@ class HomeFragment(
 
     private var empName: String? = null
 
+    private var attendanceStatus: String? = null
+
     private var locationAutoId: String? = null
 
+    private lateinit var shiftSelectionLiveData: MutableLiveData<String>
+    private lateinit var siteSelectionLiveData: MutableLiveData<String>
+
+    private var outStatus: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,8 +86,18 @@ class HomeFragment(
         addAccountAdapter = AddAccountAdapter(requireContext(), this)
         hashMap = HashMap()
 
+        shiftSelectionLiveData = MutableLiveData()
+        siteSelectionLiveData = MutableLiveData()
 
-        SaveUsersInSharedPreference
+//        attendanceStatus = SaveUsersInSharedPreference.getAttendanceStatus(requireActivity())
+//
+//        if (attendanceStatus.toString().isNotEmpty()&&attendanceStatus.toString()=="IN"){
+//            binding.checkInBtn.isClickable= false
+//            binding.checkoutBtn.isEnabled = true
+//            binding.checkoutBtn.isClickable = true
+//        }
+
+
     }
 
     override fun onCreateView(
@@ -88,27 +109,45 @@ class HomeFragment(
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false)
         Log.d("TAGGGG", "onCreateView:////////////////////////// $otp")
         currentUser = SaveUsersInSharedPreference.getUserByPin(requireContext(), otp)
-        mobileNumber = currentUser?.mobileNumber.toString()
-        val allusers =  SaveUsersInSharedPreference.getList(requireContext())
+        locationAutoId = currentUser?.LocationAutoId.toString()
+        empName = currentUser?.userName
+        empNumber = currentUser?.empId.toString()
+        empDesignation = currentUser?.designation
+        val allusers = SaveUsersInSharedPreference.getList(requireContext())
         Log.d("TAGGGGGGGGGGG", "onCreateView:/.........all usersz ${allusers.size}")
 
-        for (i in 0 until allusers.size){
+
+
+        shiftSelections(locationAutoId.toString())
+
+        for (i in 0 until allusers.size) {
             Log.d("TAGGGGGGGGGGG", "onCreateView:/.........all usersz ${allusers.get(i)}")
 
         }
-        getCurrentEmployee(otp, mobileNumber)
+        //getCurrentEmployee(otp, mobileNumber)
 
         binding.userName.text = currentUser?.userName
+        binding.designation.text = currentUser?.designation
+setShiftJoiningTime()
+        binding.shiftStartdateText.text = getFormattedDate()
+        binding.shiftEnddateText.text = getFormattedDate()
+        binding.join.text = getFormattedDate()
+        binding.out.text = getFormattedDate()
 
         createLocationRequest()
         binding.checkoutBtn.isEnabled = false
         retrofitInstance = RetrofitInstance.apiInstance
 
+        siteSelectionLiveData.observe(requireActivity()) {
+        }
 
+        shiftSelectionLiveData.observe(requireActivity()) {
+            setShiftTiming(it)
+        }
         binding.btnLogout.setOnClickListener {
-            SaveUsersInSharedPreference.removeUserByPin(requireContext(),otp)
+            SaveUsersInSharedPreference.removeUserByPin(requireContext(), otp)
 
-        startActivity(Intent(requireContext(),RegistrationScreen::class.java))
+            startActivity(Intent(requireContext(), DashBoardScreen::class.java))
         }
         siteList = ArrayList()
         shiftList = ArrayList()
@@ -116,8 +155,10 @@ class HomeFragment(
 
         getLastLocation()
 
+
+
         binding.checkInBtn.setOnClickListener {
-            if (shiftSelect!=null&&siteSelect!=null){
+            if (shiftSelect != null && siteSelect != null) {
                 binding.checkoutBtn.setTextColor(resources.getColor(R.color.check_btn))
                 binding.checkoutBtn.setBackgroundResource(R.drawable.button_backwhite)
                 binding.checkInBtn.setTextColor(resources.getColor(R.color.white))
@@ -129,21 +170,25 @@ class HomeFragment(
                     shiftSelect.toString(),
                     siteSelect.toString(),
                     otp,
-                    empNumber,empDesignation.toString(),empName.toString(),locationAutoId.toString()
-                    ,shiftTimingList)
+                    empNumber,
+                    empDesignation.toString(),
+                    empName.toString(),
+                    locationAutoId.toString(),
+                    shiftTimingList
+                )
                 currentUserShiftList.add(currentUserShift)
                 SaveUsersInSharedPreference.saveCurrentUserShifts(
                     requireContext(),
                     currentUserShiftList
                 )
 
-                Log.d(
-                    "TAGGGGGG",
-                    "onCreateView: 1111111 saved successfullly"
-                )
-                startActivity(Intent(requireContext(), CheckInScreen::class.java))
-            }else{
-                Toast.makeText(requireContext(), "Please select Shift and Site", Toast.LENGTH_SHORT).show()
+                val intent = Intent(requireContext(), CheckInScreen::class.java)
+                intent.putExtra("INOUTStatus", "IN")
+                intent.putExtra("mOTP", otp)
+                startActivity(intent)
+            } else {
+                Toast.makeText(requireContext(), "Please select Shift and Site", Toast.LENGTH_SHORT)
+                    .show()
             }
 
         }
@@ -179,18 +224,7 @@ class HomeFragment(
                             shiftTimingList.add(response.body()!!.get(i).ShiftDetails)
 
                         }
-                        Log.d(
-                            "TAGGGGGGG",
-                            "onResponse: this is shift timing list ...............${
-                                shiftList
-                            }"
-                        )
-                        Log.d(
-                            "TAGGGGGGG",
-                            "onResponse: this is shift  list ...............${
-                                shiftTimingList
-                            }"
-                        )
+
                         retrofitInstance.getGeoMappedSites(
                             "sams", locationAutoid, "28.4062994",
                             "77.0685759"
@@ -232,7 +266,6 @@ class HomeFragment(
                 }
 
 
-
                 override fun onFailure(call: Call<ShiftSelectionResponse?>, t: Throwable) {
 
                 }
@@ -270,12 +303,15 @@ class HomeFragment(
                     // Handle the selected item
                     val selectedItem = parent?.getItemAtPosition(position).toString()
                     siteSelect = selectedItem
+                    siteSelectionLiveData.postValue(siteSelect.toString())
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {
                     parent?.let {
                         if (it.count > 0) {
+
                             siteSelect = it.getItemAtPosition(0).toString()
+                            siteSelectionLiveData.postValue(siteSelect.toString())
                         }
                     }
                 }
@@ -292,7 +328,7 @@ class HomeFragment(
                     // Handle the selected item
                     val selectedItem = parent?.getItemAtPosition(position).toString()
                     shiftSelect = selectedItem
-
+                    shiftSelectionLiveData.postValue(shiftSelect.toString())
                     val shiftTiming = hashMap[selectedItem]
 
 
@@ -302,6 +338,7 @@ class HomeFragment(
                     parent?.let {
                         if (it.count > 0) {
                             shiftSelect = it.getItemAtPosition(0).toString()
+                            shiftSelectionLiveData.postValue(shiftSelect.toString())
                         }
                     }
                 }
@@ -360,34 +397,77 @@ class HomeFragment(
 
     }
 
-    private fun getCurrentEmployee(otp: String, mobileNumber: String) {
-        retrofitInstance.loginByPIN("sams", mobileNumber, otp)
-            .enqueue(object : Callback<LoginByPINResponse?> {
-                override fun onResponse(
-                    call: Call<LoginByPINResponse?>,
-                    response: Response<LoginByPINResponse?>
-                ) {
-                    if (response.isSuccessful) {
-                        if (response.body()?.get(0)?.MessageID.toString().toInt() == 1) {
-
-                            locationAutoId = response.body()?.get(0)?.LocationAutoID
-                            binding.userName.text = response.body()?.get(0)?.EmpName
-                            binding.designation.text = response.body()?.get(0)?.Designation
-
-                            empDesignation = response.body()?.get(0)?.Designation
-                            empName = response.body()?.get(0)?.EmpName
-                            shiftSelections(locationAutoId.toString())
-                        }
-                    } else {
-                        Log.d("TAGGGGGG", "onResponse: response id not successful")
-                    }
-                }
-
-                override fun onFailure(call: Call<LoginByPINResponse?>, t: Throwable) {
-
-                }
-            })
+    private fun getFormattedDate(): String {
+        val currentDate = Calendar.getInstance().time
+        val dateFormat = SimpleDateFormat("EEE d MMM", Locale.getDefault())
+        return dateFormat.format(currentDate)
     }
 
 
+    fun getCurrentTime(): String {
+        val currentTime = Calendar.getInstance().time
+        val dateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+        return dateFormat.format(currentTime)
+    }
+
+    private fun setShiftTiming(shift: String) {
+        Log.d("TAGGGGGGGG", "setShiftTiming: $shiftTimingList")
+        for (timing in shiftTimingList) {
+            Log.d("TAGGGGGGGG", "setShiftTiming: one ${timing.substring(0, 2)}")
+            Log.d("TAGGGGGGGG", "setShiftTiming: one ${shift} is my shift")
+            if (shift.trim() == timing.substring(0, 2).trim()) {
+
+                Log.d("TAGGGGGGGG", "setShiftTiming: one ${shift} is common shift")
+
+                binding.shiftStartTime.text = timing.substring(4, 9)
+                binding.shiftEndTime.text = timing.substring(10, 15)
+            }
+        }
+    }
+
+    private fun setShiftJoiningTime() {
+
+        if (SaveUsersInSharedPreference.getShiftJoiningTime(requireContext()).isNullOrEmpty()) {
+
+
+            if (getCurrentTime().substring(0, 2).toInt() < 12) {
+                binding.joiningTime.text = getCurrentTime()
+                binding.joiningAm.text = "AM"
+                SaveUsersInSharedPreference.setShiftJoiningTime(
+                    requireContext(), getCurrentTime(), "AM"
+                )
+            } else {
+                binding.joiningTime.text = getCurrentTime()
+                binding.joiningAm.text = "PM"
+                SaveUsersInSharedPreference.setShiftJoiningTime(
+                    requireContext(), getCurrentTime(), "PM"
+                )
+            }
+        } else {
+            var shiftTime = SaveUsersInSharedPreference.getShiftJoiningTime(requireContext())
+
+            if (shiftTime?.substring(0, 2)?.toInt()!! < 12) {
+                binding.joiningTime.text = shiftTime
+                binding.joiningAm.text = "AM"
+
+            } else {
+                binding.joiningTime.text = shiftTime
+                binding.joiningAm.text = "PM"
+
+            }
+
+
+
+            if (getCurrentTime().substring(0, 2).toInt() < 12) {
+                binding.outTime.text = getCurrentTime()
+                binding.outPm.text = "AM"
+
+            } else {
+                binding.outTime.text = getCurrentTime()
+                binding.outPm.text = "PM"
+
+            }
+
+        }
+    }
 }

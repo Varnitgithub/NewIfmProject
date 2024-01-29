@@ -19,7 +19,7 @@ class LauncherScreen : AppCompatActivity() {
         setContentView(R.layout.activity_launcher_screen)
 
         if (checkPermission()){
-            val delayMillis = 3000L
+            val delayMillis = 2000L
             Handler().postDelayed({
                 finish()
                 checkDatabaseUsers()

@@ -24,11 +24,16 @@ class MainActivity : AppCompatActivity() {
 
     private var otpFromLogin: String? = null
 
+    private var otpFromsignUp: String? = null
+    private var mOTP: String? = null
+
     private var mobileNumber: String? = null
 
     private var empNumber: String? = null
 
     private var locationAutoId: String? = null
+
+    private var pinFromSignin: String? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,7 +41,10 @@ class MainActivity : AppCompatActivity() {
         otp = intent.getStringExtra("mPIN")
         otpFromLogin = intent.getStringExtra("mPINFromLogin")
         mobileNumber = intent.getStringExtra("mobileNumber")
+        otpFromsignUp = intent.getStringExtra("userPin")
+        pinFromSignin = intent.getStringExtra("pinFromSignin")
         empNumber = intent.getStringExtra("empId")
+        mOTP = intent.getStringExtra("mOTP")
 
 
 
@@ -44,8 +52,15 @@ class MainActivity : AppCompatActivity() {
 
         if (otp!=null){
             homeFragment = HomeFragment(this, otp.toString(), mobileNumber.toString(),empNumber.toString())
-        }else{
+        }else if (otpFromLogin!=null){
             homeFragment = HomeFragment(this, otpFromLogin.toString(), mobileNumber.toString(),empNumber.toString())
+        }else if (otpFromsignUp!=null){
+            homeFragment = HomeFragment(this, otpFromsignUp.toString(), mobileNumber.toString(),empNumber.toString())
+        }else if (pinFromSignin!=null){
+            homeFragment = HomeFragment(this, pinFromSignin.toString(), mobileNumber.toString(),empNumber.toString())
+
+        }else{
+            homeFragment = HomeFragment(this, mOTP.toString(), mobileNumber.toString(),empNumber.toString())
 
         }
 

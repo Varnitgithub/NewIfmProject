@@ -8,10 +8,11 @@
     tools:context=".activities.LoginCheckedScreen">
 
     <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_width="200dp"
+        android:layout_height="80dp"
 android:src="@drawable/ifm360"
         android:padding="34dp"
+        android:layout_gravity="center"
         android:scaleType="centerCrop"
         android:layout_marginTop="100dp"/>
 

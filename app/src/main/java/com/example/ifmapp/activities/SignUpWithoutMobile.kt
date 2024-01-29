@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import com.example.ifmapp.MainActivity
 import com.example.ifmapp.R
 import com.example.ifmapp.RetrofitInstance
 import com.example.ifmapp.apiinterface.ApiInterface
@@ -175,23 +176,26 @@ class SignUpWithoutMobile : AppCompatActivity() {
                     if (response.isSuccessful) {
 
                         if (response.body()?.get(0)?.MessageID.toString().toInt() == 1) {
-                            var user = UserListModel(
+                            val user = UserListModel(
                                 response.body()?.get(0)?.EmpName.toString(),
                                 pin,
                                 empId,
-                                ""
+                                response.body()?.get(0)?.LocationAutoID.toString(),
+                                response.body()?.get(0)?.Designation.toString()
                             )
 
                             SaveUsersInSharedPreference.addUserIfNotExists(
-                                this@SignUpWithoutMobile, user
+                                this@SignUpWithoutMobile, user,pin
                             )
 
-                            startActivity(
+                            val intent =
                                 Intent(
                                     this@SignUpWithoutMobile,
-                                    DashBoardScreen::class.java
+                                    MainActivity::class.java
                                 )
-                            )
+                            intent.putExtra("userPin", pin)
+
+                            startActivity(intent)
                         } else {
 
                         }

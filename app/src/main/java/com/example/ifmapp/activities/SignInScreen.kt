@@ -6,7 +6,9 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import com.example.ifmapp.MainActivity
 import com.example.ifmapp.R
 import com.example.ifmapp.RetrofitInstance
 import com.example.ifmapp.apiinterface.ApiInterface
@@ -32,6 +34,7 @@ class SignInScreen : AppCompatActivity() {
         binding.btnContinue.isEnabled = false
 
         binding.btnContinue.setOnClickListener {
+
 loginByEmployeeId(
     binding.employeeidEdt.text.toString().trim(),
     binding.employeepinEdt.text.toString().trim()
@@ -71,28 +74,30 @@ loginByEmployeeId(
                     response: Response<LoginByPINResponse?>
                 ) {
                     if (response.isSuccessful) {
-
+                        Log.d("TAGGGGGGGGG", "onResponse: here")
                         if (response.body()?.get(0)?.MessageID.toString().toInt() == 1) {
-                            var user = UserListModel(
+
+                            val user = UserListModel(
                                 response.body()?.get(0)?.EmpName.toString(),
                                 pin,
                                 empId,
-                                ""
+                                response.body()?.get(0)?.LocationAutoID.toString(),response.body()?.get(0)?.Designation.toString()
                             )
 
                             SaveUsersInSharedPreference.addUserIfNotExists(
-                                this@SignInScreen, user
+                                this@SignInScreen, user,pin
                             )
                             Log.d("TAGGGGGGGGG", "onResponse: user saved successfully")
 
-                            startActivity(
+                            val intent =
                                 Intent(
                                     this@SignInScreen,
-                                    DashBoardScreen::class.java
+                                    MainActivity::class.java
                                 )
-                            )
+                            intent.putExtra("pinFromSignin",pin)
+                            startActivity(intent)
                         } else {
-                            Log.d("TAGGGGGGGGG", "onResponse: User does not exists")
+                            Toast.makeText(this@SignInScreen, "User does not exists", Toast.LENGTH_SHORT).show()
                         }
 
                     } else {

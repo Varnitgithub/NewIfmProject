@@ -38,7 +38,7 @@ class MobileRegisterScreen : AppCompatActivity() {
     private val LOCATION_PERMISSION_REQUEST_CODE = 123
     private val READ_PHONE_PERMISSION = 123
     private val BACKGROUND_LOCATION_CODE = 111
-    private var countDownTimer: CountDownTimer?=null
+    private var countDownTimer: CountDownTimer? = null
     private val initialTimeMillis: Long = 60000 // 60 seconds
     private val countDownIntervalMillis: Long = 1000 // 1 second
 
@@ -59,15 +59,13 @@ class MobileRegisterScreen : AppCompatActivity() {
         //getPhoneRead()
 
 
-
-
-/*
-        binding.moveToSignup.setOnClickListener {
-            startActivity(Intent(this, LoginByPinMobileScreen::class.java))
-        }
-        binding.wayToSignup.setOnClickListener {
-            startActivity(Intent(this, SignUpScreen::class.java))
-        }*/
+        /*
+                binding.moveToSignup.setOnClickListener {
+                    startActivity(Intent(this, LoginByPinMobileScreen::class.java))
+                }
+                binding.wayToSignup.setOnClickListener {
+                    startActivity(Intent(this, SignUpScreen::class.java))
+                }*/
 
         binding.btnContinue.setOnClickListener {
             startCountdownTimer()
@@ -77,6 +75,7 @@ class MobileRegisterScreen : AppCompatActivity() {
         binding.resentOtp.setOnClickListener {
             startCountdownTimer()
             sendOTP()
+            binding.resentOtp.isEnabled = false
         }
 
         binding.mobileNoEdt.addTextChangedListener(object : TextWatcher {
@@ -120,9 +119,10 @@ class MobileRegisterScreen : AppCompatActivity() {
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                     if (editTexts[3].text.toString().isNotEmpty()) {
-
                         editTexts[i].inputType =
                             InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD
+                        binding.btnContinue.isEnabled = true
+                        binding.btnContinue.isClickable = true
                     }
                     editTexts[i].inputType =
                         InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD
@@ -138,6 +138,9 @@ class MobileRegisterScreen : AppCompatActivity() {
                 if (keyCode == KeyEvent.KEYCODE_DEL && event.action == KeyEvent.ACTION_DOWN) {
                     // If backspace is pressed, move the focus to the previous EditText
                     if (i > 0) {
+                        editTexts[i].inputType =
+                            InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+                        editTexts[i].text.clear()
                         editTexts[i - 1].requestFocus()
                     }
                     true
@@ -166,6 +169,7 @@ class MobileRegisterScreen : AppCompatActivity() {
                 if (s?.length == 1) {
                     nextEditText?.requestFocus()
 
+
                 }
             }
 
@@ -184,13 +188,15 @@ class MobileRegisterScreen : AppCompatActivity() {
                     binding.time.text = "00:0$secondsRemaining"
 
                 }
-               // binding.resentOtp.visibility = View.VISIBLE
+                // binding.resentOtp.visibility = View.VISIBLE
 
             }
 
             override fun onFinish() {
                 // Countdown timer finished, handle the event
+                binding.resentOtp.isEnabled = true
                 binding.resentOtp.visibility = View.VISIBLE
+
             }
         }
 
@@ -242,6 +248,10 @@ class MobileRegisterScreen : AppCompatActivity() {
                                                             "TAGGGGGGGG",
                                                             "onResponse: otp send successfully"
                                                         )
+                                                        binding.mobileNoEdt.isEnabled = false
+                                                        binding.btnContinue.isEnabled = false
+                                                        binding.btnContinue.isClickable = false
+                                                        binding.resentOtp.visibility = View.GONE
                                                         binding.otpSectionLL.visibility =
                                                             View.VISIBLE
 
@@ -482,7 +492,6 @@ class MobileRegisterScreen : AppCompatActivity() {
         }
         return false
     }
-
 
 
     private fun getPhoneRead() {

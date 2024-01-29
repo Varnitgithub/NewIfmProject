@@ -12,16 +12,13 @@ import android.graphics.Matrix
 import android.location.Address
 import android.location.Geocoder
 import android.location.Location
-import android.media.ExifInterface
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
-import android.provider.MediaStore
 import android.telephony.TelephonyManager
 import android.util.Base64
 import android.util.Log
 import android.view.View
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -33,6 +30,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import com.example.ifmapp.MainActivity
 import com.example.ifmapp.R
 import com.example.ifmapp.RetrofitInstance
 import com.example.ifmapp.animation.AnimationClass
@@ -68,7 +66,6 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 import java.nio.file.Files
-import java.nio.file.Paths
 
 class CheckInScreen : AppCompatActivity() {
     private lateinit var imageCapture: ImageCapture
@@ -81,6 +78,7 @@ class CheckInScreen : AppCompatActivity() {
     private var myaddress: String? = null
     private var mLatitude: String? = null
     private var mLongitude: String? = null
+    private var mOTP: String? = null
     private val LOCATION_REQUEST_CODE = 111
 
     private var rotatedBitmap: Bitmap? = null
@@ -96,6 +94,7 @@ class CheckInScreen : AppCompatActivity() {
     private lateinit var imeiGetter: IMEIGetter
     private var imageInString: String? = null
     private var employeeName: String? = null
+    private var inoutStatus: String? = null
     private var employeeDesignation: String? = null
     private var otp: String? = null
     private var base64Image: String? = null
@@ -112,6 +111,8 @@ class CheckInScreen : AppCompatActivity() {
     private lateinit var currentDate: Date
     private val CAMERA_REQUEST_CODE = 1
 
+    var inStatus = "IN"
+    var outStatus = "OUT"
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -124,6 +125,12 @@ class CheckInScreen : AppCompatActivity() {
         binding.cameraImageView.visibility = View.GONE
         binding.allLayout.visibility = View.VISIBLE
         binding.cameraPreviewView.visibility = View.GONE
+
+          inoutStatus = intent.getStringExtra("INOUTStatus")
+          mOTP = intent.getStringExtra("mOTP")
+        Log.d("TAGGGGG", "onCreate: this is motp.........................$mOTP")
+
+
 
 
         imageCapture = ImageCapture.Builder().build()
@@ -183,6 +190,7 @@ class CheckInScreen : AppCompatActivity() {
                     mLatitude.toString(),
                     mLongitude.toString()
                 )
+                binding.btnSubmit.isClickable = false
                 AnimationClass.startBlinkAnimation(binding.attendanceMarkedTxt)
 
                 val saveCurrentUserFinalList = ArrayList<CheckOutModel>()
@@ -204,10 +212,11 @@ class CheckInScreen : AppCompatActivity() {
         }
         binding.cameraPreviewView.setOnClickListener {
             takePhoto()
+
         }
         binding.btnRetake.setOnClickListener {
             if (imagesBitmap != null) {
-
+binding.btnSubmit.isClickable = true
                 binding.btnRetake.setTextColor(resources.getColor(R.color.white))
                 binding.btnRetake.setBackgroundResource(R.drawable.button_back)
                 binding.btnSubmit.setTextColor(resources.getColor(R.color.check_btn))
@@ -245,42 +254,35 @@ class CheckInScreen : AppCompatActivity() {
                     val address: Address = addresses[0]
                     withContext(Dispatchers.Main) {
 
-                        if (address.subThoroughfare != null && address.thoroughfare != null &&address.premises!=null
-                            && address.postalCode!=null && address.subLocality!=null
-                            && address.subAdminArea!=null &&address.locality!=null&&  address.adminArea!=null
-                            && address.subThoroughfare.isNotEmpty() && address.thoroughfare.isNotEmpty() &&address.premises.isNotEmpty()
-                            && address.postalCode.isNotEmpty() && address.subLocality.isNotEmpty()
-                            && address.subAdminArea.isNotEmpty() &&address.locality.isNotEmpty() &&  address.adminArea.isNotEmpty()) {
-                            val formattedAdress =
-                                "${address.premises} ${address.subThoroughfare} ${address.thoroughfare} ${address.postalCode} ${address.subLocality} ${address.subAdminArea} ${address.locality}  ${address.adminArea} "
-                            binding.locationName.text = formattedAdress
+                        val subThoroughfare = address.subThoroughfare ?: ""
+                        val thoroughfare = address.thoroughfare ?: ""
+                        val premises = address.premises ?: ""
+                        val postalCode = address.postalCode ?: ""
+                        val subLocality = address.subLocality ?: ""
+                        val subAdminArea = address.subAdminArea ?: ""
+                        val locality = address.locality ?: ""
+                        val adminArea = address.adminArea ?: ""
 
-
-                            binding.address.text = formattedAdress
-
-                            myaddress = formattedAdress
-
-
-                        } else {
-                            val formatAddress2 =
-                                "${address.premises} ${address.postalCode} ${address.subLocality} ${address.subAdminArea} ${address.locality}  ${address.adminArea} "
-
-                            myaddress = formatAddress2
-
-
-                            binding.locationName.text =
-                                formatAddress2
-                            binding.address.text =
-                                formatAddress2
-
+                        val formattedAdress = buildString {
+                            if (premises.isNotEmpty()) append("$premises ")
+                            if (subThoroughfare.isNotEmpty()) append("$subThoroughfare ")
+                            if (thoroughfare.isNotEmpty()) append("$thoroughfare ")
+                            if (postalCode.isNotEmpty()) append("$postalCode ")
+                            if (subLocality.isNotEmpty()) append("$subLocality ")
+                            if (subAdminArea.isNotEmpty()) append("$subAdminArea ")
+                            if (locality.isNotEmpty()) append("$locality ")
+                            if (adminArea.isNotEmpty()) append("$adminArea ")
                         }
 
+                        binding.locationName.text = formattedAdress
+                        binding.address.text = formattedAdress
+                        myaddress = formattedAdress
 
                         address.apply {
                             Log.d(
                                 "TAGGGGGGGG", "getAddressFromLocation: $adminArea $subAdminArea" +
                                         " $locality $subLocality $countryCode $countryName $extras $featureName $locale $maxAddressLineIndex " +
-                                        "${address.postalCode}  $subThoroughfare $thoroughfare $premises"
+                                        "$postalCode $subThoroughfare $thoroughfare $premises"
                             )
                         }
                     }
@@ -467,7 +469,7 @@ class CheckInScreen : AppCompatActivity() {
                                     empNumber.toString(),
                                     emp?.AsmtID.toString(),
                                     empNumber.toString(),
-                                    "IN",
+                                    inoutStatus.toString(),
                                     time.toString(),
                                     latitude = mLatitude.toString(),
                                     mLongitude.toString(),
@@ -529,17 +531,24 @@ class CheckInScreen : AppCompatActivity() {
                 response: Response<AttendanceResponse?>
             ) {
                 if (response.isSuccessful) {
+
                     Log.d("TAGGGGGGGG", "onResponse: attendance inserted")
                     Toast.makeText(this@CheckInScreen, "attendance marked", Toast.LENGTH_SHORT)
                         .show()
                     binding.cameraPreviewView.visibility = View.GONE
 
                     binding.checkinCL.visibility = View.GONE
+
+                    binding.attendanceMarkedTxt.text = "Attendance Marked ${inoutStatus} Successfully!"
                     setFinalDialog(mLatitude.toString(), mLongitude.toString(), myaddress.toString())
+
+                    SaveUsersInSharedPreference.setAttendanceStatus(this@CheckInScreen,"IN")
                     val delayMillis = 5000L
                     Handler().postDelayed({
                         finish()
-                        val intent = Intent(this@CheckInScreen, CheckOutScreen::class.java)
+                        val intent = Intent(this@CheckInScreen, MainActivity::class.java)
+                        intent.putExtra("inoutStatus",inoutStatus)
+                        intent.putExtra("mOTP",mOTP)
                         startActivity(intent)
                     }, delayMillis)
 

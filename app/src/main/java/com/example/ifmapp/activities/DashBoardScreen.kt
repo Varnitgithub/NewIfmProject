@@ -50,7 +50,7 @@ class DashBoardScreen : AppCompatActivity(), AddAccountAdapter.OnClickedInterfac
         binding.userName.text = "Hi, ${currentUser.userName}"
         allUsersList = ArrayList()
         empNumber = currentUser.empId
-        mobileNumber = currentUser.mobileNumber
+      //  mobileNumber = currentUser.mobileNumber
 
         otpTextView = findViewById(R.id.otp_view)
 
@@ -59,7 +59,7 @@ class DashBoardScreen : AppCompatActivity(), AddAccountAdapter.OnClickedInterfac
 
         addAccountAdapter = AddAccountAdapter(this, this)
         binding.accountsRecyclerView.layoutManager =
-            GridLayoutManager(this, 1, GridLayoutManager.HORIZONTAL, true)
+            GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, true)
         binding.accountsRecyclerView.adapter = addAccountAdapter
         val employeesList = ArrayList<AddAccountModel>()
 
@@ -104,26 +104,9 @@ class DashBoardScreen : AppCompatActivity(), AddAccountAdapter.OnClickedInterfac
     }
 
 
-    private fun createOtpTextWatcher(nextEditText: EditText?): TextWatcher {
-        return object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
-                if (s?.length == 1) {
-                    nextEditText?.requestFocus()
-
-                }
-            }
-
-            override fun afterTextChanged(s: Editable?) {}
-
-
-        }
-    }
 
     override fun onclick(employeeModel: UserListModel, position: Int) {
-        Log.d("TAGGGGGGGGGGG", "onclick: current user = ${employeeModel.mobileNumber}")
+        binding.userName.text ="Hi, ${employeeModel.userName}"
     }
 
     private fun checkPermission(): Boolean {

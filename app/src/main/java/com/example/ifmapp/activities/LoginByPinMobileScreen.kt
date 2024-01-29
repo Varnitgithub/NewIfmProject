@@ -64,7 +64,7 @@ class LoginByPinMobileScreen : AppCompatActivity() {
         if (binding.employeeMobileEdt.text != null && binding.employeepinEdt.text != null) {
 
             if (binding.employeeMobileEdt.text.toString().length <= 10 && binding.employeepinEdt.text.toString().length <= 4) {
-
+                Log.d("TAGGGGGGGGG", "loginUser: login successful")
                 retrofitInstance.loginByPIN(
                     "sams",
                     binding.employeeMobileEdt.text.toString().trim(),
@@ -85,14 +85,15 @@ class LoginByPinMobileScreen : AppCompatActivity() {
                                         response.body()!![0].EmpName,
                                         userPin,
                                         response.body()!![0].EmpNumber,
-                                        binding.employeeMobileEdt.text.toString().trim()
+                                        response.body()?.get(0)?.LocationAutoID.toString(),
+                                        response.body()?.get(0)?.Designation.toString()
 
                                     )
-                                Log.d("TAGGGG", "onResponse: ${ response.body()!![0].EmpName}")
+                                Log.d("TAGGGG", "onResponse: aaaaaaaaa ${response.body()!![0].EmpName}")
 
                                 SaveUsersInSharedPreference.addUserIfNotExists(
                                     this@LoginByPinMobileScreen,
-                                    usersList
+                                    usersList, binding.employeepinEdt.text.toString()
                                 )
                                 val intent =
                                     Intent(this@LoginByPinMobileScreen, MainActivity::class.java)
