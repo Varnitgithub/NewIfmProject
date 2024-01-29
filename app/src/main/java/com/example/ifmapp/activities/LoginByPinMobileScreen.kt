@@ -1,33 +1,26 @@
 package com.example.ifmapp.activities
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.example.ifmapp.MainActivity
 import com.example.ifmapp.R
 import com.example.ifmapp.RetrofitInstance
 import com.example.ifmapp.apiinterface.ApiInterface
-import com.example.ifmapp.databasedb.EmployeeDB
-import com.example.ifmapp.databasedb.EmployeePinDao
 import com.example.ifmapp.databinding.ActivityLoginByPinMobileScreenBinding
 import com.example.ifmapp.modelclasses.loginby_pin.LoginByPINResponse
-import com.example.ifmapp.modelclasses.loginby_pin.LoginByPINResponseItem
 import com.example.ifmapp.modelclasses.usermodel_sharedpreference.UserListModel
 import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class LoginByPinMobileScreen : AppCompatActivity() {
-    private lateinit var employeePinDao: EmployeePinDao
     private lateinit var retrofitInstance: ApiInterface
     private lateinit var binding: ActivityLoginByPinMobileScreenBinding
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,7 +28,6 @@ class LoginByPinMobileScreen : AppCompatActivity() {
         setContentView(R.layout.activity_login_by_pin_mobile_screen)
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login_by_pin_mobile_screen)
-        employeePinDao = EmployeeDB.getInstance(this).employeePinDao()
         retrofitInstance = RetrofitInstance.apiInstance
 
         binding.btnContinue.setOnClickListener {
@@ -82,27 +74,45 @@ class LoginByPinMobileScreen : AppCompatActivity() {
                         call: Call<LoginByPINResponse?>,
                         response: Response<LoginByPINResponse?>
                     ) {
-                        if (response.isSuccessful && response.body()
-                                ?.get(0)?.MessageID?.toInt() == 1
+                        if (response.isSuccessful
                         ) {
-                            val userPin =binding.employeepinEdt.text.toString().trim()
-                            val usersList =
-                                UserListModel(
-                                    response.body()!![0].EmpName,
-                                    userPin,
-                                    response.body()!![0].EmpNumber,
+                            if (response.body()
+                                    ?.get(0)?.MessageID?.toInt() == 1
+                            ) {
+                                val userPin = binding.employeepinEdt.text.toString().trim()
+                                val usersList =
+                                    UserListModel(
+                                        response.body()!![0].EmpName,
+                                        userPin,
+                                        response.body()!![0].EmpNumber,
+                                        binding.employeeMobileEdt.text.toString().trim()
+
+                                    )
+                                Log.d("TAGGGG", "onResponse: ${ response.body()!![0].EmpName}")
+
+                                SaveUsersInSharedPreference.addUserIfNotExists(
+                                    this@LoginByPinMobileScreen,
+                                    usersList
+                                )
+                                val intent =
+                                    Intent(this@LoginByPinMobileScreen, MainActivity::class.java)
+                                intent.putExtra(
+                                    "mPINFromLogin",
+                                    binding.employeepinEdt.text.toString().trim()
+                                )
+                                intent.putExtra(
+                                    "mMobileFromLogin",
                                     binding.employeeMobileEdt.text.toString().trim()
-
-                            )
-
-                            SaveUsersInSharedPreference.addUserIfNotExists(this@LoginByPinMobileScreen,usersList)
-
-                            startActivity(Intent(this@LoginByPinMobileScreen,DashBoardScreen::class.java))
+                                )
+                                startActivity(intent)
+                                binding.employeepinEdt.text.clear()
+                                binding.employeeMobileEdt.text.clear()
+                            }
 
                         } else {
                             Toast.makeText(
                                 this@LoginByPinMobileScreen,
-                                "you does not have valid pin",
+                                "you does not have valid pin or Mobile no.",
                                 Toast.LENGTH_SHORT
                             ).show()
                         }

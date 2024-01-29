@@ -13,17 +13,11 @@ import androidx.lifecycle.MutableLiveData
 import com.example.ifmapp.R
 import com.example.ifmapp.RetrofitInstance
 import com.example.ifmapp.apiinterface.ApiInterface
-import com.example.ifmapp.databasedb.EmployeeDB
-import com.example.ifmapp.databasedb.EmployeePinDao
 import com.example.ifmapp.databinding.ActivityGnereratePinCodeScreenBinding
 import com.example.ifmapp.modelclasses.loginby_pin.LoginByPINResponse
-import com.example.ifmapp.modelclasses.loginby_pin.LoginByPINResponseItem
 import com.example.ifmapp.modelclasses.usermodel_sharedpreference.UserListModel
 import com.example.ifmapp.modelclasses.verifymobile.VerifyOtpResponse
 import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -33,7 +27,6 @@ class GnereratePinCodeScreen : AppCompatActivity() {
     private lateinit var binding: ActivityGnereratePinCodeScreenBinding
     private var mobileNumber: String? = null
     private lateinit var retrofitInstance: ApiInterface
-    private lateinit var employeePinDao: EmployeePinDao
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +38,6 @@ class GnereratePinCodeScreen : AppCompatActivity() {
         mobileNumber = intent.getStringExtra("mobileNumber")
 
 
-        employeePinDao = EmployeeDB.getInstance(this).employeePinDao()
 
         edtPincodeLiveData.observe(this) {
             if (it == 4) {

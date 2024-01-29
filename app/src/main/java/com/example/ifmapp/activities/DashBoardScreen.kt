@@ -1,46 +1,24 @@
 package com.example.ifmapp.activities
 
 import android.Manifest
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.res.ColorStateList
-import android.graphics.Paint
-import android.location.LocationManager
 import android.os.Bundle
-import android.provider.Settings
 import android.text.Editable
-import android.text.InputType
 import android.text.TextWatcher
 import android.util.Log
-import android.view.KeyEvent
-import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.ifmapp.MainActivity
 import com.example.ifmapp.R
 import com.example.ifmapp.adapters.AddAccountAdapter
-import com.example.ifmapp.apiinterface.ApiInterface
 import com.example.ifmapp.checked
-import com.example.ifmapp.databasedb.EmployeeDB
-import com.example.ifmapp.databasedb.EmployeePinDao
 import com.example.ifmapp.databinding.ActivityDashBoardScreenBinding
-import com.example.ifmapp.fragments.DocsFragment
-import com.example.ifmapp.fragments.HomeFragment
-import com.example.ifmapp.fragments.MenuFragment
-import com.example.ifmapp.fragments.MustersFragment
 import com.example.ifmapp.modelclasses.AddAccountModel
-import com.example.ifmapp.modelclasses.loginby_pin.LoginByPINResponseItem
 import com.example.ifmapp.modelclasses.usermodel_sharedpreference.UserListModel
-import com.example.ifmapp.services.LocationService
 import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
 import com.otpview.OTPListener
 import com.otpview.OTPTextView
@@ -187,6 +165,11 @@ class DashBoardScreen : AppCompatActivity(), AddAccountAdapter.OnClickedInterfac
 
 
         }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        startActivity(Intent(this@DashBoardScreen,RegistrationScreen::class.java))
     }
 }
 

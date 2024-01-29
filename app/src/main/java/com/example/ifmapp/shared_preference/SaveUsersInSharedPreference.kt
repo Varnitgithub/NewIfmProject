@@ -2,6 +2,7 @@ package com.example.ifmapp.shared_preference
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import com.example.ifmapp.modelclasses.usermodel_sharedpreference.UserListModel
 import com.example.ifmapp.shared_preference.shared_preference_models.CheckOutModel
 import com.example.ifmapp.shared_preference.shared_preference_models.CurrentUserShiftsDetails
@@ -15,7 +16,7 @@ class SaveUsersInSharedPreference {
         private const val KEY_MY_LIST = "user_list"
         private const val KEY_CURRENT_USER_SHIFT_DETAILS = "current_user_shift_details"
         private const val KEY_FINAL_CHECKOUT_DETAILS = "current_user_final_checkout_details"
-        private fun saveList(context: Context, pin: String, myList: List<UserListModel>) {
+        private fun saveList(context: Context, myList: List<UserListModel>) {
             val preferences: SharedPreferences =
                 context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
             val editor: SharedPreferences.Editor = preferences.edit()
@@ -28,18 +29,29 @@ class SaveUsersInSharedPreference {
         }
 
         private fun isPinExists(context: Context, pin: String): Boolean {
-            val preferences: SharedPreferences =
-                context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-            val json: String? = preferences.getString(pin, "")
+            val userList: List<UserListModel> = getList(context)
 
-            return json?.isNotEmpty() ?: false
+            for (user in userList) {
+                if (user.pin == pin) {
+                    Log.d("TAGGGGGGGG", "isPinExists: exists")
+                    return false
+                }
+            }
+
+            Log.d("TAGGGGGGGG", "isPinExists: not exists")
+            return true
         }
 
         fun addUserIfNotExists(context: Context,  user: UserListModel) {
-            if (!isPinExists(context, KEY_MY_LIST)) {
+            if (isPinExists(context, KEY_MY_LIST)) {
                 val userList: MutableList<UserListModel> = getList(context).toMutableList()
+                Log.d("TAGGGGGGGGGG", "addUserIfNotExists: user not added ${userList.size}")
+
                 userList.add(user)
-                saveList(context, KEY_MY_LIST, userList)
+                Log.d("TAGGGGGGGGGG", "addUserIfNotExists: user added ${userList.size}")
+                saveList(context, userList)
+            }else{
+                Log.d("TAGGGGGGGG", "addUserIfNotExists: i am here")
             }
         }
 
@@ -73,7 +85,7 @@ class SaveUsersInSharedPreference {
                 val user = iterator.next()
                 if (user.pin == pinToRemove) {
                     iterator.remove()
-                    saveList(context, KEY_MY_LIST, userList)
+                    saveList(context, userList)
                     break // Assuming each PIN is unique, we can break after removing the user.
                 }
             }
@@ -121,6 +133,10 @@ class SaveUsersInSharedPreference {
             val gson = Gson()
             val type: Type = object : TypeToken<List<CheckOutModel>>() {}.type
             return gson.fromJson(json, type) ?: ArrayList()
+        }
+
+        fun clearAllUsers(){
+
         }
 
     }

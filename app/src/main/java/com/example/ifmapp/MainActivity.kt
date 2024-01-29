@@ -1,46 +1,14 @@
 package com.example.ifmapp
 
-import android.annotation.SuppressLint
-import android.content.Intent
-import android.location.Location
-import com.example.ifmapp.R
 import android.os.Bundle
-import android.util.Log
-import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
-import com.example.ifmapp.activities.CheckInScreen
-import com.example.ifmapp.activities.ScannerScreen
-import com.example.ifmapp.apiinterface.ApiInterface
-import com.example.ifmapp.databasedb.EmployeeDB
-import com.example.ifmapp.databasedb.EmployeePinDao
 import com.example.ifmapp.databinding.MainActivityBinding
 import com.example.ifmapp.fragments.DocsFragment
 import com.example.ifmapp.fragments.HomeFragment
 import com.example.ifmapp.fragments.MenuFragment
 import com.example.ifmapp.fragments.MustersFragment
-import com.example.ifmapp.modelclasses.ShiftTimingDetails
-import com.example.ifmapp.modelclasses.geomappedsite_model.GeoMappedResponse
-import com.example.ifmapp.modelclasses.shift_selection_model.ShiftSelectionResponse
-import com.example.ifmapp.modelclasses.shift_selection_model.ShiftSelectionResponseItem
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationAvailability
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.Priority
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 
 class MainActivity : AppCompatActivity() {
@@ -54,6 +22,8 @@ class MainActivity : AppCompatActivity() {
 
     private var otp: String? = null
 
+    private var otpFromLogin: String? = null
+
     private var mobileNumber: String? = null
 
     private var empNumber: String? = null
@@ -64,6 +34,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         otp = intent.getStringExtra("mPIN")
+        otpFromLogin = intent.getStringExtra("mPINFromLogin")
         mobileNumber = intent.getStringExtra("mobileNumber")
         empNumber = intent.getStringExtra("empId")
 
@@ -71,8 +42,14 @@ class MainActivity : AppCompatActivity() {
 
         binding = DataBindingUtil.setContentView(this, R.layout.main_activity)
 
+        if (otp!=null){
+            homeFragment = HomeFragment(this, otp.toString(), mobileNumber.toString(),empNumber.toString())
+        }else{
+            homeFragment = HomeFragment(this, otpFromLogin.toString(), mobileNumber.toString(),empNumber.toString())
 
-        homeFragment = HomeFragment(this, otp.toString(), mobileNumber.toString(),empNumber.toString())
+        }
+
+
         val bundle = Bundle()
         bundle.putString("mPIN", otp)
         homeFragment.arguments = bundle

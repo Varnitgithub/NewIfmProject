@@ -1,20 +1,15 @@
 package com.example.ifmapp.activities
 
+import LocationSpoofChecker
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import com.example.ifmapp.MainActivity
 import com.example.ifmapp.R
-import com.example.ifmapp.checked
-import com.example.ifmapp.databasedb.EmployeeDB
-import com.example.ifmapp.databasedb.EmployeePinDao
-import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
 
 class RegistrationScreen : AppCompatActivity() {
     private var LOCATION_PERMISSION_REQUEST_CODE = 111
@@ -26,18 +21,32 @@ class RegistrationScreen : AppCompatActivity() {
         val newRegistration: Button = findViewById(R.id.new_Registration)
         val alreadyRegistered: Button = findViewById(R.id.already_Registered)
             if (checkPermission()) {
-
+if (LocationSpoofChecker.isLocationSpoofed(this@RegistrationScreen)){
+    Toast.makeText(this@RegistrationScreen, "You are using location spoofed app, Please disable this", Toast.LENGTH_SHORT).show()
+}
             } else {
                 requestPermission()
             }
             newRegistration.setOnClickListener {
+                if (LocationSpoofChecker.isLocationSpoofed(this@RegistrationScreen)){
+                    Toast.makeText(this@RegistrationScreen, "You are using location spoofed app, Please disable this", Toast.LENGTH_SHORT).show()
+                }else{
                     startActivity(Intent(this, SignUpWaysScreen::class.java))
+
+                }
+
 
 
 
             }
             alreadyRegistered.setOnClickListener {
-                    startActivity(Intent(this, LoginCheckedScreen::class.java))
+                if (LocationSpoofChecker.isLocationSpoofed(this@RegistrationScreen)){
+                    Toast.makeText(this@RegistrationScreen, "You are using location spoofed app, Please disable this", Toast.LENGTH_SHORT).show()
+                }
+                else{
+                startActivity(Intent(this, LoginCheckedScreen::class.java))
+
+            }
 
 
             }
@@ -77,7 +86,9 @@ class RegistrationScreen : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
+                if (LocationSpoofChecker.isLocationSpoofed(this@RegistrationScreen)){
+                    Toast.makeText(this@RegistrationScreen, "You are using location spoofed app, Please disable this", Toast.LENGTH_SHORT).show()
+                }
             } else {
                 Toast.makeText(
                     this,

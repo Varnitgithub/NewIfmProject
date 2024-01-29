@@ -1,13 +1,10 @@
 package com.example.ifmapp.activities
 
 import android.Manifest
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Paint
 import android.location.LocationManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.provider.Settings
@@ -19,19 +16,14 @@ import android.view.KeyEvent
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
-import com.example.ifmapp.MainActivity
 import com.example.ifmapp.R
 import com.example.ifmapp.RetrofitInstance
 import com.example.ifmapp.apiinterface.ApiInterface
-import com.example.ifmapp.checked
-import com.example.ifmapp.databasedb.EmployeeDB
-import com.example.ifmapp.databasedb.EmployeePinDao
 import com.example.ifmapp.databinding.ActivityMobileRegisterScreenBinding
-import com.example.ifmapp.modelclasses.verifymobile.InputMobileRegister
 import com.example.ifmapp.modelclasses.verifymobile.OtpSend
-import com.example.ifmapp.modelclasses.verifymobile.OtpSendItem
 import com.example.ifmapp.modelclasses.verifymobile.VerifyOtpResponse
 import com.example.ifmapp.utils.IMEIGetter
 import retrofit2.Call
@@ -49,7 +41,6 @@ class MobileRegisterScreen : AppCompatActivity() {
     private var countDownTimer: CountDownTimer?=null
     private val initialTimeMillis: Long = 60000 // 60 seconds
     private val countDownIntervalMillis: Long = 1000 // 1 second
-    private lateinit var employeePinDao: EmployeePinDao
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,7 +50,6 @@ class MobileRegisterScreen : AppCompatActivity() {
         binding.resentOtp.visibility = View.GONE
         binding.otpSectionLL.visibility = View.GONE
 
-        employeePinDao = EmployeeDB.getInstance(this).employeePinDao()
         if (checkPermission()) {
 
         } else {

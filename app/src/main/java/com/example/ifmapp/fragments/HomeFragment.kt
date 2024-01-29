@@ -3,56 +3,34 @@ package com.example.ifmapp.fragments
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
-import android.graphics.Paint
 import android.location.Location
 import android.os.Bundle
-import android.text.Editable
-import android.text.InputType
-import android.text.TextWatcher
 import android.util.Log
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.EditText
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.MutableLiveData
-import androidx.recyclerview.widget.GridLayoutManager
-import com.example.ifmapp.MainActivity
 import com.example.ifmapp.R
 import com.example.ifmapp.RetrofitInstance
 import com.example.ifmapp.activities.CheckInScreen
-import com.example.ifmapp.activities.GnereratePinCodeScreen
-import com.example.ifmapp.activities.MobileRegisterScreen
+import com.example.ifmapp.activities.RegistrationScreen
 import com.example.ifmapp.adapters.AddAccountAdapter
 import com.example.ifmapp.apiinterface.ApiInterface
-import com.example.ifmapp.databasedb.EmployeeDB
-import com.example.ifmapp.databasedb.EmployeePin
-import com.example.ifmapp.databasedb.EmployeePinDao
 import com.example.ifmapp.databinding.FragmentHomeBinding
-import com.example.ifmapp.databinding.MainActivityBinding
-import com.example.ifmapp.modelclasses.AddAccountModel
-import com.example.ifmapp.modelclasses.ShiftTimingDetails
 import com.example.ifmapp.modelclasses.geomappedsite_model.GeoMappedResponse
 import com.example.ifmapp.modelclasses.loginby_pin.LoginByPINResponse
-import com.example.ifmapp.modelclasses.loginby_pin.LoginByPINResponseItem
 import com.example.ifmapp.modelclasses.shift_selection_model.ShiftSelectionResponse
 import com.example.ifmapp.modelclasses.usermodel_sharedpreference.UserListModel
-import com.example.ifmapp.shared_preference.MyPreferences
 import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
 import com.example.ifmapp.shared_preference.shared_preference_models.CurrentUserShiftsDetails
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -108,8 +86,16 @@ class HomeFragment(
 
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false)
-
+        Log.d("TAGGGG", "onCreateView:////////////////////////// $otp")
         currentUser = SaveUsersInSharedPreference.getUserByPin(requireContext(), otp)
+        mobileNumber = currentUser?.mobileNumber.toString()
+        val allusers =  SaveUsersInSharedPreference.getList(requireContext())
+        Log.d("TAGGGGGGGGGGG", "onCreateView:/.........all usersz ${allusers.size}")
+
+        for (i in 0 until allusers.size){
+            Log.d("TAGGGGGGGGGGG", "onCreateView:/.........all usersz ${allusers.get(i)}")
+
+        }
         getCurrentEmployee(otp, mobileNumber)
 
         binding.userName.text = currentUser?.userName
@@ -121,6 +107,8 @@ class HomeFragment(
 
         binding.btnLogout.setOnClickListener {
             SaveUsersInSharedPreference.removeUserByPin(requireContext(),otp)
+
+        startActivity(Intent(requireContext(),RegistrationScreen::class.java))
         }
         siteList = ArrayList()
         shiftList = ArrayList()
@@ -129,30 +117,35 @@ class HomeFragment(
         getLastLocation()
 
         binding.checkInBtn.setOnClickListener {
-            binding.checkoutBtn.setTextColor(resources.getColor(R.color.check_btn))
-            binding.checkoutBtn.setBackgroundResource(R.drawable.button_backwhite)
-            binding.checkInBtn.setTextColor(resources.getColor(R.color.white))
-            binding.checkInBtn.setBackgroundResource(R.drawable.button_back)
+            if (shiftSelect!=null&&siteSelect!=null){
+                binding.checkoutBtn.setTextColor(resources.getColor(R.color.check_btn))
+                binding.checkoutBtn.setBackgroundResource(R.drawable.button_backwhite)
+                binding.checkInBtn.setTextColor(resources.getColor(R.color.white))
+                binding.checkInBtn.setBackgroundResource(R.drawable.button_back)
 
-            val currentUserShiftList = ArrayList<CurrentUserShiftsDetails>()
+                val currentUserShiftList = ArrayList<CurrentUserShiftsDetails>()
 
-            val currentUserShift = CurrentUserShiftsDetails(
-                shiftSelect.toString(),
-                siteSelect.toString(),
-                otp,
-                empNumber,empDesignation.toString(),empName.toString(),locationAutoId.toString()
-            ,shiftTimingList)
-            currentUserShiftList.add(currentUserShift)
-            SaveUsersInSharedPreference.saveCurrentUserShifts(
-                requireContext(),
-                currentUserShiftList
-            )
+                val currentUserShift = CurrentUserShiftsDetails(
+                    shiftSelect.toString(),
+                    siteSelect.toString(),
+                    otp,
+                    empNumber,empDesignation.toString(),empName.toString(),locationAutoId.toString()
+                    ,shiftTimingList)
+                currentUserShiftList.add(currentUserShift)
+                SaveUsersInSharedPreference.saveCurrentUserShifts(
+                    requireContext(),
+                    currentUserShiftList
+                )
 
-            Log.d(
-                "TAGGGGGG",
-                "onCreateView: 1111111 saved successfullly"
-            )
-            startActivity(Intent(requireContext(), CheckInScreen::class.java))
+                Log.d(
+                    "TAGGGGGG",
+                    "onCreateView: 1111111 saved successfullly"
+                )
+                startActivity(Intent(requireContext(), CheckInScreen::class.java))
+            }else{
+                Toast.makeText(requireContext(), "Please select Shift and Site", Toast.LENGTH_SHORT).show()
+            }
+
         }
 
 

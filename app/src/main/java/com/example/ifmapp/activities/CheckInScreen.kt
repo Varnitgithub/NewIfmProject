@@ -115,10 +115,12 @@ class CheckInScreen : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_check_in_screen)
+        //setContentView(R.layout.activity_check_in_screen)
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_check_in_screen)
+
         binding.btnRetake.isEnabled = false
+        binding.bigProfile.isClickable = false
         binding.cameraImageView.visibility = View.GONE
         binding.allLayout.visibility = View.VISIBLE
         binding.cameraPreviewView.visibility = View.GONE
@@ -130,6 +132,7 @@ class CheckInScreen : AppCompatActivity() {
         binding.checkinCL.visibility = View.VISIBLE
         binding.finalLayoutCL.visibility = View.GONE
         currentDate = Date()
+
         formattedDate = getFormattedDate(currentDate)
 
         cameraExecutor = Executors.newSingleThreadExecutor()
@@ -194,12 +197,7 @@ class CheckInScreen : AppCompatActivity() {
                     this@CheckInScreen,
                     saveCurrentUserFinalList
                 )
-                val delayMillis = 10000L
-                Handler().postDelayed({
-                    finish()
-                    val intent = Intent(this@CheckInScreen, CheckOutScreen::class.java)
-                    startActivity(intent)
-                }, delayMillis)
+
 
             }
 
@@ -222,6 +220,7 @@ class CheckInScreen : AppCompatActivity() {
         binding.bigProfile.setOnClickListener {
             if (checkCameraPermission()) {
                 startCamera()
+                binding.bigProfile.isClickable = false
             } else {
                 requestCameraPermission()
             }
@@ -246,7 +245,12 @@ class CheckInScreen : AppCompatActivity() {
                     val address: Address = addresses[0]
                     withContext(Dispatchers.Main) {
 
-                        if (address.subThoroughfare != null && address.thoroughfare != null) {
+                        if (address.subThoroughfare != null && address.thoroughfare != null &&address.premises!=null
+                            && address.postalCode!=null && address.subLocality!=null
+                            && address.subAdminArea!=null &&address.locality!=null&&  address.adminArea!=null
+                            && address.subThoroughfare.isNotEmpty() && address.thoroughfare.isNotEmpty() &&address.premises.isNotEmpty()
+                            && address.postalCode.isNotEmpty() && address.subLocality.isNotEmpty()
+                            && address.subAdminArea.isNotEmpty() &&address.locality.isNotEmpty() &&  address.adminArea.isNotEmpty()) {
                             val formattedAdress =
                                 "${address.premises} ${address.subThoroughfare} ${address.thoroughfare} ${address.postalCode} ${address.subLocality} ${address.subAdminArea} ${address.locality}  ${address.adminArea} "
                             binding.locationName.text = formattedAdress
@@ -311,8 +315,10 @@ class CheckInScreen : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == CAMERA_PERMISSION_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE)
+                startCamera()
+                binding.bigProfile.isClickable = false
+                /*val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE)*/
             } else {
                 // Permission denied, show a message to the user
                 Toast.makeText(this, "Please Allow Camera permission", Toast.LENGTH_SHORT).show()
@@ -336,6 +342,7 @@ class CheckInScreen : AppCompatActivity() {
         address: String
     ) {
         binding.checkinCL.visibility = View.GONE
+
         binding.finalLayoutCL.visibility = View.VISIBLE
         binding.nameAtfinal.text = employeeName
         binding.designationAtfinal.text = employeeDesignation
@@ -429,50 +436,55 @@ class CheckInScreen : AppCompatActivity() {
                     call: Call<GeoMappedResponse?>,
                     response: Response<GeoMappedResponse?>
                 ) {
-                    if (response.isSuccessful && response.body()?.get(0)?.MessageID.toString()
-                            .toInt() == 1
+                    if (response.isSuccessful
                     ) {
+                        if (response.body()?.get(0)?.MessageID.toString()
+                                .toInt() == 1){
 
-                        Log.d("TAGGGGGGGGGG", "onResponse: response Successfulllll")
+                            Log.d("TAGGGGGGGGGG", "onResponse: response Successfulllll")
 
-                        val emp = response.body()?.get(0)
-                        Log.d("TAGGGGGGG", "onResponse: this is $mAltitude")
+                            val emp = response.body()?.get(0)
+                            Log.d("TAGGGGGGG", "onResponse: this is $mAltitude")
 
-                        if (myaddress != null) {
+                            if (myaddress != null) {
 
-                            val imeiPhone = imeiGetter.getIMEI()
-                            Log.d(
-                                "TAGGGGG",
-                                "onResponse:1${time} \n2 ${imeiPhone}\n" +
-                                        "3${empNumber} 4${emp?.AsmtID} 5${mLatitude.toString()} 6 ${mLongitude.toString()}" +
-                                        "7${mAltitude.toString()} 8${
-                                            base64Image?.substring(
-                                                1,
-                                                10
-                                            )
-                                        } 9${LocationAutoID} 10${emp?.ClientCode}" +
-                                        "11${siteSelect} 12${shiftSelect} 13${myaddress}"
-                            )
-                            insertAttendance(
-                                "sams",
-                                imeiPhone,
-                                empNumber.toString(),
-                                emp?.AsmtID.toString(),
-                                empNumber.toString(),
-                                "IN",
-                                time.toString(),
-                                latitude = mLatitude.toString(),
-                                mLongitude.toString(),
-                                mAltitude.toString(),
-                                base64Image ?: "",
-                                emp?.LocationAutoID.toString(),
-                                emp?.ClientCode.toString(),
-                                siteSelect.toString(),
-                                myaddress.toString()
-                            )
+                                val imeiPhone = imeiGetter.getIMEI()
+                                Log.d(
+                                    "TAGGGGG",
+                                    "onResponse:1${time} \n2 ${imeiPhone}\n" +
+                                            "3${empNumber} 4${emp?.AsmtID} 5${mLatitude.toString()} 6 ${mLongitude.toString()}" +
+                                            "7${mAltitude.toString()} 8${
+                                                base64Image?.substring(
+                                                    1,
+                                                    10
+                                                )
+                                            } 9${LocationAutoID} 10${emp?.ClientCode}" +
+                                            "11${siteSelect} 12${shiftSelect} 13${myaddress}"
+                                )
+                                insertAttendance(
+                                    "sams",
+                                    imeiPhone,
+                                    empNumber.toString(),
+                                    emp?.AsmtID.toString(),
+                                    empNumber.toString(),
+                                    "IN",
+                                    time.toString(),
+                                    latitude = mLatitude.toString(),
+                                    mLongitude.toString(),
+                                    mAltitude.toString(),
+                                    base64Image ?: "",
+                                    emp?.LocationAutoID.toString(),
+                                    emp?.ClientCode.toString(),
+                                    siteSelect.toString(),
+                                    myaddress.toString()
+                                )
+                            }
+
+                        }else{
+                            Toast.makeText(this@CheckInScreen, "attendance is already marked ", Toast.LENGTH_SHORT).show()
                         }
-
-                    } else {
+                        }
+ else {
                         Log.d("TAGGGGGGGG", "onResponse: attendance not success")
                     }
                 }
@@ -520,8 +532,16 @@ class CheckInScreen : AppCompatActivity() {
                     Log.d("TAGGGGGGGG", "onResponse: attendance inserted")
                     Toast.makeText(this@CheckInScreen, "attendance marked", Toast.LENGTH_SHORT)
                         .show()
-                    setFinalDialog(mLatitude!!, mLongitude!!, myaddress ?: "")
+                    binding.cameraPreviewView.visibility = View.GONE
 
+                    binding.checkinCL.visibility = View.GONE
+                    setFinalDialog(mLatitude.toString(), mLongitude.toString(), myaddress.toString())
+                    val delayMillis = 5000L
+                    Handler().postDelayed({
+                        finish()
+                        val intent = Intent(this@CheckInScreen, CheckOutScreen::class.java)
+                        startActivity(intent)
+                    }, delayMillis)
 
                 } else {
                     Log.d("TAGGGGGGGG", "onResponse:error ${response.errorBody()}")
