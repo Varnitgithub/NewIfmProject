@@ -76,9 +76,13 @@ class LoginByPinMobileScreen : AppCompatActivity() {
                     ) {
                         if (response.isSuccessful
                         ) {
+                            Log.d("TAGGGGGGGGG", "loginUser: login successful_2")
+
                             if (response.body()
                                     ?.get(0)?.MessageID?.toInt() == 1
                             ) {
+                                Log.d("TAGGGGGGGGG", "loginUser: login successful_3")
+
                                 val userPin = binding.employeepinEdt.text.toString().trim()
                                 val usersList =
                                     UserListModel(
@@ -108,6 +112,8 @@ class LoginByPinMobileScreen : AppCompatActivity() {
                                 startActivity(intent)
                                 binding.employeepinEdt.text.clear()
                                 binding.employeeMobileEdt.text.clear()
+                            }else{
+                                Toast.makeText(this@LoginByPinMobileScreen, "incorrect pin or password", Toast.LENGTH_SHORT).show()
                             }
 
                         } else {

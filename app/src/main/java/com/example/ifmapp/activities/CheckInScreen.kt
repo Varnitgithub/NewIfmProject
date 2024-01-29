@@ -156,7 +156,6 @@ class CheckInScreen : AppCompatActivity() {
         binding.shifts.text = shiftSelect
         locationAutoID = currentUser.locationAutoId
 
-
         Log.d("TAGGGGGGGG", "onCreate: this is $locationAutoID")
         time = getCurrentTime()
 
@@ -173,7 +172,6 @@ class CheckInScreen : AppCompatActivity() {
 
 
         getLastLocation()
-
 
         binding.btnSubmit.setOnClickListener {
 

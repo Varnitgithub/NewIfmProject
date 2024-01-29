@@ -8,6 +8,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
@@ -50,7 +51,7 @@ class DashBoardScreen : AppCompatActivity(), AddAccountAdapter.OnClickedInterfac
         binding.userName.text = "Hi, ${currentUser.userName}"
         allUsersList = ArrayList()
         empNumber = currentUser.empId
-      //  mobileNumber = currentUser.mobileNumber
+        //  mobileNumber = currentUser.mobileNumber
 
         otpTextView = findViewById(R.id.otp_view)
 
@@ -87,12 +88,24 @@ class DashBoardScreen : AppCompatActivity(), AddAccountAdapter.OnClickedInterfac
             }
 
             override fun onOTPComplete(otp: String) {
+                val userList = SaveUsersInSharedPreference.getList(this@DashBoardScreen)
 
-                val intent = Intent(this@DashBoardScreen, MainActivity::class.java)
-                intent.putExtra("mPIN", otp)
-                intent.putExtra("mobileNumber", mobileNumber)
-                intent.putExtra("empId", empNumber)
-                startActivity(intent)
+                for (user in userList) {
+                    if (user.pin == otp) {
+                        val intent = Intent(this@DashBoardScreen, MainActivity::class.java)
+                        intent.putExtra("mPIN", otp)
+                        intent.putExtra("mobileNumber", mobileNumber)
+                        intent.putExtra("empId", empNumber)
+                        startActivity(intent)
+                    } else {
+                        Toast.makeText(
+                            this@DashBoardScreen,
+                            "You are not a stored Use,Please Login",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+
 
             }
         }
@@ -104,9 +117,8 @@ class DashBoardScreen : AppCompatActivity(), AddAccountAdapter.OnClickedInterfac
     }
 
 
-
     override fun onclick(employeeModel: UserListModel, position: Int) {
-        binding.userName.text ="Hi, ${employeeModel.userName}"
+        binding.userName.text = "Hi, ${employeeModel.userName}"
     }
 
     private fun checkPermission(): Boolean {
@@ -152,7 +164,7 @@ class DashBoardScreen : AppCompatActivity(), AddAccountAdapter.OnClickedInterfac
 
     override fun onBackPressed() {
         super.onBackPressed()
-        startActivity(Intent(this@DashBoardScreen,RegistrationScreen::class.java))
+        startActivity(Intent(this@DashBoardScreen, RegistrationScreen::class.java))
     }
 }
 
