@@ -12,6 +12,8 @@
         android:layout_height="match_parent"
         tools:context=".activities.CheckInScreen">
 
+
+
         <ImageView
             android:id="@+id/cameraImageView"
             android:layout_width="match_parent"
@@ -343,7 +345,6 @@
                                     android:textColor="#001C35"
                                     android:textSize="14sp"
                                     android:textStyle="bold"
-                                    app:layout_constraintBottom_toTopOf="@id/don_t_have_LL"
                                     app:layout_constraintEnd_toEndOf="@id/top_icons_CL"
                                     app:layout_constraintStart_toStartOf="@id/top_icons_CL" />
 
@@ -361,7 +362,6 @@
                                     android:textColor="#ffffff"
                                     android:textSize="14sp"
 
-                                    app:layout_constraintBottom_toTopOf="@id/don_t_have_LL"
                                     app:layout_constraintEnd_toEndOf="@id/top_icons_CL"
                                     app:layout_constraintStart_toStartOf="@id/top_icons_CL" />
 
@@ -657,6 +657,16 @@
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:id="@+id/progressBar"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

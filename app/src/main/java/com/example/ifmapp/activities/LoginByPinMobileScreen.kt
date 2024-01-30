@@ -16,6 +16,7 @@ import com.example.ifmapp.databinding.ActivityLoginByPinMobileScreenBinding
 import com.example.ifmapp.modelclasses.loginby_pin.LoginByPINResponse
 import com.example.ifmapp.modelclasses.usermodel_sharedpreference.UserListModel
 import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
+import com.example.ifmapp.toast.CustomToast
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -57,8 +58,6 @@ class LoginByPinMobileScreen : AppCompatActivity() {
         })
 
     }
-
-
     private fun loginUser() {
 
         if (binding.employeeMobileEdt.text != null && binding.employeepinEdt.text != null) {
@@ -113,15 +112,12 @@ class LoginByPinMobileScreen : AppCompatActivity() {
                                 binding.employeepinEdt.text.clear()
                                 binding.employeeMobileEdt.text.clear()
                             }else{
-                                Toast.makeText(this@LoginByPinMobileScreen, "incorrect pin or password", Toast.LENGTH_SHORT).show()
+                                CustomToast.showToast(this@LoginByPinMobileScreen,response.body()?.get(0)?.MessageString.toString())
                             }
 
                         } else {
-                            Toast.makeText(
-                                this@LoginByPinMobileScreen,
-                                "you does not have valid pin or Mobile no.",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            CustomToast.showToast(this@LoginByPinMobileScreen,"you does not have valid pin or Mobile no.")
+
                         }
                     }
 
@@ -132,11 +128,11 @@ class LoginByPinMobileScreen : AppCompatActivity() {
 
 
             } else {
-                Toast.makeText(this, "Please enter valid mobile or pin", Toast.LENGTH_SHORT).show()
+                CustomToast.showToast(this@LoginByPinMobileScreen,"Please enter valid mobile or pin")
             }
 
         } else {
-            Toast.makeText(this, "Please enter all details", Toast.LENGTH_SHORT).show()
+           CustomToast.showToast(this@LoginByPinMobileScreen,"Please enter all details")
         }
 
 

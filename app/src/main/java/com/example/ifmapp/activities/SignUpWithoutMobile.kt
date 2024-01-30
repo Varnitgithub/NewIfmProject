@@ -18,6 +18,7 @@ import com.example.ifmapp.modelclasses.loginby_pin.LoginByPINResponse
 import com.example.ifmapp.modelclasses.usermodel_sharedpreference.UserListModel
 import com.example.ifmapp.modelclasses.verifymobile.VerifyOtpResponse
 import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
+import com.example.ifmapp.toast.CustomToast
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -38,6 +39,7 @@ class SignUpWithoutMobile : AppCompatActivity() {
 
 
         binding.btnGenerate.setOnClickListener {
+            binding.employeeidEdt.isClickable = false
             pinGenerationByEmployeeId(
                 "sams",
                 binding.employeeidEdt.text.toString().trim(),
@@ -99,19 +101,11 @@ class SignUpWithoutMobile : AppCompatActivity() {
 
                             binding.employeepinLL.visibility = View.VISIBLE
 
-                            Toast.makeText(
-                                this@SignUpWithoutMobile,
-                                "this is valied employee id, Please Generate your pin",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                           CustomToast.showToast(this@SignUpWithoutMobile,"this is valied employee id, Please Generate your pin")
                             binding.btnGenerate.isEnabled = true
 
                         } else {
-                            Toast.makeText(
-                                this@SignUpWithoutMobile,
-                                "Invalid employee Id",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                          CustomToast.showToast(this@SignUpWithoutMobile,response.body()?.get(0)?.MessageString.toString())
                         }
 
 
@@ -138,18 +132,11 @@ class SignUpWithoutMobile : AppCompatActivity() {
 
                         if (response.body()?.get(0)?.MessageID.toString().toInt() == 1) {
 
-                            Toast.makeText(
-                                this@SignUpWithoutMobile,
-                                "Pin generation Successful",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                         CustomToast.showToast(this@SignUpWithoutMobile,"Pin generation Successful")
                             loginByEmployeeId("sams", empId, pin)
                         } else {
-                            Toast.makeText(
-                                this@SignUpWithoutMobile,
-                                "Pin generation failed",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            CustomToast.showToast(this@SignUpWithoutMobile,"Pin generation Failed")
+
                         }
 
                     } else {
@@ -201,7 +188,7 @@ class SignUpWithoutMobile : AppCompatActivity() {
                         }
 
                     } else {
-                        Log.d("TAGGGGGG", "onResponse: pin generation is no successful")
+                        Log.d("TAGGGGGG", "onResponse: pin generation is not successful")
                     }
                 }
 

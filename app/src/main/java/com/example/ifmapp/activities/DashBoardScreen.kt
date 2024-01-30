@@ -69,8 +69,12 @@ class DashBoardScreen : AppCompatActivity(), AddAccountAdapter.OnClickedInterfac
         for (user in 1 until newlist) {
             allUsersList.add(SaveUsersInSharedPreference.getList(this)[user])
         }
+        if ( allUsersList.size!=0 ) {
+            addAccountAdapter.updateList(allUsersList)
+        }
 
-        addAccountAdapter.updateList(allUsersList)
+
+
 
         binding.forgotPin.setOnClickListener {
             startActivity(Intent(this, GnereratePinCodeScreen::class.java))

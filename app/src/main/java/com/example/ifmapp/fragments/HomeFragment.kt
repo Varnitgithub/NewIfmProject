@@ -128,7 +128,7 @@ class HomeFragment(
 
         binding.userName.text = currentUser?.userName
         binding.designation.text = currentUser?.designation
-setShiftJoiningTime()
+        setShiftJoiningTime()
         binding.shiftStartdateText.text = getFormattedDate()
         binding.shiftEnddateText.text = getFormattedDate()
         binding.join.text = getFormattedDate()
@@ -146,9 +146,9 @@ setShiftJoiningTime()
         }
         binding.btnLogout.setOnClickListener {
             SaveUsersInSharedPreference.removeUserByPin(requireContext(), otp)
-
             startActivity(Intent(requireContext(), DashBoardScreen::class.java))
         }
+
         siteList = ArrayList()
         shiftList = ArrayList()
         shiftTimingList = ArrayList()
@@ -428,8 +428,6 @@ setShiftJoiningTime()
     private fun setShiftJoiningTime() {
 
         if (SaveUsersInSharedPreference.getShiftJoiningTime(requireContext()).isNullOrEmpty()) {
-
-
             if (getCurrentTime().substring(0, 2).toInt() < 12) {
                 binding.joiningTime.text = getCurrentTime()
                 binding.joiningAm.text = "AM"
@@ -458,15 +456,15 @@ setShiftJoiningTime()
 
 
 
-            if (getCurrentTime().substring(0, 2).toInt() < 12) {
-                binding.outTime.text = getCurrentTime()
-                binding.outPm.text = "AM"
-
-            } else {
-                binding.outTime.text = getCurrentTime()
-                binding.outPm.text = "PM"
-
-            }
+//            if (getCurrentTime().substring(0, 2).toInt() < 12) {
+//                binding.outTime.text = getCurrentTime()
+//                binding.outPm.text = "AM"
+//
+//            } else {
+//                binding.outTime.text = getCurrentTime()
+//                binding.outPm.text = "PM"
+//
+//            }
 
         }
     }

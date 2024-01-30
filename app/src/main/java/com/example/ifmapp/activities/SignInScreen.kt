@@ -16,6 +16,7 @@ import com.example.ifmapp.databinding.ActivitySignUpScreenBinding
 import com.example.ifmapp.modelclasses.loginby_pin.LoginByPINResponse
 import com.example.ifmapp.modelclasses.usermodel_sharedpreference.UserListModel
 import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
+import com.example.ifmapp.toast.CustomToast
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -34,11 +35,12 @@ class SignInScreen : AppCompatActivity() {
         binding.btnContinue.isEnabled = false
 
         binding.btnContinue.setOnClickListener {
-
-loginByEmployeeId(
-    binding.employeeidEdt.text.toString().trim(),
-    binding.employeepinEdt.text.toString().trim()
-)
+            binding.employeepinEdt.isClickable = false
+            binding.employeeidEdt.isClickable = false
+            loginByEmployeeId(
+                binding.employeeidEdt.text.toString().trim(),
+                binding.employeepinEdt.text.toString().trim()
+            )
 
         }
         binding.employeepinEdt.addTextChangedListener(object : TextWatcher {
@@ -81,11 +83,12 @@ loginByEmployeeId(
                                 response.body()?.get(0)?.EmpName.toString(),
                                 pin,
                                 empId,
-                                response.body()?.get(0)?.LocationAutoID.toString(),response.body()?.get(0)?.Designation.toString()
+                                response.body()?.get(0)?.LocationAutoID.toString(),
+                                response.body()?.get(0)?.Designation.toString()
                             )
 
                             SaveUsersInSharedPreference.addUserIfNotExists(
-                                this@SignInScreen, user,pin
+                                this@SignInScreen, user, pin
                             )
                             Log.d("TAGGGGGGGGG", "onResponse: user saved successfully")
 
@@ -94,10 +97,10 @@ loginByEmployeeId(
                                     this@SignInScreen,
                                     MainActivity::class.java
                                 )
-                            intent.putExtra("pinFromSignin",pin)
+                            intent.putExtra("pinFromSignin", pin)
                             startActivity(intent)
                         } else {
-                            Toast.makeText(this@SignInScreen, "User does not exists", Toast.LENGTH_SHORT).show()
+                          CustomToast.showToast(this@SignInScreen,response.body()?.get(0)?.MessageString.toString())
                         }
 
                     } else {
@@ -112,6 +115,7 @@ loginByEmployeeId(
 
 
     }
+
 
 
 }

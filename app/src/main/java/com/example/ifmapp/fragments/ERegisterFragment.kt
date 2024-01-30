@@ -13,7 +13,7 @@ import com.example.ifmapp.databinding.FragmentDocsBinding
 import com.example.ifmapp.modelclasses.DocumentsModel
 
 
-class DocsFragment : Fragment() {
+class ERegisterFragment : Fragment() {
   private lateinit var binding: FragmentDocsBinding
   private lateinit var documentsAdapter: DocumentsAdapter
     override fun onCreate(savedInstanceState: Bundle?) {

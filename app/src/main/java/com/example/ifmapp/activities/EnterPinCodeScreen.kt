@@ -19,10 +19,7 @@ class EnterPinCodeScreen : AppCompatActivity() {
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_enter_pin_code_screen)
         edtPincodeLiveData = MutableLiveData()
-binding.reset.setOnClickListener {
-    startActivity(Intent(this, GnereratePinCodeScreen::class.java))
 
-}
         binding.btnSignIn.setOnClickListener {
            // startActivity(Intent(this,))
         }

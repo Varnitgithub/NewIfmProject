@@ -1,18 +1,10 @@
 package com.example.ifmapp.fragments
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Typeface
-import android.os.Build
 import android.os.Bundle
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.LinearLayout
-import android.widget.TextView
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -20,12 +12,11 @@ import com.example.ifmapp.R
 import com.example.ifmapp.databinding.FragmentMustersBinding
 import com.example.ifmapp.utils.CustomGridAdapter
 import java.text.SimpleDateFormat
-import java.time.Month
 import java.util.Calendar
 import java.util.Locale
 
 
-class MustersFragment(private var context: Context) : Fragment() {
+class MyTaskFragment(private var context: Context) : Fragment() {
     private lateinit var binding: FragmentMustersBinding
     private lateinit var calendar: Calendar
 

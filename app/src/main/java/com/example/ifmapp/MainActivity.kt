@@ -1,23 +1,28 @@
 package com.example.ifmapp
 
+import android.app.Dialog
+import android.content.Intent
 import android.os.Bundle
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import com.example.ifmapp.activities.DashBoardScreen
 import com.example.ifmapp.databinding.MainActivityBinding
-import com.example.ifmapp.fragments.DocsFragment
+import com.example.ifmapp.fragments.ERegisterFragment
 import com.example.ifmapp.fragments.HomeFragment
 import com.example.ifmapp.fragments.MenuFragment
-import com.example.ifmapp.fragments.MustersFragment
+import com.example.ifmapp.fragments.MyTaskFragment
 
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: MainActivityBinding
-
+    private lateinit var dialog: Dialog
     private lateinit var hashMap: HashMap<String, String>
     private lateinit var homeFragment: HomeFragment
-    private lateinit var mustersFragment: MustersFragment
-    private lateinit var docsfragment: DocsFragment
+    private lateinit var myTaskFragment: MyTaskFragment
+    private lateinit var eRegisterFragment: ERegisterFragment
     private lateinit var menuFragment: MenuFragment
 
     private var otp: String? = null
@@ -50,29 +55,62 @@ class MainActivity : AppCompatActivity() {
 
         binding = DataBindingUtil.setContentView(this, R.layout.main_activity)
 
-        if (otp!=null){
-            homeFragment = HomeFragment(this, otp.toString(), mobileNumber.toString(),empNumber.toString())
-        }else if (otpFromLogin!=null){
-            homeFragment = HomeFragment(this, otpFromLogin.toString(), mobileNumber.toString(),empNumber.toString())
-        }else if (otpFromsignUp!=null){
-            homeFragment = HomeFragment(this, otpFromsignUp.toString(), mobileNumber.toString(),empNumber.toString())
-        }else if (pinFromSignin!=null){
-            homeFragment = HomeFragment(this, pinFromSignin.toString(), mobileNumber.toString(),empNumber.toString())
 
-        }else{
-            homeFragment = HomeFragment(this, mOTP.toString(), mobileNumber.toString(),empNumber.toString())
 
+
+
+        if (otp != null) {
+            homeFragment =
+                HomeFragment(this, otp.toString(), mobileNumber.toString(), empNumber.toString())
+        } else if (otpFromLogin != null) {
+            homeFragment = HomeFragment(
+                this,
+                otpFromLogin.toString(),
+                mobileNumber.toString(),
+                empNumber.toString()
+            )
+        } else if (otpFromsignUp != null) {
+            homeFragment = HomeFragment(
+                this,
+                otpFromsignUp.toString(),
+                mobileNumber.toString(),
+                empNumber.toString()
+            )
+        } else if (pinFromSignin != null) {
+            homeFragment = HomeFragment(
+                this,
+                pinFromSignin.toString(),
+                mobileNumber.toString(),
+                empNumber.toString()
+            )
+        } else {
+            homeFragment =
+                HomeFragment(this, mOTP.toString(), mobileNumber.toString(), empNumber.toString())
         }
 
+        if (otp != null) {
+            menuFragment = MenuFragment(otp.toString())
+        } else if (otpFromLogin != null) {
+            menuFragment = MenuFragment(otpFromLogin.toString())
+        } else if (otpFromsignUp != null) {
+            menuFragment = MenuFragment(otpFromsignUp.toString())
+        } else if (pinFromSignin != null) {
+            menuFragment = MenuFragment(pinFromSignin.toString())
+        } else {
+            menuFragment = MenuFragment(mOTP.toString())
+
+        }
 
         val bundle = Bundle()
         bundle.putString("mPIN", otp)
         homeFragment.arguments = bundle
         addFragment(homeFragment)
 
-        mustersFragment = MustersFragment(this)
-        docsfragment = DocsFragment()
-        menuFragment = MenuFragment()
+        myTaskFragment = MyTaskFragment(this)
+        eRegisterFragment = ERegisterFragment()
+
+
+
 
         hashMap = HashMap()
 
@@ -86,13 +124,13 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 R.id.navigation_musters -> {
-                    addFragment(mustersFragment)
+                    addFragment(myTaskFragment)
 
                     true
                 }
 
                 R.id.navigation_mydocs -> {
-                    addFragment(docsfragment)
+                    addFragment(eRegisterFragment)
 
                     true
                 }
@@ -115,4 +153,45 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    override fun onBackPressed() {
+
+        val fragmentManager: FragmentManager = supportFragmentManager
+        val currentFragment: Fragment? = fragmentManager.findFragmentById(R.id.frameLayout)
+
+        when(currentFragment){
+           is HomeFragment->{
+               dialog = Dialog(this)
+               dialog.setContentView(R.layout.back_button_dialog)
+               dialog.setCancelable(true)
+               dialog.show()
+               val dialogText: TextView = dialog.findViewById(R.id.logoutTxt)
+               val btnNo: TextView = dialog.findViewById(R.id.btnNo)
+               val btnYes: TextView = dialog.findViewById(R.id.btnYes)
+
+               btnYes.setOnClickListener {
+                   startActivity(Intent(this@MainActivity, DashBoardScreen::class.java))
+                   dialog.dismiss()
+                   super.onBackPressed()
+               }
+               btnNo.setOnClickListener {
+                   dialog.dismiss()
+               }
+            }
+            is MyTaskFragment->{
+                addFragment(homeFragment)
+                binding.bottomNavigation.selectedItemId = R.id.navigation_home
+            }
+            is ERegisterFragment->{
+                addFragment(homeFragment)
+                binding.bottomNavigation.selectedItemId = R.id.navigation_home
+
+            }
+            is MenuFragment->{
+                addFragment(homeFragment)
+                binding.bottomNavigation.selectedItemId = R.id.navigation_home
+
+            }
+
+        }
+    }
 }

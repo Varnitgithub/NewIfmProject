@@ -41,6 +41,7 @@ import com.example.ifmapp.modelclasses.geomappedsite_model.GeoMappedResponse
 import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
 import com.example.ifmapp.shared_preference.shared_preference_models.CheckOutModel
 import com.example.ifmapp.shared_preference.shared_preference_models.CurrentUserShiftsDetails
+import com.example.ifmapp.toast.CustomToast
 import com.example.ifmapp.utils.IMEIGetter
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
@@ -120,6 +121,8 @@ class CheckInScreen : AppCompatActivity() {
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_check_in_screen)
 
+        binding.progressBar.visibility = View.GONE
+
         binding.btnRetake.isEnabled = false
         binding.bigProfile.isClickable = false
         binding.cameraImageView.visibility = View.GONE
@@ -182,6 +185,7 @@ class CheckInScreen : AppCompatActivity() {
 
             if (base64Image != null && mLatitude != null && mLongitude != null && locationAutoID != null) {
                 Log.d("TAGGGGGGGG", "onCreate:;llllll $locationAutoID")
+                binding.progressBar.visibility = View.VISIBLE
                 getGeoMappedSites(
                     "sams",
                     locationAutoID.toString(),
@@ -321,13 +325,13 @@ binding.btnSubmit.isClickable = true
                 startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE)*/
             } else {
                 // Permission denied, show a message to the user
-                Toast.makeText(this, "Please Allow Camera permission", Toast.LENGTH_SHORT).show()
+               CustomToast.showToast(this@CheckInScreen,"Please Allow Camera permission")
             }
         } else if (requestCode == LOCATION_REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 getLastLocation()
             } else {
-                Toast.makeText(this, "Please Allow Camera permission", Toast.LENGTH_SHORT).show()
+                CustomToast.showToast(this@CheckInScreen,"Please Allow Location permission")
             }
 
         }
@@ -341,6 +345,7 @@ binding.btnSubmit.isClickable = true
         longitude: String,
         address: String
     ) {
+        binding.progressBar.visibility = View.GONE
         binding.checkinCL.visibility = View.GONE
 
         binding.finalLayoutCL.visibility = View.VISIBLE
@@ -481,7 +486,7 @@ binding.btnSubmit.isClickable = true
                             }
 
                         }else{
-                            Toast.makeText(this@CheckInScreen, "attendance is already marked ", Toast.LENGTH_SHORT).show()
+                           CustomToast.showToast(this@CheckInScreen,"attendance is already marked ")
                         }
                         }
  else {
@@ -531,12 +536,13 @@ binding.btnSubmit.isClickable = true
                 if (response.isSuccessful) {
 
                     Log.d("TAGGGGGGGG", "onResponse: attendance inserted")
-                    Toast.makeText(this@CheckInScreen, "attendance marked", Toast.LENGTH_SHORT)
-                        .show()
+                  CustomToast.showToast(this@CheckInScreen,"attendance marked")
                     binding.cameraPreviewView.visibility = View.GONE
 
                     binding.checkinCL.visibility = View.GONE
 
+
+                    binding.progressBar.visibility = View.VISIBLE
                     binding.attendanceMarkedTxt.text = "Attendance Marked ${inoutStatus} Successfully!"
                     setFinalDialog(mLatitude.toString(), mLongitude.toString(), myaddress.toString())
 
@@ -748,5 +754,11 @@ binding.btnSubmit.isClickable = true
         )
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        var intent = Intent(this@CheckInScreen,MainActivity::class.java)
+        intent.putExtra("mPin",otp)
+        startActivity(intent)
+    }
 }
 
