@@ -25,6 +25,7 @@ import com.example.ifmapp.apiinterface.ApiInterface
 import com.example.ifmapp.databinding.ActivityMobileRegisterScreenBinding
 import com.example.ifmapp.modelclasses.verifymobile.OtpSend
 import com.example.ifmapp.modelclasses.verifymobile.VerifyOtpResponse
+import com.example.ifmapp.toast.CustomToast
 import com.example.ifmapp.utils.IMEIGetter
 import retrofit2.Call
 import retrofit2.Callback
@@ -244,6 +245,7 @@ class MobileRegisterScreen : AppCompatActivity() {
                                                     response: Response<OtpSend?>
                                                 ) {
                                                     if (response.isSuccessful) {
+
                                                         Log.d(
                                                             "TAGGGGGGGG",
                                                             "onResponse: otp send successfully"
@@ -281,20 +283,10 @@ class MobileRegisterScreen : AppCompatActivity() {
                                                 }
                                             })
                                         } else {
-                                            Toast.makeText(
-                                                this@MobileRegisterScreen,
-                                                "Mobile no should be 10 digit",
-                                                Toast.LENGTH_SHORT
-                                            )
-                                                .show()
+                                           CustomToast.showToast(this@MobileRegisterScreen,"Mobile no should be 10 digit")
                                         }
                                     } else {
-                                        Toast.makeText(
-                                            this@MobileRegisterScreen,
-                                            "Please enter your mobile number",
-                                            Toast.LENGTH_SHORT
-                                        )
-                                            .show()
+                                      CustomToast.showToast(this@MobileRegisterScreen,"Please enter your mobile number")
 
                                     }
                                 } else {
@@ -319,20 +311,25 @@ class MobileRegisterScreen : AppCompatActivity() {
                                                     response: Response<VerifyOtpResponse?>
                                                 ) {
                                                     if (response.isSuccessful) {
+                                                        if (response.body()?.get(0)?.MessageID?.toInt()==1){
+                                                            Log.d(
+                                                                "TAGGGGGGGGGG",
+                                                                "onResponse: verify otp"
+                                                            )
+                                                            val intent = Intent(
+                                                                this@MobileRegisterScreen,
+                                                                GnereratePinCodeScreen::class.java
+                                                            )
+                                                            intent.putExtra(
+                                                                "mobileNumber",
+                                                                mobileNumber
+                                                            )
+                                                            startActivity(intent)
+                                                        }else{
+                                                            CustomToast.showToast(this@MobileRegisterScreen,"${response.body()?.get(0)?.MessageString}")
+                                                        }
 
-                                                        Log.d(
-                                                            "TAGGGGGGGGGG",
-                                                            "onResponse: verify otp"
-                                                        )
-                                                        val intent = Intent(
-                                                            this@MobileRegisterScreen,
-                                                            GnereratePinCodeScreen::class.java
-                                                        )
-                                                        intent.putExtra(
-                                                            "mobileNumber",
-                                                            mobileNumber
-                                                        )
-                                                        startActivity(intent)
+
 
                                                     } else {
 
@@ -370,11 +367,7 @@ class MobileRegisterScreen : AppCompatActivity() {
 
 
                         } else {
-                            Toast.makeText(
-                                this@MobileRegisterScreen,
-                                "user is not valid",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                           CustomToast.showToast(this@MobileRegisterScreen,"user is not valid")
                         }
                     }
 
@@ -385,12 +378,11 @@ class MobileRegisterScreen : AppCompatActivity() {
 
 
             } else {
-                Toast.makeText(this, "Mobile no should be 10 digit", Toast.LENGTH_SHORT)
-                    .show()
+                CustomToast.showToast(this@MobileRegisterScreen,"Mobile no should be 10 digit")
+
             }
         } else {
-            Toast.makeText(this, "Please enter your mobile number", Toast.LENGTH_SHORT)
-                .show()
+            CustomToast.showToast(this@MobileRegisterScreen,"Please enter your mobile number")
 
         }
 
@@ -469,15 +461,11 @@ class MobileRegisterScreen : AppCompatActivity() {
                 if (!isMockLocation()) {
                     Log.d("TAGGGGGGGGGG", "onRequestPermissionsResult: getting location")
                 } else {
-                    Toast.makeText(
-                        this,
-                        "mock location is enabled please disable it",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    CustomToast.showToast(
+                        this@MobileRegisterScreen,
+                        "mock location is enabled please disable it"
+                    )
                 }
-                //Permission Granted
-
-
             }
         }
     }
@@ -501,9 +489,6 @@ class MobileRegisterScreen : AppCompatActivity() {
                 Manifest.permission.READ_PHONE_STATE
             ) == PackageManager.PERMISSION_GRANTED
         ) {
-            // Permission is already granted
-            // You can proceed with the logic that requires this permission
-            // For example, you might call getIMEI() here
             val imeiGetter = IMEIGetter(this)
             val imei = imeiGetter.getIMEI()
             // Do something with the IMEI
@@ -517,7 +502,6 @@ class MobileRegisterScreen : AppCompatActivity() {
         }
     }
 
-    // Handle the result of the permission request
     override fun onPause() {
         super.onPause()
     }

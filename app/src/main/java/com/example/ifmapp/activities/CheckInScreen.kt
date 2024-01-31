@@ -533,7 +533,7 @@ binding.btnSubmit.isClickable = true
                 call: Call<AttendanceResponse?>,
                 response: Response<AttendanceResponse?>
             ) {
-                if (response.isSuccessful) {
+                if (response.isSuccessful&&response.body()?.get(0)?.MessageID?.toInt()==1) {
 
                     Log.d("TAGGGGGGGG", "onResponse: attendance inserted")
                   CustomToast.showToast(this@CheckInScreen,"attendance marked")
@@ -557,7 +557,7 @@ binding.btnSubmit.isClickable = true
                     }, delayMillis)
 
                 } else {
-                    Log.d("TAGGGGGGGG", "onResponse:error ${response.errorBody()}")
+                    CustomToast.showToast(this@CheckInScreen,response.body()?.get(0)?.MessageString.toString())
                 }
             }
 
@@ -647,7 +647,7 @@ binding.btnSubmit.isClickable = true
                 )
 
             } catch (exc: Exception) {
-                Toast.makeText(this, "Unable to open camera", Toast.LENGTH_SHORT).show()
+      CustomToast.showToast(this@CheckInScreen,"Unable to open camera")
             }
 
         }, ContextCompat.getMainExecutor(this))
@@ -683,11 +683,7 @@ binding.btnSubmit.isClickable = true
                 }
 
                 override fun onError(exception: ImageCaptureException) {
-                    Toast.makeText(
-                        applicationContext,
-                        "Error capturing image",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                   CustomToast.showToast(this@CheckInScreen,"Error capturing image")
                 }
             }
         )
