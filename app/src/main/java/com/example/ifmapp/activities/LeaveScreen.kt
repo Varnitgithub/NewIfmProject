@@ -16,6 +16,8 @@ class LeaveScreen : AppCompatActivity() {
         //    setContentView(R.layout.activity_leave_screen2)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_leave_screen2)
 
+
+
         binding.applyforLeave.setOnClickListener {
             val intent = Intent(this, LeaveReasonScreen::class.java)
             intent.putExtra("leave", "Apply For Leave")

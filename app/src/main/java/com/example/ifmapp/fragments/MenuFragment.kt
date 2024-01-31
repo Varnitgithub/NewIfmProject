@@ -37,23 +37,31 @@ class MenuFragment(private var pin:String) : Fragment() {
         }
 
         binding.salaryBtm.setOnClickListener {
-            startActivity(Intent(requireContext(), SalaryScreen::class.java))
+           var intent = Intent(requireContext(), SalaryScreen::class.java)
+            intent.putExtra("mPIN",pin)
+            startActivity(intent)
         }
 
         binding.taskBtn.setOnClickListener {
-            startActivity(Intent(requireContext(),TaskScreen::class.java))
+          var intent =   Intent(requireContext(),TaskScreen::class.java)
+            intent.putExtra("mPIN",pin)
+            startActivity(intent)
         }
 
         binding.eRegisterBtn.setOnClickListener {
-            addFragment(ERegisterFragment())
+            addFragment(ERegisterFragment(pin))
         }
 
         binding.homeBtm.setOnClickListener {
-            startActivity(Intent(requireContext(), HomeFragment::class.java))
+           var intent =Intent(requireContext(), HomeFragment::class.java)
+            intent.putExtra("mPIN",pin)
+            startActivity(intent)
         }
 
         binding.leavesBtm.setOnClickListener {
-            startActivity(Intent(requireContext(), LeaveScreen::class.java))
+            val intent = Intent(requireContext(), LeaveScreen::class.java)
+            intent.putExtra("mPIN",pin)
+            startActivity(intent)
         }
 
 

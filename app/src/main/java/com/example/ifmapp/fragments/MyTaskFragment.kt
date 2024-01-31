@@ -16,7 +16,7 @@ import java.util.Calendar
 import java.util.Locale
 
 
-class MyTaskFragment(private var context: Context) : Fragment() {
+class MyTaskFragment(private var context: Context,private var pin:String) : Fragment() {
     private lateinit var binding: FragmentMustersBinding
     private lateinit var calendar: Calendar
 

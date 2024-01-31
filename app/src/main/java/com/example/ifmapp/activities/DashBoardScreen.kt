@@ -21,6 +21,7 @@ import com.example.ifmapp.databinding.ActivityDashBoardScreenBinding
 import com.example.ifmapp.modelclasses.AddAccountModel
 import com.example.ifmapp.modelclasses.usermodel_sharedpreference.UserListModel
 import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
+import com.example.ifmapp.toast.CustomToast
 import com.otpview.OTPListener
 import com.otpview.OTPTextView
 
@@ -102,11 +103,7 @@ class DashBoardScreen : AppCompatActivity(), AddAccountAdapter.OnClickedInterfac
                         intent.putExtra("empId", empNumber)
                         startActivity(intent)
                     } else {
-                        Toast.makeText(
-                            this@DashBoardScreen,
-                            "You are not a stored Use,Please Login",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                       CustomToast.showToast(this@DashBoardScreen,"You are not a stored Use,Please Login")
                     }
                 }
 

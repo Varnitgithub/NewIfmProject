@@ -90,14 +90,32 @@ class MainActivity : AppCompatActivity() {
 
         if (otp != null) {
             menuFragment = MenuFragment(otp.toString())
+            myTaskFragment = MyTaskFragment(this,otp.toString())
+            eRegisterFragment= ERegisterFragment(otp.toString())
         } else if (otpFromLogin != null) {
             menuFragment = MenuFragment(otpFromLogin.toString())
+            myTaskFragment = MyTaskFragment(this,otpFromLogin.toString())
+            eRegisterFragment= ERegisterFragment(otpFromLogin.toString())
+
+
         } else if (otpFromsignUp != null) {
             menuFragment = MenuFragment(otpFromsignUp.toString())
+            myTaskFragment = MyTaskFragment(this,otpFromsignUp.toString())
+            eRegisterFragment= ERegisterFragment(otpFromsignUp.toString())
+
+
         } else if (pinFromSignin != null) {
             menuFragment = MenuFragment(pinFromSignin.toString())
+            myTaskFragment = MyTaskFragment(this,pinFromSignin.toString())
+            eRegisterFragment= ERegisterFragment(pinFromSignin.toString())
+
+
         } else {
             menuFragment = MenuFragment(mOTP.toString())
+            myTaskFragment = MyTaskFragment(this,mOTP.toString())
+            eRegisterFragment= ERegisterFragment(mOTP.toString())
+
+
 
         }
 
@@ -106,8 +124,7 @@ class MainActivity : AppCompatActivity() {
         homeFragment.arguments = bundle
         addFragment(homeFragment)
 
-        myTaskFragment = MyTaskFragment(this)
-        eRegisterFragment = ERegisterFragment()
+
 
 
 
