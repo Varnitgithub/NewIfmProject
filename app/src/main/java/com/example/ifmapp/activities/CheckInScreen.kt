@@ -80,6 +80,7 @@ class CheckInScreen : AppCompatActivity() {
     private var mLatitude: String? = null
     private var mLongitude: String? = null
     private var mOTP: String? = null
+    private var mUserName: String? = null
     private val LOCATION_REQUEST_CODE = 111
 
     private var rotatedBitmap: Bitmap? = null
@@ -114,6 +115,7 @@ class CheckInScreen : AppCompatActivity() {
 
     var inStatus = "IN"
     var outStatus = "OUT"
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -129,8 +131,9 @@ class CheckInScreen : AppCompatActivity() {
         binding.allLayout.visibility = View.VISIBLE
         binding.cameraPreviewView.visibility = View.GONE
 
-          inoutStatus = intent.getStringExtra("INOUTStatus")
-          mOTP = intent.getStringExtra("mOTP")
+        inoutStatus = intent.getStringExtra("INOUTStatus")
+        mOTP = intent.getStringExtra("mPIN")
+        mUserName = intent.getStringExtra("empName")
         Log.d("TAGGGGG", "onCreate: this is motp.........................$mOTP")
 
 
@@ -183,7 +186,7 @@ class CheckInScreen : AppCompatActivity() {
             binding.btnRetake.setTextColor(resources.getColor(R.color.check_btn))
             binding.btnRetake.setBackgroundResource(R.drawable.button_backwhite)
 
-            if (base64Image != null && mLatitude != null && mLongitude != null && locationAutoID != null) {
+            if (base64Image != null && mLatitude != null && mLongitude != null && locationAutoID != null && mAltitude != null) {
                 Log.d("TAGGGGGGGG", "onCreate:;llllll $locationAutoID")
                 binding.progressBar.visibility = View.VISIBLE
                 getGeoMappedSites(
@@ -218,7 +221,7 @@ class CheckInScreen : AppCompatActivity() {
         }
         binding.btnRetake.setOnClickListener {
             if (imagesBitmap != null) {
-binding.btnSubmit.isClickable = true
+                binding.btnSubmit.isClickable = true
                 binding.btnRetake.setTextColor(resources.getColor(R.color.white))
                 binding.btnRetake.setBackgroundResource(R.drawable.button_back)
                 binding.btnSubmit.setTextColor(resources.getColor(R.color.check_btn))
@@ -325,13 +328,13 @@ binding.btnSubmit.isClickable = true
                 startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE)*/
             } else {
                 // Permission denied, show a message to the user
-               CustomToast.showToast(this@CheckInScreen,"Please Allow Camera permission")
+                CustomToast.showToast(this@CheckInScreen, "Please Allow Camera permission")
             }
         } else if (requestCode == LOCATION_REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 getLastLocation()
             } else {
-                CustomToast.showToast(this@CheckInScreen,"Please Allow Location permission")
+                CustomToast.showToast(this@CheckInScreen, "Please Allow Location permission")
             }
 
         }
@@ -354,6 +357,7 @@ binding.btnSubmit.isClickable = true
         binding.shiftAtfinal.text = "${siteSelect} $shiftSelect $formattedDate"
         binding.latlgTxt.text = "$latitude $longitude"
         binding.address.text = myaddress
+        binding.profileFinal.setImageBitmap(imagesBitmap)
 
 
     }
@@ -444,7 +448,8 @@ binding.btnSubmit.isClickable = true
                     if (response.isSuccessful
                     ) {
                         if (response.body()?.get(0)?.MessageID.toString()
-                                .toInt() == 1){
+                                .toInt() == 1
+                        ) {
 
                             Log.d("TAGGGGGGGGGG", "onResponse: response Successfulllll")
 
@@ -466,30 +471,45 @@ binding.btnSubmit.isClickable = true
                                             } 9${LocationAutoID} 10${emp?.ClientCode}" +
                                             "11${siteSelect} 12${shiftSelect} 13${myaddress}"
                                 )
-                                insertAttendance(
-                                    "sams",
-                                    imeiPhone,
-                                    empNumber.toString(),
-                                    emp?.AsmtID.toString(),
-                                    empNumber.toString(),
-                                    inoutStatus.toString(),
-                                    time.toString(),
-                                    latitude = mLatitude.toString(),
-                                    mLongitude.toString(),
-                                    mAltitude.toString(),
-                                    base64Image ?: "",
-                                    emp?.LocationAutoID.toString(),
-                                    emp?.ClientCode.toString(),
-                                    siteSelect.toString(),
-                                    myaddress.toString()
-                                )
+
+                                if (empNumber.toString().isNotEmpty() && emp?.AsmtID.toString()
+                                        .isNotEmpty() && inoutStatus.toString().isNotEmpty() &&
+                                    time.toString()
+                                        .isNotEmpty() && emp?.ClientCode != null && siteSelect != null && myaddress != null
+
+                                ) {
+                                    insertAttendance(
+                                        "sams",
+                                        imeiPhone,
+                                        empNumber.toString(),
+                                        emp.AsmtID,
+                                        empNumber.toString(),
+                                        inoutStatus.toString(),
+                                        time.toString(),
+                                        latitude = mLatitude.toString(),
+                                        mLongitude.toString(),
+                                        mAltitude.toString(),
+                                        base64Image ?: "",
+                                        emp.LocationAutoID,
+                                        emp.ClientCode,shiftSelect.toString()
+                                        ,
+                                        myaddress.toString()
+                                    )
+                                } else {
+                                    CustomToast.showToast(
+                                        this@CheckInScreen,
+                                        "Some details are mission"
+                                    )
+                                }
                             }
 
-                        }else{
-                           CustomToast.showToast(this@CheckInScreen,"attendance is already marked ")
+                        } else {
+                            CustomToast.showToast(
+                                this@CheckInScreen,
+                                "attendance is already marked "
+                            )
                         }
-                        }
- else {
+                    } else {
                         Log.d("TAGGGGGGGG", "onResponse: attendance not success")
                     }
                 }
@@ -522,8 +542,6 @@ binding.btnSubmit.isClickable = true
         ShiftCode: String,
         LocationName: String
     ) {
-
-
         retrofitInstance.insertAttendance(
             connectionKey, IMEI ?: "", userId, AsmtID, employeeNumber, InOutStatus,
             DutyDateTime, latitude, longitude, altitude, employeeImageBase64,
@@ -533,31 +551,40 @@ binding.btnSubmit.isClickable = true
                 call: Call<AttendanceResponse?>,
                 response: Response<AttendanceResponse?>
             ) {
-                if (response.isSuccessful&&response.body()?.get(0)?.MessageID?.toInt()==1) {
+                if (response.isSuccessful && response.body()?.get(0)?.MessageID?.toInt() == 1) {
 
                     Log.d("TAGGGGGGGG", "onResponse: attendance inserted")
-                  CustomToast.showToast(this@CheckInScreen,"attendance marked")
                     binding.cameraPreviewView.visibility = View.GONE
 
                     binding.checkinCL.visibility = View.GONE
 
 
                     binding.progressBar.visibility = View.VISIBLE
-                    binding.attendanceMarkedTxt.text = "Attendance Marked ${inoutStatus} Successfully!"
-                    setFinalDialog(mLatitude.toString(), mLongitude.toString(), myaddress.toString())
+                    binding.attendanceMarkedTxt.text =
+                        "Attendance Marked ${inoutStatus} Successfully!"
+                    setFinalDialog(
+                        mLatitude.toString(),
+                        mLongitude.toString(),
+                        myaddress.toString()
+                    )
 
-                    SaveUsersInSharedPreference.setAttendanceStatus(this@CheckInScreen,"IN")
+                    SaveUsersInSharedPreference.setAttendanceStatus(this@CheckInScreen, "IN")
+                    Log.d("TAGGGGGGG", "onResponse: $mOTP is the new otp")
                     val delayMillis = 5000L
                     Handler().postDelayed({
                         finish()
                         val intent = Intent(this@CheckInScreen, MainActivity::class.java)
-                        intent.putExtra("inoutStatus",inoutStatus)
-                        intent.putExtra("mOTP",mOTP)
+                        intent.putExtra("inoutStatus", "OUT")
+                        intent.putExtra("mPIN", mOTP)
+                        intent.putExtra("empName", mUserName)
                         startActivity(intent)
                     }, delayMillis)
 
                 } else {
-                    CustomToast.showToast(this@CheckInScreen,response.body()?.get(0)?.MessageString.toString())
+                    CustomToast.showToast(
+                        this@CheckInScreen,
+                        response.body()?.get(0)?.MessageString.toString()
+                    )
                 }
             }
 
@@ -647,7 +674,7 @@ binding.btnSubmit.isClickable = true
                 )
 
             } catch (exc: Exception) {
-      CustomToast.showToast(this@CheckInScreen,"Unable to open camera")
+                CustomToast.showToast(this@CheckInScreen, "Unable to open camera")
             }
 
         }, ContextCompat.getMainExecutor(this))
@@ -683,7 +710,7 @@ binding.btnSubmit.isClickable = true
                 }
 
                 override fun onError(exception: ImageCaptureException) {
-                   CustomToast.showToast(this@CheckInScreen,"Error capturing image")
+                    CustomToast.showToast(this@CheckInScreen, "Error capturing image")
                 }
             }
         )
@@ -752,8 +779,8 @@ binding.btnSubmit.isClickable = true
 
     override fun onBackPressed() {
         super.onBackPressed()
-        var intent = Intent(this@CheckInScreen,MainActivity::class.java)
-        intent.putExtra("mPin",otp)
+        var intent = Intent(this@CheckInScreen, MainActivity::class.java)
+        intent.putExtra("mPIN", otp)
         startActivity(intent)
     }
 }

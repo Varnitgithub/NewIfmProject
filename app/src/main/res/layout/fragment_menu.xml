@@ -80,35 +80,10 @@
                 android:weightSum="4">
 
 
-                <LinearLayout
-                    android:id="@+id/home_btm"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bottom_frag_back"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:padding="13dp">
 
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/menus" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto"
-                        android:gravity="center"
-                        android:text="Home"
-                        android:textColor="@color/black"
-                        android:textSize="14sp" />
-
-                </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/task_btn"
+                    android:id="@+id/musters"
 
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -138,7 +113,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/e_Register_btn"
+                    android:id="@+id/mydoc"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
@@ -200,16 +175,6 @@
 
                 </LinearLayout>
 
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="4">
-
-
                 <LinearLayout
                     android:id="@+id/salary_btm"
 
@@ -238,6 +203,17 @@
                         tools:ignore="TextSizeCheck" />
 
                 </LinearLayout>
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="4">
+
+
+
 
                 <LinearLayout
                     android:id="@+id/notification_btm"
@@ -295,6 +271,22 @@
 
                         android:textColor="@color/black"
                         android:textSize="14sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="12dp">
+
+
+
+
 
                 </LinearLayout>
 

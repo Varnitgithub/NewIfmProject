@@ -69,11 +69,13 @@ class MobileRegisterScreen : AppCompatActivity() {
                 }*/
 
         binding.btnContinue.setOnClickListener {
+
             startCountdownTimer()
             sendOTP()
         }
 
         binding.resentOtp.setOnClickListener {
+
             startCountdownTimer()
             sendOTP()
             binding.resentOtp.isEnabled = false
@@ -101,8 +103,12 @@ class MobileRegisterScreen : AppCompatActivity() {
                 }
             }
 
-            override fun afterTextChanged(s: Editable?) {
-
+            override fun afterTextChanged(s: Editable?) {/*
+                val stringWithoutSpaces = s.toString().replace(" ", "")
+                if (s.toString() != stringWithoutSpaces) {
+                    binding.mobileNoEdt.setText(stringWithoutSpaces)
+                    binding.mobileNoEdt.setSelection(stringWithoutSpaces.length) // Move cursor to the end
+                }*/
             }
         })
 
@@ -119,19 +125,19 @@ class MobileRegisterScreen : AppCompatActivity() {
                 }
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    /*editTexts[i].inputType =
+                        InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD*/
                     if (editTexts[3].text.toString().isNotEmpty()) {
-                        editTexts[i].inputType =
-                            InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD
+                       /* editTexts[i].inputType =
+                            InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD*/
                         binding.btnContinue.isEnabled = true
                         binding.btnContinue.isClickable = true
                     }
-                    editTexts[i].inputType =
-                        InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD
+
                 }
 
 
                 override fun afterTextChanged(s: Editable?) {
-
                 }
             })
 
@@ -214,6 +220,8 @@ class MobileRegisterScreen : AppCompatActivity() {
     private fun sendOTP() {
         if (binding.mobileNoEdt.text.isNotEmpty()) {
             if (binding.mobileNoEdt.text.toString().length == 10) {
+                binding.btnContinue.isClickable = false
+
                 mobileNumber = binding.mobileNoEdt.text.toString().trim()
                 retrofitInstance.validateMobileNumber(
                     "sams",

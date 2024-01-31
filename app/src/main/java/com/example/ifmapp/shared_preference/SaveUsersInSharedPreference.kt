@@ -28,23 +28,21 @@ class SaveUsersInSharedPreference {
             editor.apply()
         }
 
-        private fun isPinExists(context: Context, pin: String): Boolean {
+        private fun isPinExists(context: Context, pin: String,userName:String): Boolean {
             val userList: List<UserListModel> = getList(context)
 
             for (user in userList) {
                 Log.d("TAGGGGGGGG", "isPinExists: ${user.pin}==${pin}")
-                if (user.pin == pin) {
-
+                if (user.pin == pin && user.userName == userName) {
                     return false
                 }
             }
                 Log.d("TAGGGGGGGG", "isPinExists: not exists")
                 return true
-
         }
 
-        fun addUserIfNotExists(context: Context,  user: UserListModel,pin:String) {
-            if (isPinExists(context, pin)) {
+        fun addUserIfNotExists(context: Context,  user: UserListModel,pin:String,userName:String) {
+            if (isPinExists(context, pin,userName)) {
                 val userList: MutableList<UserListModel> = getList(context).toMutableList()
                 Log.d("TAGGGGGGGGGG", "addUserIfNotExists: user not added ${userList.size}")
 
@@ -66,11 +64,11 @@ class SaveUsersInSharedPreference {
             return gson.fromJson(json, type) ?: ArrayList()
         }
 
-        fun getUserByPin(context: Context, pin: String): UserListModel? {
+        fun getUserByPin(context: Context, pin: String,name:String): UserListModel? {
             val userList: List<UserListModel> = getList(context)
 
             for (user in userList) {
-                if (user.pin == pin) {
+                if (user.pin == pin && user.userName==name) {
                     return user
                 }
             }

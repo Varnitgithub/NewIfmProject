@@ -3,22 +3,27 @@
     <item
         android:id="@+id/navigation_home"
         android:title="Home"
-        
+        android:iconTint="@color/white"
         android:icon="@drawable/home_icon" />
 
     <item
         android:id="@+id/navigation_musters"
         android:title="My Task"
+        android:iconTint="@color/white"
+
         android:icon="@drawable/muster_icon" />
 
     <item
         android:id="@+id/navigation_mydocs"
-        android:title="E_Register"
+        android:title="Register"
+        android:iconTint="@color/white"
+
         android:icon="@drawable/e_register_icon" />
 
     <item
         android:id="@+id/navigation_menu"
         android:title="Menu"
+        android:iconTint="@color/white"
 
         android:icon="@drawable/menu_icon" />
 </menu>

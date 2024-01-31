@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
+import android.text.InputType
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
@@ -60,6 +61,11 @@ class SignUpWithoutMobile : AppCompatActivity() {
             }
 
             override fun afterTextChanged(p0: Editable?) {
+              /*  val stringWithoutSpaces = p0.toString().replace(" ", "")
+                if (p0.toString() != stringWithoutSpaces) {
+                    binding.employeepinEdt.setText(stringWithoutSpaces)
+                    binding.employeepinEdt.setSelection(stringWithoutSpaces.length) // Move cursor to the end
+                }*/
             }
         })
 
@@ -72,15 +78,21 @@ class SignUpWithoutMobile : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
 
                 Log.d("TAGGGGGGGGGG", "onTextChanged: onChangeee")
-                if (binding.employeeidEdt.text.toString().length == 6) {
-                    validateEmployeeId(binding.employeeidEdt.text.toString().trim())
-                }
+
 
             }
 
 
             override fun afterTextChanged(s: Editable?) {
+              /*  val stringWithoutSpaces = s.toString().replace(" ", "")
+                if (s.toString() != stringWithoutSpaces) {
+                    binding.employeepinEdt.setText(stringWithoutSpaces)
+                    binding.employeepinEdt.setSelection(stringWithoutSpaces.length) // Move cursor to the end
+                }*/
+                if (binding.employeeidEdt.text.toString().length == 6) {
+                    validateEmployeeId(binding.employeeidEdt.text.toString().trim())
 
+                }
             }
         })
 
@@ -89,7 +101,6 @@ class SignUpWithoutMobile : AppCompatActivity() {
 
 
     private fun validateEmployeeId(empId: String) {
-        Log.d("TAGGGGGG", "validateEmployeeId: validate employee tag")
         retrofitInstance.validateEmployeeId("sams", empId)
             .enqueue(object : Callback<VerifyOtpResponse?> {
                 override fun onResponse(
@@ -100,11 +111,8 @@ class SignUpWithoutMobile : AppCompatActivity() {
                         if (response.body()?.get(0)?.MessageID.toString().toInt() == 1) {
 
                             binding.employeepinLL.visibility = View.VISIBLE
+                            binding.employeepinEdt.inputType = InputType.TYPE_CLASS_NUMBER
 
-                            CustomToast.showToast(
-                                this@SignUpWithoutMobile,
-                                "this is valied employee id, Please Generate your pin"
-                            )
                             binding.btnGenerate.isEnabled = true
 
                         } else {
@@ -181,13 +189,13 @@ class SignUpWithoutMobile : AppCompatActivity() {
                             )
 
                             SaveUsersInSharedPreference.addUserIfNotExists(
-                                this@SignUpWithoutMobile, user, pin
+                                this@SignUpWithoutMobile, user, pin,response.body()?.get(0)?.EmpName.toString()
                             )
 
                             val intent =
                                 Intent(
                                     this@SignUpWithoutMobile,
-                                    MainActivity::class.java
+                                    DashBoardScreen::class.java
                                 )
                             intent.putExtra("userPin", pin)
 

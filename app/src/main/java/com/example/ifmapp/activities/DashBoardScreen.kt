@@ -39,8 +39,8 @@ class DashBoardScreen : AppCompatActivity(), AddAccountAdapter.OnClickedInterfac
     var empPin: String? = null
     var currentEmployee: UserListModel? = null
     private lateinit var currentUser: UserListModel
+    private lateinit var usersList: ArrayList<UserListModel>
     private lateinit var allUsersList: ArrayList<UserListModel>
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,16 +48,13 @@ class DashBoardScreen : AppCompatActivity(), AddAccountAdapter.OnClickedInterfac
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dash_board_screen)
 
         currentUser = SaveUsersInSharedPreference.getList(this)[0]
-
+        empName = currentUser.userName
         binding.userName.text = "Hi, ${currentUser.userName}"
+        usersList = ArrayList()
         allUsersList = ArrayList()
         empNumber = currentUser.empId
-        //  mobileNumber = currentUser.mobileNumber
 
         otpTextView = findViewById(R.id.otp_view)
-
-
-
 
         addAccountAdapter = AddAccountAdapter(this, this)
         binding.accountsRecyclerView.layoutManager =
@@ -67,15 +64,22 @@ class DashBoardScreen : AppCompatActivity(), AddAccountAdapter.OnClickedInterfac
 
 
         val newlist = SaveUsersInSharedPreference.getList(this).size
-        for (user in 1 until newlist) {
-            allUsersList.add(SaveUsersInSharedPreference.getList(this)[user])
+        for (user in 0 until newlist) {
+            usersList.add(SaveUsersInSharedPreference.getList(this)[user])
+
         }
-        if ( allUsersList.size!=0 ) {
+
+
+        for (user in 0 until newlist) {
+            if (SaveUsersInSharedPreference.getList(this@DashBoardScreen)[user].userName != empName) {
+                allUsersList.add(SaveUsersInSharedPreference.getList(this)[user])
+            }
+        }
+        if (allUsersList.size> 0) {
             addAccountAdapter.updateList(allUsersList)
+        } else {
+            addAccountAdapter.updateList(emptyList())
         }
-
-
-
 
         binding.forgotPin.setOnClickListener {
             startActivity(Intent(this, GnereratePinCodeScreen::class.java))
@@ -93,18 +97,25 @@ class DashBoardScreen : AppCompatActivity(), AddAccountAdapter.OnClickedInterfac
             }
 
             override fun onOTPComplete(otp: String) {
-                val userList = SaveUsersInSharedPreference.getList(this@DashBoardScreen)
+                val userList = SaveUsersInSharedPreference.getList(this@DashBoardScreen).size
 
-                for (user in userList) {
-                    if (user.pin == otp) {
+                for (user in 0 until userList) {
+                    var mUser = SaveUsersInSharedPreference.getList(this@DashBoardScreen)[user]
+                    if (mUser.pin == otp && mUser.userName == empName) {
                         val intent = Intent(this@DashBoardScreen, MainActivity::class.java)
                         intent.putExtra("mPIN", otp)
                         intent.putExtra("mobileNumber", mobileNumber)
                         intent.putExtra("empId", empNumber)
+                        intent.putExtra("empName", empName)
                         startActivity(intent)
                     } else {
-                       CustomToast.showToast(this@DashBoardScreen,"You are not a stored Use,Please Login")
+                        CustomToast.showToast(this@DashBoardScreen, "Please enter correct pin")
+                        otpTextView.resetState()
+                        otpTextView.setOTP("")
+
+
                     }
+
                 }
 
 
@@ -117,9 +128,17 @@ class DashBoardScreen : AppCompatActivity(), AddAccountAdapter.OnClickedInterfac
         otpTextView.setOTP("")
     }
 
-
     override fun onclick(employeeModel: UserListModel, position: Int) {
         binding.userName.text = "Hi, ${employeeModel.userName}"
+        empName = employeeModel.userName
+        val newlist = SaveUsersInSharedPreference.getList(this).size
+        allUsersList.clear()
+        for (user in 0 until newlist) {
+            if (SaveUsersInSharedPreference.getList(this@DashBoardScreen)[user].userName != empName) {
+                allUsersList.add(SaveUsersInSharedPreference.getList(this)[user])
+            }
+        }
+        addAccountAdapter.updateList(allUsersList)
     }
 
     private fun checkPermission(): Boolean {

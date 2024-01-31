@@ -9,6 +9,7 @@ import androidx.databinding.DataBindingUtil
 import com.example.ifmapp.R
 import com.example.ifmapp.databinding.ActivityLeaveScreen2Binding
 import com.example.ifmapp.databinding.ActivityLeaveScreenBinding
+import com.example.ifmapp.toast.CustomToast
 
 class LeaveReasonScreen : AppCompatActivity() {
     private lateinit var binding: ActivityLeaveScreenBinding
@@ -24,7 +25,7 @@ class LeaveReasonScreen : AppCompatActivity() {
            if ( binding.sickCheck.isChecked||binding.familyCheck.isChecked||binding.otherCheck.isChecked){
                startActivity(Intent(this,LeaveDateScreen::class.java))
            }else{
-               Toast.makeText(this, "Please select an option", Toast.LENGTH_SHORT).show()
+              CustomToast.showToast(this@LeaveReasonScreen,"Please select an option")
            }
         }
 
@@ -33,7 +34,6 @@ class LeaveReasonScreen : AppCompatActivity() {
             if (isChecked) {
                 binding.familyCheck.isChecked = false
                 binding.otherCheck.isChecked  =false
-                Toast.makeText(this, "you checked sick", Toast.LENGTH_SHORT).show()
                 binding.btnContinue.setBackgroundResource(R.drawable.button_back)
                 binding.btnContinue.setTextColor(resources.getColor(R.color.white))
                 binding.reasonEdt.visibility = View.GONE
@@ -44,7 +44,6 @@ class LeaveReasonScreen : AppCompatActivity() {
             if (isChecked) {
                 binding.sickCheck.isChecked = false
                 binding.otherCheck.isChecked  =false
-                Toast.makeText(this, "you checked family issue", Toast.LENGTH_SHORT).show()
                 binding.btnContinue.setBackgroundResource(R.drawable.button_back)
                 binding.btnContinue.setTextColor(resources.getColor(R.color.white))
                 binding.reasonEdt.visibility = View.GONE
@@ -55,7 +54,6 @@ class LeaveReasonScreen : AppCompatActivity() {
             if (isChecked) {
                 binding.sickCheck.isChecked  =false
                 binding.familyCheck.isChecked = false
-                Toast.makeText(this, "you checked other reason", Toast.LENGTH_SHORT).show()
                 binding.btnContinue.setBackgroundResource(R.drawable.button_back)
                 binding.btnContinue.setTextColor(resources.getColor(R.color.white))
                 binding.reasonEdt.visibility = View.VISIBLE

@@ -15,7 +15,7 @@ import com.example.ifmapp.modelclasses.DocumentsModel
 
 class ERegisterFragment(private var pin:String) : Fragment() {
   private lateinit var binding: FragmentDocsBinding
-  private lateinit var documentsAdapter: DocumentsAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -27,37 +27,12 @@ class ERegisterFragment(private var pin:String) : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
          binding = DataBindingUtil.inflate(inflater,R.layout.fragment_docs, container, false)
-        documentsAdapter = DocumentsAdapter(requireActivity())
 
-        binding.documentsRecyclerView.layoutManager = LinearLayoutManager(requireActivity())
-        binding.documentsRecyclerView.adapter = documentsAdapter
 
-        val documentList = documentsList()
-        documentsAdapter.updateList(documentList)
         return binding.root
     }
 
 
-    private fun documentsList():ArrayList<DocumentsModel>{
 
-        val documentList = arrayListOf<DocumentsModel>()
-
-        documentList.add(DocumentsModel(1,R.drawable.aadhar,"Aadhar Card","1234 5678 1357 2468"))
-        documentList.add(DocumentsModel(1,R.drawable.aadhar,"Aadhar Card","1234 5678 1357 2468"))
-        documentList.add(DocumentsModel(1,R.drawable.aadhar,"Aadhar Card","1234 5678 1357 2468"))
-        documentList.add(DocumentsModel(1,R.drawable.aadhar,"Aadhar Card","1234 5678 1357 2468"))
-        documentList.add(DocumentsModel(1,R.drawable.aadhar,"Aadhar Card","1234 5678 1357 2468"))
-        documentList.add(DocumentsModel(1,R.drawable.aadhar,"Aadhar Card","1234 5678 1357 2468"))
-        documentList.add(DocumentsModel(1,R.drawable.aadhar,"Aadhar Card","1234 5678 1357 2468"))
-        documentList.add(DocumentsModel(1,R.drawable.aadhar,"Aadhar Card","1234 5678 1357 2468"))
-        documentList.add(DocumentsModel(1,R.drawable.aadhar,"Aadhar Card","1234 5678 1357 2468"))
-        documentList.add(DocumentsModel(1,R.drawable.aadhar,"Aadhar Card","1234 5678 1357 2468"))
-        documentList.add(DocumentsModel(1,R.drawable.aadhar,"Aadhar Card","1234 5678 1357 2468"))
-        documentList.add(DocumentsModel(1,R.drawable.aadhar,"Aadhar Card","1234 5678 1357 2468"))
-        documentList.add(DocumentsModel(1,R.drawable.aadhar,"Aadhar Card","1234 5678 1357 2468"))
-        documentList.add(DocumentsModel(1,R.drawable.aadhar,"Aadhar Card","1234 5678 1357 2468"))
-
-        return documentList
-    }
 
     }

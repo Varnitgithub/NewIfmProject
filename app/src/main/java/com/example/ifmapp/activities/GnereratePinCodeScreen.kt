@@ -70,7 +70,6 @@ class GnereratePinCodeScreen : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {
             }
         })
-
     }
 
     private fun generatePIN() {
@@ -111,7 +110,7 @@ if (response.body()?.get(0)?.MessageID?.toInt()==1){
 
                     SaveUsersInSharedPreference.addUserIfNotExists(
                         this@GnereratePinCodeScreen,
-                        user,binding.edtEnterPinCode.text.toString().trim(),
+                        user,binding.edtEnterPinCode.text.toString().trim(),  response.body()?.get(0)?.EmpName.toString()
                     )
                     startActivity(Intent(this@GnereratePinCodeScreen,DashBoardScreen::class.java))
 

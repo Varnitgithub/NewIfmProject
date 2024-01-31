@@ -53,12 +53,21 @@ class LoginByPinMobileScreen : AppCompatActivity() {
             }
 
             override fun afterTextChanged(s: Editable?) {
-
+              /*  val stringWithoutSpaces = s.toString().replace(" ", "")
+                if (s.toString() != stringWithoutSpaces) {
+                    binding.employeepinEdt.setText(stringWithoutSpaces)
+                    binding.employeepinEdt.setSelection(stringWithoutSpaces.length) // Move cursor to the end
+                }*/
             }
         })
 
     }
     private fun loginUser() {
+        val stringWithoutSpaces = binding.employeeMobileEdt.toString().replace(" ", "")
+        if (binding.employeeMobileEdt.toString() != stringWithoutSpaces) {
+            binding.employeepinEdt.setText(stringWithoutSpaces)
+            binding.employeepinEdt.setSelection(stringWithoutSpaces.length) // Move cursor to the end
+        }
 
         if (binding.employeeMobileEdt.text != null && binding.employeepinEdt.text != null) {
 
@@ -96,7 +105,7 @@ class LoginByPinMobileScreen : AppCompatActivity() {
 
                                 SaveUsersInSharedPreference.addUserIfNotExists(
                                     this@LoginByPinMobileScreen,
-                                    usersList, binding.employeepinEdt.text.toString()
+                                    usersList, binding.employeepinEdt.text.toString(),response.body()?.get(0)?.EmpName.toString()
                                 )
                                 val intent =
                                     Intent(this@LoginByPinMobileScreen, MainActivity::class.java)
@@ -116,7 +125,7 @@ class LoginByPinMobileScreen : AppCompatActivity() {
                             }
 
                         } else {
-                            CustomToast.showToast(this@LoginByPinMobileScreen,"you does not have valid pin or Mobile no.")
+                            CustomToast.showToast(this@LoginByPinMobileScreen,"You does not have valid pin or Mobile no.")
 
                         }
                     }

@@ -23,12 +23,14 @@ import com.example.ifmapp.activities.RegistrationScreen
 import com.example.ifmapp.adapters.AddAccountAdapter
 import com.example.ifmapp.apiinterface.ApiInterface
 import com.example.ifmapp.databinding.FragmentHomeBinding
+import com.example.ifmapp.modelclasses.daily_attendance_model.DailyAttendanceModel
 import com.example.ifmapp.modelclasses.geomappedsite_model.GeoMappedResponse
 import com.example.ifmapp.modelclasses.loginby_pin.LoginByPINResponse
 import com.example.ifmapp.modelclasses.shift_selection_model.ShiftSelectionResponse
 import com.example.ifmapp.modelclasses.usermodel_sharedpreference.UserListModel
 import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
 import com.example.ifmapp.shared_preference.shared_preference_models.CurrentUserShiftsDetails
+import com.example.ifmapp.toast.CustomToast
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -44,7 +46,7 @@ class HomeFragment(
     private var context: Context,
     private var otp: String,
     private var mobileNumber: String,
-    private var empNumber: String
+    private var empNumber: String, private var userName: String, private var inOut: String
 ) : Fragment(),
     AddAccountAdapter.OnClickedInterface {
     private lateinit var binding: FragmentHomeBinding
@@ -67,6 +69,8 @@ class HomeFragment(
     private var currentUser: UserListModel? = null
 
     private var empDesignation: String? = null
+    private var clientCode: String? = null
+    private var asmtId: String? = null
 
     private var empName: String? = null
 
@@ -78,6 +82,8 @@ class HomeFragment(
     private lateinit var siteSelectionLiveData: MutableLiveData<String>
 
     private var outStatus: String? = null
+    private var intTime: String? = null
+    private var outTime: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -97,7 +103,7 @@ class HomeFragment(
 //            binding.checkoutBtn.isClickable = true
 //        }
 
-
+        Log.d("TAGGGGG", "onCreate: this is newwww $otp")
     }
 
     override fun onCreateView(
@@ -108,9 +114,12 @@ class HomeFragment(
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false)
         Log.d("TAGGGG", "onCreateView:////////////////////////// $otp")
-        currentUser = SaveUsersInSharedPreference.getUserByPin(requireContext(), otp)
+        currentUser = SaveUsersInSharedPreference.getUserByPin(requireContext(), otp, userName)
         locationAutoId = currentUser?.LocationAutoId.toString()
         empName = currentUser?.userName
+
+
+
         empNumber = currentUser?.empId.toString()
         empDesignation = currentUser?.designation
         val allusers = SaveUsersInSharedPreference.getList(requireContext())
@@ -128,7 +137,7 @@ class HomeFragment(
 
         binding.userName.text = currentUser?.userName
         binding.designation.text = currentUser?.designation
-        setShiftJoiningTime()
+
         binding.shiftStartdateText.text = getFormattedDate()
         binding.shiftEnddateText.text = getFormattedDate()
         binding.join.text = getFormattedDate()
@@ -136,6 +145,7 @@ class HomeFragment(
 
         createLocationRequest()
         binding.checkoutBtn.isEnabled = false
+        binding.checkInBtn.isEnabled = false
         retrofitInstance = RetrofitInstance.apiInstance
 
         siteSelectionLiveData.observe(requireActivity()) {
@@ -145,7 +155,7 @@ class HomeFragment(
             setShiftTiming(it)
         }
         binding.btnLogout.setOnClickListener {
-            SaveUsersInSharedPreference.removeUserByPin(requireContext(), otp)
+
             startActivity(Intent(requireContext(), DashBoardScreen::class.java))
         }
 
@@ -154,7 +164,6 @@ class HomeFragment(
         shiftTimingList = ArrayList()
 
         getLastLocation()
-
 
 
         binding.checkInBtn.setOnClickListener {
@@ -184,7 +193,8 @@ class HomeFragment(
 
                 val intent = Intent(requireContext(), CheckInScreen::class.java)
                 intent.putExtra("INOUTStatus", "IN")
-                intent.putExtra("mOTP", otp)
+                intent.putExtra("mPIN", otp)
+                intent.putExtra("empName", userName)
                 startActivity(intent)
             } else {
                 Toast.makeText(requireContext(), "Please select Shift and Site", Toast.LENGTH_SHORT)
@@ -331,7 +341,7 @@ class HomeFragment(
                     shiftSelectionLiveData.postValue(shiftSelect.toString())
                     val shiftTiming = hashMap[selectedItem]
 
-
+                    loginUser()
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -339,6 +349,7 @@ class HomeFragment(
                         if (it.count > 0) {
                             shiftSelect = it.getItemAtPosition(0).toString()
                             shiftSelectionLiveData.postValue(shiftSelect.toString())
+                            loginUser()
                         }
                     }
                 }
@@ -391,8 +402,6 @@ class HomeFragment(
     }
 
     @SuppressLint("MissingPermission")
-
-
     override fun onclick(employeeModel: UserListModel, position: Int) {
 
     }
@@ -425,47 +434,86 @@ class HomeFragment(
         }
     }
 
-    private fun setShiftJoiningTime() {
+    private fun setShiftJoiningTime(inTime: String, outTime: String) {
 
-        if (SaveUsersInSharedPreference.getShiftJoiningTime(requireContext()).isNullOrEmpty()) {
-            if (getCurrentTime().substring(0, 2).toInt() < 12) {
-                binding.joiningTime.text = getCurrentTime()
-                binding.joiningAm.text = "AM"
-                SaveUsersInSharedPreference.setShiftJoiningTime(
-                    requireContext(), getCurrentTime(), "AM"
-                )
-            } else {
-                binding.joiningTime.text = getCurrentTime()
-                binding.joiningAm.text = "PM"
-                SaveUsersInSharedPreference.setShiftJoiningTime(
-                    requireContext(), getCurrentTime(), "PM"
-                )
-            }
-        } else {
-            var shiftTime = SaveUsersInSharedPreference.getShiftJoiningTime(requireContext())
-
-            if (shiftTime?.substring(0, 2)?.toInt()!! < 12) {
-                binding.joiningTime.text = shiftTime
-                binding.joiningAm.text = "AM"
-
-            } else {
-                binding.joiningTime.text = shiftTime
-                binding.joiningAm.text = "PM"
-
-            }
-
-
-
-//            if (getCurrentTime().substring(0, 2).toInt() < 12) {
-//                binding.outTime.text = getCurrentTime()
-//                binding.outPm.text = "AM"
-//
-//            } else {
-//                binding.outTime.text = getCurrentTime()
-//                binding.outPm.text = "PM"
-//
-//            }
-
+        if (inTime.isEmpty()) {
+            binding.checkInBtn.isEnabled = true
+            binding.checkoutBtn.isEnabled = false
+            binding.joiningTime.text = inTime
+            binding.outTime.text = outTime
+            binding.spinnerSelectShift.isClickable = false
+            binding.spinnerSelectSite.isClickable = false
+        } else  {
+            binding.checkInBtn.isEnabled = false
+            binding.checkoutBtn.isEnabled = true
+            binding.joiningTime.text = inTime
+            binding.outTime.text = outTime
+            binding.spinnerSelectShift.isClickable = false
+            binding.spinnerSel ectSite.isClickable = false
         }
+
+    }
+
+    private fun loginUser() {
+
+        Log.d("TAGGGGGGG", "loginUser: .................$locationAutoId  $mAltitude  $mLongitude")
+        retrofitInstance.getGeoMappedSites(
+            "sams",
+            locationAutoId.toString(),
+            mLatitude.toString(),
+            mLongitude.toString()
+        ).enqueue(object : Callback<GeoMappedResponse?> {
+            override fun onResponse(
+                call: Call<GeoMappedResponse?>,
+                response: Response<GeoMappedResponse?>
+            ) {
+                if (response.body()?.get(0)?.MessageID?.toInt() == 1) {
+                    clientCode = response.body()?.get(0)!!.ClientCode
+                    asmtId = response.body()?.get(0)!!.AsmtID
+
+                    getAttendanceTime(
+                        clientCode.toString(),
+                        asmtId.toString(),
+                        shiftSelect.toString(),
+                        empNumber
+                    )
+                } else {
+                    Log.d("TAGGGGGGGGG", "onResponse: this is -1 case")
+                }
+            }
+
+            override fun onFailure(call: Call<GeoMappedResponse?>, t: Throwable) {
+                CustomToast.showToast(requireContext(), "failed")
+
+            }
+        })
+    }
+
+    fun getAttendanceTime(clientCode: String, asmtId: String, shift: String, empNumber: String) {
+
+        retrofitInstance.getAttendancDaily("sams", clientCode, asmtId, shift, empNumber)
+            .enqueue(object : Callback<DailyAttendanceModel?> {
+                override fun onResponse(
+                    call: Call<DailyAttendanceModel?>,
+                    response: Response<DailyAttendanceModel?>
+                ) {
+                    CustomToast.showToast(requireContext(), "success 2")
+
+                    intTime = response.body()?.get(0)?.InTime.toString()
+                    outTime = response.body()?.get(0)?.OutTime.toString()
+                    setShiftJoiningTime(intTime.toString(), outTime.toString())
+
+                    Log.d(
+                        "TAGGGGGGGGGG",
+                        "onResponse: this is in time $intTime and this is outtime $outTime"
+                    )
+                }
+
+                override fun onFailure(call: Call<DailyAttendanceModel?>, t: Throwable) {
+                    CustomToast.showToast(requireContext(), "failed 2")
+
+                }
+            })
+
     }
 }

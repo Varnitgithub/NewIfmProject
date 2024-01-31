@@ -585,7 +585,6 @@
                                                 android:fontFamily="@font/roboto"
                                                 android:gravity="start"
                                                 android:textStyle="bold"
-                                                android:visibility="gone"
                                                 android:layout_marginBottom="4dp"
                                                 app:layout_constraintBottom_toBottomOf="parent"
                                                 app:layout_constraintStart_toEndOf="@id/out_time"

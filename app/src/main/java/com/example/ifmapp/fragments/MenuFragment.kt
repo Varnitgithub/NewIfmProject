@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import com.example.ifmapp.MyDocumentsScreen
 import com.example.ifmapp.R
 import com.example.ifmapp.activities.LeaveScreen
 import com.example.ifmapp.activities.ProfileScreen
@@ -37,26 +38,24 @@ class MenuFragment(private var pin:String) : Fragment() {
         }
 
         binding.salaryBtm.setOnClickListener {
-           var intent = Intent(requireContext(), SalaryScreen::class.java)
+           val intent = Intent(requireContext(), SalaryScreen::class.java)
             intent.putExtra("mPIN",pin)
             startActivity(intent)
         }
 
-        binding.taskBtn.setOnClickListener {
-          var intent =   Intent(requireContext(),TaskScreen::class.java)
+        binding.musters.setOnClickListener {
+          val intent =   Intent(requireContext(),TaskScreen::class.java)
             intent.putExtra("mPIN",pin)
             startActivity(intent)
         }
 
-        binding.eRegisterBtn.setOnClickListener {
-            addFragment(ERegisterFragment(pin))
-        }
-
-        binding.homeBtm.setOnClickListener {
-           var intent =Intent(requireContext(), HomeFragment::class.java)
+        binding.mydoc.setOnClickListener {
+            val intent =   Intent(requireContext(),MyDocumentsScreen::class.java)
             intent.putExtra("mPIN",pin)
             startActivity(intent)
         }
+
+
 
         binding.leavesBtm.setOnClickListener {
             val intent = Intent(requireContext(), LeaveScreen::class.java)

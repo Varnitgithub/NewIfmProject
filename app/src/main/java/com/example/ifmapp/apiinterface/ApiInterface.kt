@@ -1,6 +1,7 @@
 package com.example.ifmapp.apiinterface
 
 import com.example.ifmapp.modelclasses.attendance_response.AttendanceResponse
+import com.example.ifmapp.modelclasses.daily_attendance_model.DailyAttendanceModel
 import com.example.ifmapp.modelclasses.geomappedsite_model.GeoMappedResponse
 import com.example.ifmapp.modelclasses.loginby_pin.LoginByPINResponse
 import com.example.ifmapp.modelclasses.shift_selection_model.ShiftSelectionResponse
@@ -89,6 +90,17 @@ interface ApiInterface {
         @Field("Latitude") Latitude: String,
         @Field("Longitude") Longitude: String,
     ):Call<GeoMappedResponse>
+
+
+    @FormUrlEncoded
+    @POST("GetEmployeeAttendanceDaily")
+    fun getAttendancDaily(
+        @Field("connectionKey") connectionKey: String,
+        @Field("ClientCode") ClientCode: String,
+        @Field("AsmtId") AsmtId: String,
+        @Field("shift") shift: String,
+        @Field("EmployeeNumber") EmployeeNumber: String
+    ):Call<DailyAttendanceModel>
 
 
     @FormUrlEncoded

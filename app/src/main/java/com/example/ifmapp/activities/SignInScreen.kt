@@ -37,6 +37,11 @@ class SignInScreen : AppCompatActivity() {
         binding.btnContinue.setOnClickListener {
             binding.employeepinEdt.isClickable = false
             binding.employeeidEdt.isClickable = false
+         /*   val stringWithoutSpaces = binding.employeeidEdt.toString().replace(" ", "")
+            if (binding.employeeidEdt.toString() != stringWithoutSpaces) {
+                binding.employeeidEdt.setText(stringWithoutSpaces)
+                binding.employeeidEdt.setSelection(stringWithoutSpaces.length) // Move cursor to the end
+            }*/
             loginByEmployeeId(
                 binding.employeeidEdt.text.toString().trim(),
                 binding.employeepinEdt.text.toString().trim()
@@ -48,7 +53,7 @@ class SignInScreen : AppCompatActivity() {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (binding.employeeidEdt.text.toString().trim().length == 6
+                if (binding.employeeidEdt.text.toString().trim().length <=12
                     && binding.employeepinEdt.text.toString().trim().length == 4
                 ) {
                     binding.btnContinue.isEnabled = true
@@ -60,6 +65,11 @@ class SignInScreen : AppCompatActivity() {
             }
 
             override fun afterTextChanged(s: Editable?) {
+                val stringWithoutSpaces = s.toString().replace(" ", "")
+              /*  if (s.toString() != stringWithoutSpaces) {
+                    binding.employeepinEdt.setText(stringWithoutSpaces)
+                    binding.employeepinEdt.setSelection(stringWithoutSpaces.length) // Move cursor to the end
+                }*/
             }
         })
     }
@@ -84,7 +94,7 @@ class SignInScreen : AppCompatActivity() {
                             )
 
                             SaveUsersInSharedPreference.addUserIfNotExists(
-                                this@SignInScreen, user, pin
+                                this@SignInScreen, user, pin,response.body()?.get(0)?.EmpName.toString()
                             )
                             Log.d("TAGGGGGGGGG", "onResponse: user saved successfully")
 

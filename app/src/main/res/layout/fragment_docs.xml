@@ -12,12 +12,7 @@
         tools:context=".fragments.ERegisterFragment">
 
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/documents_recyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="6dp"
-            tools:listitem="@layout/document_items" />
+
 
     </FrameLayout>
 </layout>
