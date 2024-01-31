@@ -18,6 +18,7 @@ import com.example.ifmapp.modelclasses.loginby_pin.LoginByPINResponse
 import com.example.ifmapp.modelclasses.usermodel_sharedpreference.UserListModel
 import com.example.ifmapp.modelclasses.verifymobile.VerifyOtpResponse
 import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
+import com.example.ifmapp.toast.CustomToast
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -87,56 +88,59 @@ class GnereratePinCodeScreen : AppCompatActivity() {
                 ) {
                     if (response.isSuccessful) {
 
+if (response.body()?.get(0)?.MessageID?.toInt()==1){
 
-                        retrofitInstance.loginByPIN(
-                            "sams",
-                            mobileNumber.toString(),
-                            binding.edtEnterPinCode.text.toString().trim()
-                        ).enqueue(object : Callback<LoginByPINResponse?> {
-                            override fun onResponse(
-                                call: Call<LoginByPINResponse?>,
-                                response: Response<LoginByPINResponse?>
-                            ) {
-                                if (response.isSuccessful && response.body() != null) {
+    retrofitInstance.loginByPIN(
+        "sams",
+        mobileNumber.toString(),
+        binding.edtEnterPinCode.text.toString().trim()
+    ).enqueue(object : Callback<LoginByPINResponse?> {
+        override fun onResponse(
+            call: Call<LoginByPINResponse?>,
+            response: Response<LoginByPINResponse?>
+        ) {
+            if (response.isSuccessful && response.body() != null) {
+                if (response.body()?.get(0)?.MessageID?.toInt()==1){
+                    val user = UserListModel(
+                        response.body()?.get(0)?.EmpName.toString(),
+                        binding.edtEnterPinCode.text.toString().trim(),
+                        response.body()?.get(0)?.EmpNumber.toString(),
+                        response.body()?.get(0)?.LocationAutoID.toString(),
+                        response.body()?.get(0)?.Designation.toString()
+                    )
 
-                                    val user = UserListModel(
-                                        response.body()?.get(0)?.EmpName.toString(),
-                                        binding.edtEnterPinCode.text.toString().trim(),
-                                        response.body()?.get(0)?.EmpNumber.toString(),
-                                        response.body()?.get(0)?.LocationAutoID.toString(),
-                                        response.body()?.get(0)?.Designation.toString()
-                                    )
-
-                                    SaveUsersInSharedPreference.addUserIfNotExists(
-                                        this@GnereratePinCodeScreen,
-                                        user,binding.edtEnterPinCode.text.toString().trim(),
-                                    )
-                                    startActivity(Intent(this@GnereratePinCodeScreen,DashBoardScreen::class.java))
-
-
-                                    Log.d(
-                                        "TAGGGGGG",
-                                        "onResponse: data called and saved successful"
-                                    )
-                                }
-                            }
-
-                            override fun onFailure(call: Call<LoginByPINResponse?>, t: Throwable) {
-
-                            }
-                        })
+                    SaveUsersInSharedPreference.addUserIfNotExists(
+                        this@GnereratePinCodeScreen,
+                        user,binding.edtEnterPinCode.text.toString().trim(),
+                    )
+                    startActivity(Intent(this@GnereratePinCodeScreen,DashBoardScreen::class.java))
 
 
-                        val intent = Intent(
-                            this@GnereratePinCodeScreen,
-                            DashBoardScreen::class.java
-                        )
-                        /*intent.putExtra("usermobileNumber",mobileNumber)
-                        intent.putExtra("PIN",binding.edtEnterPinCode.text.toString().trim())*/
-                        startActivity(intent)
+                    Log.d(
+                        "TAGGGGGG",
+                        "onResponse: data called and saved successful"
+                    )
+                }else{
+                    CustomToast.showToast(this@GnereratePinCodeScreen,response.body()?.get(0)?.MessageString.toString())
+                }
 
 
-                        Log.d("TAGGGGGG", "onResponse: response is successful")
+            }
+        }
+
+        override fun onFailure(call: Call<LoginByPINResponse?>, t: Throwable) {
+
+        }
+    })
+    val intent = Intent(
+        this@GnereratePinCodeScreen,
+        DashBoardScreen::class.java)
+
+    startActivity(intent)
+    Log.d("TAGGGGGG", "onResponse: response is successful")
+}else{
+    CustomToast.showToast(this@GnereratePinCodeScreen,response.body()?.get(0)?.MessageString.toString())
+}
 
                     } else {
                         binding.edtEnterPinCode.isEnabled = true
@@ -150,11 +154,7 @@ class GnereratePinCodeScreen : AppCompatActivity() {
                 }
             })
         } else {
-            Toast.makeText(
-                this@GnereratePinCodeScreen,
-                "Please enter 4 digit pin",
-                Toast.LENGTH_SHORT
-            ).show()
+           CustomToast.showToast(this@GnereratePinCodeScreen,"Please enter 4 digit pin")
         }
     }
 

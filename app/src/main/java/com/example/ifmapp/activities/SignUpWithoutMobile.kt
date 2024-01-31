@@ -101,11 +101,17 @@ class SignUpWithoutMobile : AppCompatActivity() {
 
                             binding.employeepinLL.visibility = View.VISIBLE
 
-                           CustomToast.showToast(this@SignUpWithoutMobile,"this is valied employee id, Please Generate your pin")
+                            CustomToast.showToast(
+                                this@SignUpWithoutMobile,
+                                "this is valied employee id, Please Generate your pin"
+                            )
                             binding.btnGenerate.isEnabled = true
 
                         } else {
-                          CustomToast.showToast(this@SignUpWithoutMobile,response.body()?.get(0)?.MessageString.toString())
+                            CustomToast.showToast(
+                                this@SignUpWithoutMobile,
+                                response.body()?.get(0)?.MessageString.toString()
+                            )
                         }
 
 
@@ -132,10 +138,13 @@ class SignUpWithoutMobile : AppCompatActivity() {
 
                         if (response.body()?.get(0)?.MessageID.toString().toInt() == 1) {
 
-                         CustomToast.showToast(this@SignUpWithoutMobile,"Pin generation Successful")
+                            CustomToast.showToast(
+                                this@SignUpWithoutMobile,
+                                "Pin generation Successful"
+                            )
                             loginByEmployeeId("sams", empId, pin)
                         } else {
-                            CustomToast.showToast(this@SignUpWithoutMobile,"Pin generation Failed")
+                            CustomToast.showToast(this@SignUpWithoutMobile, response.body()?.get(0)?.MessageString.toString())
 
                         }
 
@@ -172,7 +181,7 @@ class SignUpWithoutMobile : AppCompatActivity() {
                             )
 
                             SaveUsersInSharedPreference.addUserIfNotExists(
-                                this@SignUpWithoutMobile, user,pin
+                                this@SignUpWithoutMobile, user, pin
                             )
 
                             val intent =
@@ -184,7 +193,10 @@ class SignUpWithoutMobile : AppCompatActivity() {
 
                             startActivity(intent)
                         } else {
-
+                            CustomToast.showToast(
+                                this@SignUpWithoutMobile,
+                                response.body()?.get(0)?.MessageString.toString()
+                            )
                         }
 
                     } else {

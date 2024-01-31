@@ -62,11 +62,7 @@ class SignInScreen : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {
             }
         })
-
-
     }
-
-
     private fun loginByEmployeeId(empId: String, pin: String) {
 
         retrofitInstance.loginByemployeeId("sams", empId, pin)
