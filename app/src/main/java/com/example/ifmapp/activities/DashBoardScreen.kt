@@ -62,20 +62,18 @@ class DashBoardScreen : AppCompatActivity(), AddAccountAdapter.OnClickedInterfac
         binding.accountsRecyclerView.adapter = addAccountAdapter
         val employeesList = ArrayList<AddAccountModel>()
 
-
         val newlist = SaveUsersInSharedPreference.getList(this).size
         for (user in 0 until newlist) {
             usersList.add(SaveUsersInSharedPreference.getList(this)[user])
 
         }
 
-
         for (user in 0 until newlist) {
             if (SaveUsersInSharedPreference.getList(this@DashBoardScreen)[user].userName != empName) {
                 allUsersList.add(SaveUsersInSharedPreference.getList(this)[user])
             }
         }
-        if (allUsersList.size> 0) {
+        if (allUsersList.size > 0) {
             addAccountAdapter.updateList(allUsersList)
         } else {
             addAccountAdapter.updateList(emptyList())
@@ -97,10 +95,9 @@ class DashBoardScreen : AppCompatActivity(), AddAccountAdapter.OnClickedInterfac
             }
 
             override fun onOTPComplete(otp: String) {
-                val userList = SaveUsersInSharedPreference.getList(this@DashBoardScreen).size
+                val userList = SaveUsersInSharedPreference.getList(this@DashBoardScreen)
 
-                for (user in 0 until userList) {
-                    var mUser = SaveUsersInSharedPreference.getList(this@DashBoardScreen)[user]
+                for (mUser in userList) {
                     if (mUser.pin == otp && mUser.userName == empName) {
                         val intent = Intent(this@DashBoardScreen, MainActivity::class.java)
                         intent.putExtra("mPIN", otp)
@@ -108,18 +105,16 @@ class DashBoardScreen : AppCompatActivity(), AddAccountAdapter.OnClickedInterfac
                         intent.putExtra("empId", empNumber)
                         intent.putExtra("empName", empName)
                         startActivity(intent)
-                    } else {
-                        CustomToast.showToast(this@DashBoardScreen, "Please enter correct pin")
-                        otpTextView.resetState()
-                        otpTextView.setOTP("")
-
-
+                        return // Exit the function early if PIN is correct
                     }
-
                 }
 
-
+                // If no correct PIN is found in the loop
+                CustomToast.showToast(this@DashBoardScreen, "Please Enter Correct Pin")
+                otpTextView.setOTP(" ")
+                otpTextView.requestFocusOTP()
             }
+
         }
     }
 

@@ -341,7 +341,7 @@
                                                 android:textColor="#121212"
                                                 android:textSize="24sp"
                                                 app:layout_constraintBottom_toBottomOf="parent"
-                                                android:text="- - - - -"
+                                                tools:text="- - - - -"
                                                 android:paddingStart="3dp"
                                                 android:layout_marginStart="20dp"
                                                 app:layout_constraintEnd_toStartOf="@id/start_am"
@@ -363,7 +363,7 @@
                                                 app:layout_constraintStart_toEndOf="@id/shift_start_time"
                                                 app:layout_constraintEnd_toEndOf="parent"
                                                 android:layout_marginTop="2dp"
-                                                android:text="AM" />
+                                                tools:text="AM" />
 
                                         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -402,7 +402,7 @@
                                                 android:textColor="#121212"
                                                 android:textSize="24sp"
                                                 app:layout_constraintBottom_toBottomOf="parent"
-                                                android:text="- - - - -"
+                                                tools:text="- - - - -"
                                                 android:paddingStart="3dp"
                                                 android:layout_marginStart="20dp"
                                                 app:layout_constraintEnd_toStartOf="@id/joining_am"
@@ -424,7 +424,7 @@
                                                 app:layout_constraintStart_toEndOf="@id/joining_time"
                                                 app:layout_constraintEnd_toEndOf="parent"
                                                 android:layout_marginTop="2dp"
-                                                android:text="AM" />
+                                                tools:text="AM" />
 
                                         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -507,7 +507,7 @@
                                                 android:textColor="#121212"
                                                 android:textSize="24sp"
                                                 app:layout_constraintBottom_toBottomOf="parent"
-                                                android:text="- - - - -"
+                                                tools:text="- - - - -"
                                                 android:paddingStart="3dp"
                                                 android:layout_marginStart="20dp"
                                                 app:layout_constraintEnd_toStartOf="@id/end_pm"
@@ -529,7 +529,7 @@
                                                 app:layout_constraintStart_toEndOf="@id/shift_end_time"
                                                 app:layout_constraintEnd_toEndOf="parent"
                                                 android:layout_marginTop="2dp"
-                                                android:text="PM" />
+                                                tools:text="PM" />
 
                                         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -568,7 +568,7 @@
                                                 android:textColor="#121212"
                                                 android:textSize="24sp"
                                                 app:layout_constraintBottom_toBottomOf="parent"
-                                                android:text="- - - - - "
+                                                tools:text="- - - - - "
                                                 android:paddingStart="3dp"
                                                 android:layout_marginStart="20dp"
                                                 app:layout_constraintEnd_toStartOf="@id/out_pm"
@@ -590,7 +590,7 @@
                                                 app:layout_constraintStart_toEndOf="@id/out_time"
                                                 app:layout_constraintEnd_toEndOf="parent"
                                                 android:layout_marginTop="2dp"
-                                                android:text="AM" />
+                                                tools:text="AM" />
 
                                         </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -38,6 +38,7 @@ class MobileRegisterScreen : AppCompatActivity() {
     private lateinit var retrofitInstance: ApiInterface
     private val LOCATION_PERMISSION_REQUEST_CODE = 123
     private val READ_PHONE_PERMISSION = 123
+    private var oneTimeResend = true
     private val BACKGROUND_LOCATION_CODE = 111
     private var countDownTimer: CountDownTimer? = null
     private val initialTimeMillis: Long = 60000 // 60 seconds
@@ -50,37 +51,35 @@ class MobileRegisterScreen : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_mobile_register_screen)
         binding.resentOtp.visibility = View.GONE
         binding.otpSectionLL.visibility = View.GONE
+        binding.progressBar.visibility = View.GONE
+        /*   if (checkPermission()) {
 
-        if (checkPermission()) {
+           } else {
+               requestPermission()
+           }
 
-        } else {
-            requestPermission()
-        }
-
+   */
         //getPhoneRead()
 
 
-        /*
-                binding.moveToSignup.setOnClickListener {
-                    startActivity(Intent(this, LoginByPinMobileScreen::class.java))
-                }
-                binding.wayToSignup.setOnClickListener {
-                    startActivity(Intent(this, SignUpScreen::class.java))
-                }*/
-
+//
         binding.btnContinue.setOnClickListener {
+            binding.progressBar.visibility = View.VISIBLE
 
-            startCountdownTimer()
             sendOTP()
         }
 
         binding.resentOtp.setOnClickListener {
+            if (oneTimeResend) {
+                startCountdownTimer()
+                sendOTP()
+                binding.resentOtp.isEnabled = false
+                binding.resentOtp.visibility = View.GONE
+                oneTimeResend = false
+            }
 
-            startCountdownTimer()
-            sendOTP()
-            binding.resentOtp.isEnabled = false
+
         }
-
         binding.mobileNoEdt.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(
                 s: CharSequence?,
@@ -125,28 +124,24 @@ class MobileRegisterScreen : AppCompatActivity() {
                 }
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    /*editTexts[i].inputType =
-                        InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD*/
+                    editTexts[i].inputType =
+                        InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD
                     if (editTexts[3].text.toString().isNotEmpty()) {
-                       /* editTexts[i].inputType =
-                            InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD*/
+                        editTexts[i].inputType =
+                            InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD
                         binding.btnContinue.isEnabled = true
                         binding.btnContinue.isClickable = true
                     }
-
                 }
-
 
                 override fun afterTextChanged(s: Editable?) {
                 }
             })
-
             editTexts[i].setOnKeyListener { _, keyCode, event ->
                 if (keyCode == KeyEvent.KEYCODE_DEL && event.action == KeyEvent.ACTION_DOWN) {
-                    // If backspace is pressed, move the focus to the previous EditText
                     if (i > 0) {
                         editTexts[i].inputType =
-                            InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+                            InputType.TYPE_CLASS_NUMBER or InputType.TYPE_TEXT_VARIATION_PASSWORD
                         editTexts[i].text.clear()
                         editTexts[i - 1].requestFocus()
                     }
@@ -175,7 +170,8 @@ class MobileRegisterScreen : AppCompatActivity() {
 
                 if (s?.length == 1) {
                     nextEditText?.requestFocus()
-
+                    nextEditText?.inputType =
+                        InputType.TYPE_CLASS_NUMBER or InputType.TYPE_TEXT_VARIATION_PASSWORD
 
                 }
             }
@@ -201,13 +197,17 @@ class MobileRegisterScreen : AppCompatActivity() {
 
             override fun onFinish() {
                 // Countdown timer finished, handle the event
+                if (oneTimeResend){
                 binding.resentOtp.isEnabled = true
-                binding.resentOtp.visibility = View.VISIBLE
+                    binding.resentOtp.visibility = View.VISIBLE
+                }
+
+
 
             }
         }
 
-        // Start the countdown timer
+
         countDownTimer?.start()
     }
 
@@ -218,9 +218,11 @@ class MobileRegisterScreen : AppCompatActivity() {
     }
 
     private fun sendOTP() {
+        binding.progressBar.visibility = View.VISIBLE
         if (binding.mobileNoEdt.text.isNotEmpty()) {
             if (binding.mobileNoEdt.text.toString().length == 10) {
                 binding.btnContinue.isClickable = false
+                binding.mobileNoEdt.isClickable = false
 
                 mobileNumber = binding.mobileNoEdt.text.toString().trim()
                 retrofitInstance.validateMobileNumber(
@@ -237,7 +239,9 @@ class MobileRegisterScreen : AppCompatActivity() {
 
                                 Log.d("TAGGGGGGGG", "onResponse: user is valid")
 
-                                if (binding.otp1.text.isEmpty() && binding.otp2.text.isEmpty() && binding.otp3.text.isEmpty() && binding.otp4.text.isEmpty()) {
+                                if (binding.otp1.text.isEmpty() && binding.otp2.text.isEmpty()
+                                    && binding.otp3.text.isEmpty() && binding.otp4.text.isEmpty()
+                                ) {
 
 
                                     if (binding.mobileNoEdt.text.isNotEmpty()) {
@@ -253,6 +257,7 @@ class MobileRegisterScreen : AppCompatActivity() {
                                                     response: Response<OtpSend?>
                                                 ) {
                                                     if (response.isSuccessful) {
+                                                        binding.progressBar.visibility = View.GONE
 
                                                         Log.d(
                                                             "TAGGGGGGGG",
@@ -264,6 +269,7 @@ class MobileRegisterScreen : AppCompatActivity() {
                                                         binding.resentOtp.visibility = View.GONE
                                                         binding.otpSectionLL.visibility =
                                                             View.VISIBLE
+                                                        startCountdownTimer()
 
                                                     } else {
 
@@ -271,6 +277,7 @@ class MobileRegisterScreen : AppCompatActivity() {
                                                             "TAGGGGGGGG",
                                                             "onResponse: otp send failure"
                                                         )
+                                                        binding.progressBar.visibility = View.GONE
 
 
                                                     }
@@ -282,19 +289,29 @@ class MobileRegisterScreen : AppCompatActivity() {
                                                     t: Throwable
                                                 ) {
                                                     Log.d("TAGGGGGGGG", "onFailure: ${t.message}")
+                                                    binding.progressBar.visibility = View.GONE
 
 
-
-                                                    binding.otpSectionLL.visibility = View.VISIBLE
+                                                    // binding.otpSectionLL.visibility = View.VISIBLE
 
 
                                                 }
                                             })
                                         } else {
-                                           CustomToast.showToast(this@MobileRegisterScreen,"Mobile no should be 10 digit")
+                                            binding.progressBar.visibility = View.GONE
+
+                                            CustomToast.showToast(
+                                                this@MobileRegisterScreen,
+                                                "Mobile no should be 10 digit"
+                                            )
                                         }
                                     } else {
-                                      CustomToast.showToast(this@MobileRegisterScreen,"Please enter your mobile number")
+                                        binding.progressBar.visibility = View.GONE
+
+                                        CustomToast.showToast(
+                                            this@MobileRegisterScreen,
+                                            "Please enter your mobile number"
+                                        )
 
                                     }
                                 } else {
@@ -319,7 +336,9 @@ class MobileRegisterScreen : AppCompatActivity() {
                                                     response: Response<VerifyOtpResponse?>
                                                 ) {
                                                     if (response.isSuccessful) {
-                                                        if (response.body()?.get(0)?.MessageID?.toInt()==1){
+                                                        if (response.body()
+                                                                ?.get(0)?.MessageID?.toInt() == 1
+                                                        ) {
                                                             Log.d(
                                                                 "TAGGGGGGGGGG",
                                                                 "onResponse: verify otp"
@@ -333,10 +352,25 @@ class MobileRegisterScreen : AppCompatActivity() {
                                                                 mobileNumber
                                                             )
                                                             startActivity(intent)
-                                                        }else{
-                                                            CustomToast.showToast(this@MobileRegisterScreen,"${response.body()?.get(0)?.MessageString}")
-                                                        }
+                                                            binding.progressBar.visibility =
+                                                                View.GONE
 
+                                                        } else {
+                                                            CustomToast.showToast(
+                                                                this@MobileRegisterScreen,
+                                                                "${
+                                                                    response.body()
+                                                                        ?.get(0)?.MessageString
+                                                                }"
+                                                            )
+
+                                                            binding.progressBar.visibility =
+                                                                View.GONE
+                                                            binding.otp1.text.clear()
+                                                            binding.otp2.text.clear()
+                                                            binding.otp3.text.clear()
+                                                            binding.otp4.text.clear()
+                                                        }
 
 
                                                     } else {
@@ -345,7 +379,7 @@ class MobileRegisterScreen : AppCompatActivity() {
                                                             "TAGGGGGGGGGG",
                                                             "onResponse: otp verification failed"
                                                         )
-
+                                                        binding.progressBar.visibility = View.GONE
                                                     }
                                                 }
 
@@ -355,7 +389,7 @@ class MobileRegisterScreen : AppCompatActivity() {
                                                 ) {
 
                                                     Log.d("TAGGGGGGGGGG", "onFailure: ${t.message}")
-
+                                                    binding.progressBar.visibility = View.GONE
 
                                                 }
                                             })
@@ -371,26 +405,29 @@ class MobileRegisterScreen : AppCompatActivity() {
                                     "${response.body()?.get(0)?.MessageString}",
                                     Toast.LENGTH_SHORT
                                 ).show()
+                                binding.progressBar.visibility = View.GONE
                             }
 
 
                         } else {
-                           CustomToast.showToast(this@MobileRegisterScreen,"user is not valid")
+                            CustomToast.showToast(this@MobileRegisterScreen, "user is not valid")
+                            binding.progressBar.visibility = View.GONE
                         }
                     }
 
                     override fun onFailure(call: Call<VerifyOtpResponse?>, t: Throwable) {
                         Log.d("TAGGGGGGGGGGG", "onFailure: user validation failed")
+                        binding.progressBar.visibility = View.GONE
                     }
                 })
 
 
             } else {
-                CustomToast.showToast(this@MobileRegisterScreen,"Mobile no should be 10 digit")
+                CustomToast.showToast(this@MobileRegisterScreen, "Mobile no should be 10 digit")
 
             }
         } else {
-            CustomToast.showToast(this@MobileRegisterScreen,"Please enter your mobile number")
+            CustomToast.showToast(this@MobileRegisterScreen, "Please enter your mobile number")
 
         }
 

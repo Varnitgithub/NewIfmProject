@@ -13,12 +13,16 @@ class LoginCheckedScreen : AppCompatActivity() {
 
         val loginByPhone: Button = findViewById(R.id.loginByPhoneAndPin)
         var loginByCompanyCode: Button = findViewById(R.id.loginByCompanyCode)
+     //   var forgotPin: Button = findViewById(R.id.forgotPin)
 
         loginByPhone.setOnClickListener {
-            startActivity(Intent(this,LoginByPinMobileScreen::class.java))
+            startActivity(Intent(this, LoginByPinMobileScreen::class.java))
         }
         loginByCompanyCode.setOnClickListener {
-            startActivity(Intent(this,SignInScreen::class.java))
+            startActivity(Intent(this, SignInScreen::class.java))
         }
+
+
+
     }
 }

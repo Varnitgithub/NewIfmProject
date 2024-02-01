@@ -112,6 +112,7 @@ class CheckInScreen : AppCompatActivity() {
     private var currenTtime: String? = null
     private lateinit var currentDate: Date
     private val CAMERA_REQUEST_CODE = 1
+    private val REQUEST_READ_PHONE_STATE = 123
 
     var inStatus = "IN"
     var outStatus = "OUT"
@@ -122,6 +123,8 @@ class CheckInScreen : AppCompatActivity() {
         //setContentView(R.layout.activity_check_in_screen)
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_check_in_screen)
+
+
 
         binding.progressBar.visibility = View.GONE
 
@@ -138,15 +141,12 @@ class CheckInScreen : AppCompatActivity() {
 
         val usersList = SaveUsersInSharedPreference.getList(this@CheckInScreen)
 
-        for (user in usersList){
-            if (user.pin==mOTP&&user.userName==mUserName){
+        for (user in usersList) {
+            if (user.pin == mOTP && user.userName == mUserName) {
                 mUserName = user.userName
                 employeeDesignation = user.designation
             }
         }
-
-
-
         imageCapture = ImageCapture.Builder().build()
         retrofitInstance = RetrofitInstance.apiInstance
         imeiGetter = IMEIGetter(this)
@@ -158,21 +158,39 @@ class CheckInScreen : AppCompatActivity() {
 
         cameraExecutor = Executors.newSingleThreadExecutor()
 
-        val currentUser: CurrentUserShiftsDetails =
-            SaveUsersInSharedPreference.getCurrentUserShifts(this)[0]
 
-        otp = currentUser.pin
-        siteSelect = currentUser.site
-        shiftSelect = currentUser.shift
-        empNumber = currentUser.empId
-        binding.userName.text = currentUser.empName
-        binding.designation.text = currentUser.empDesignation
+        val usersLists = SaveUsersInSharedPreference.getList(this@CheckInScreen)
+
+        for (user in usersLists){
+            if (user.pin==mOTP&&user.userName==mUserName){
+                binding.userName.text = user.userName
+                binding.designation.text = user.designation
+
+            }
+        }
+
+       var size =      SaveUsersInSharedPreference.getCurrentUserShifts(this,mUserName.toString())
+            for (i in size){
+                if (i.empName== mUserName){
+
+                    otp = i.pin
+                    siteSelect = i.site
+                    shiftSelect = i.shift
+                    empNumber = i.empId
+                    binding.userName.text = i.empName
+                    binding.designation.text = i.empDesignation
+                    locationAutoID = i.locationAutoId
+                    Log.d("TAGGGGGGGG", "onCreate: current user.............${i.site}" +
+                            " ${i.empId} ${i.empDesignation} $")
+                }
+
+            }
+        Log.d("TAGGGGGGGG", "onCreate: current user.............$mUserName")
+
         binding.shifts.text = shiftSelect
-        locationAutoID = currentUser.locationAutoId
 
         Log.d("TAGGGGGGGG", "onCreate: this is $locationAutoID")
         time = getCurrentTime()
-
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         locationRequest =
@@ -180,10 +198,8 @@ class CheckInScreen : AppCompatActivity() {
                 .build()
         createLocationRequest()
 
-
         binding.finalLayoutCL.visibility = View.GONE
         binding.checkinCL.visibility = View.VISIBLE
-
 
         getLastLocation()
 
@@ -237,7 +253,7 @@ class CheckInScreen : AppCompatActivity() {
                 startCamera()
             }
         }
-        val imeei = getIMEI(this)
+
 
         binding.bigProfile.setOnClickListener {
             if (checkCameraPermission()) {
@@ -322,27 +338,32 @@ class CheckInScreen : AppCompatActivity() {
         )
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == CAMERA_PERMISSION_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                startCamera()
-                binding.bigProfile.isClickable = false
-                /*val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE)*/
-            } else {
-                // Permission denied, show a message to the user
-                CustomToast.showToast(this@CheckInScreen, "Please Allow Camera permission")
+        when (requestCode) {
+            CAMERA_PERMISSION_CODE -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    startCamera()
+                    binding.bigProfile.isClickable = false
+                    /*val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                    startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE)*/
+                } else {
+                    // Permission denied, show a message to the user
+                    CustomToast.showToast(this@CheckInScreen, "Please Allow Camera permission")
+                }
             }
-        } else if (requestCode == LOCATION_REQUEST_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                getLastLocation()
-            } else {
-                CustomToast.showToast(this@CheckInScreen, "Please Allow Location permission")
+
+            LOCATION_REQUEST_CODE -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    getLastLocation()
+                } else {
+                    CustomToast.showToast(this@CheckInScreen, "Please Allow Location permission")
+                }
             }
 
         }
@@ -499,8 +520,7 @@ class CheckInScreen : AppCompatActivity() {
                                         mAltitude.toString(),
                                         base64Image ?: "",
                                         emp.LocationAutoID,
-                                        emp.ClientCode,shiftSelect.toString()
-                                        ,
+                                        emp.ClientCode, shiftSelect.toString(),
                                         myaddress.toString()
                                     )
                                 } else {
@@ -601,8 +621,8 @@ class CheckInScreen : AppCompatActivity() {
                         finish()
                         val intent = Intent(this@CheckInScreen, MainActivity::class.java)
                         intent.putExtra("inoutStatus", "OUT")
-                        intent.putExtra("mPIN", mOTP)
-                        intent.putExtra("empName", mUserName)
+                      //   intent.putExtra("mPIN", mOTP)
+                    //    intent.putExtra("empName", mUserName)
                         startActivity(intent)
                     }, delayMillis)
                 }
@@ -616,34 +636,20 @@ class CheckInScreen : AppCompatActivity() {
     }
 
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun getIMEI(context: Context): String {
-        val telephonyManager =
-            context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+    /* @SuppressLint("MissingPermission")
+    private fun getDeviceIds(): String? {
+        val telephonyManager = getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+        Log.d("TAGGGGGGG", "getDeviceIds: ${telephonyManager.allCellInfo}")
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            telephonyManager.deviceId
 
-        // Check for the READ_PHONE_STATE permission
-        if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_PHONE_STATE)
-            == PackageManager.PERMISSION_GRANTED
-        ) {
-            // Check for the Android version to handle changes in permissions starting from Android 10
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                if (ContextCompat.checkSelfPermission(
-                        context,
-                        android.Manifest.permission.READ_PHONE_STATE
-                    ) == PackageManager.PERMISSION_GRANTED
-                ) {
-                    Log.d("TAGGGGGGG", "getIMEI: this is imei no : ${telephonyManager.imei}")
-                    telephonyManager.imei ?: ""
-                } else {
-                    ""
-                }
-            } else {
-                telephonyManager.imei ?: ""
-            }
+            null // The IMEI information is restricted on Android 10 and above
         } else {
-            return ""
+            // Handling for Android versions below 10
+            telephonyManager.deviceId
         }
-    }
+    }*/
+
 
     private fun bitmapToString(bitmap: Bitmap): String {
         val byteArrayOutputStream = ByteArrayOutputStream()
@@ -800,12 +806,28 @@ class CheckInScreen : AppCompatActivity() {
     override fun onBackPressed() {
         super.onBackPressed()
         var intent = Intent(this@CheckInScreen, MainActivity::class.java)
-        intent.putExtra("mPIN", otp)
+      //  intent.putExtra("mPIN", otp)
         intent.putExtra("inoutStatus", "OUT")
-        intent.putExtra("mPIN", mOTP)
-        intent.putExtra("empName", mUserName)
+      //  intent.putExtra("mPIN", mOTP)
+      //  intent.putExtra("empName", mUserName)
         Log.d("TAGGGGGGGGGGGGG", "onBackPressed: this is $otp this is $mOTP this is $mUserName")
         startActivity(intent)
     }
-}
 
+    /*  private fun checkPhonePermission(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this@CheckInScreen,
+            Manifest.permission.READ_PHONE_STATE
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun requestPhonePermission(){
+        ActivityCompat.requestPermissions(
+            this@CheckInScreen,
+            arrayOf(Manifest.permission.READ_PHONE_STATE),
+            REQUEST_READ_PHONE_STATE
+        )
+    }
+}*/
+
+}

@@ -43,7 +43,7 @@ class CheckOutScreen : AppCompatActivity() {
 
 
         finalData = SaveUsersInSharedPreference.getCurrentUserFinalCheckoutShifts(this)[0]
-        finalSiteSelectionData = SaveUsersInSharedPreference.getCurrentUserShifts(this)[0]
+       //finalSiteSelectionData = SaveUsersInSharedPreference.getCurrentUserShifts(this,muse)[0]
         outTiming = intent.getStringExtra("inoutStatus")
         Log.d("TAGGGGGGGGGG", "onCreate: $outTiming is out timing")
         if (outTiming.toString().isNotEmpty()&&outTiming.toString()=="IN"){
@@ -80,7 +80,7 @@ class CheckOutScreen : AppCompatActivity() {
 
         }
 
-        currentTime = finalData?.currentTime
+       /* currentTime = finalData?.currentTime
         employeeName = finalData?.employeeName
         address = finalData?.address
         siteSelect = finalSiteSelectionData?.site
@@ -94,7 +94,7 @@ class CheckOutScreen : AppCompatActivity() {
         binding.designation.text = finalSiteSelectionData?.empDesignation
 
         binding.currentSiteTxt.text = siteSelect
-
+*/
         for (i in 0 until shiftTimingList?.size!!) {
             if (shiftSelect.toString() == shiftTimingList!![i].substring(0, 1)) {
                 shiftStartTiming = shiftTimingList!![i].substring(4, 9)

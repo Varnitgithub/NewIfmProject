@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import com.example.ifmapp.MainActivity
@@ -31,10 +32,12 @@ class SignInScreen : AppCompatActivity() {
         retrofitInstance = RetrofitInstance.apiInstance
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_sign_up_screen)
-
+binding.progressBar.visibility = View.GONE
         binding.btnContinue.isEnabled = false
 
         binding.btnContinue.setOnClickListener {
+            binding.progressBar.visibility = View.VISIBLE
+
             binding.employeepinEdt.isClickable = false
             binding.employeeidEdt.isClickable = false
          /*   val stringWithoutSpaces = binding.employeeidEdt.toString().replace(" ", "")
@@ -104,17 +107,26 @@ class SignInScreen : AppCompatActivity() {
                                     MainActivity::class.java
                                 )
                             intent.putExtra("pinFromSignin", pin)
+                            intent.putExtra("empId", response.body()?.get(0)?.EmpNumber)
+                            intent.putExtra("empName", response.body()?.get(0)?.EmpName)
                             startActivity(intent)
+                            binding.progressBar.visibility = View.GONE
+
                         } else {
                           CustomToast.showToast(this@SignInScreen,response.body()?.get(0)?.MessageString.toString())
+                            binding.progressBar.visibility = View.GONE
+
                         }
 
                     } else {
                         Log.d("TAGGGGGG", "onResponse: pin generation is no successful")
+                        binding.progressBar.visibility = View.GONE
+
                     }
                 }
 
                 override fun onFailure(call: Call<LoginByPINResponse?>, t: Throwable) {
+                    binding.progressBar.visibility = View.GONE
 
                 }
             })

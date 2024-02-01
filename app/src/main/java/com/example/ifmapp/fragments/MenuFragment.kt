@@ -52,6 +52,8 @@ class MenuFragment(private var pin:String,private var userName:String) : Fragmen
         binding.salaryBtm.setOnClickListener {
            val intent = Intent(requireContext(), SalaryScreen::class.java)
             intent.putExtra("mPIN",pin)
+            intent.putExtra("empName",username)
+
             startActivity(intent)
         }
 

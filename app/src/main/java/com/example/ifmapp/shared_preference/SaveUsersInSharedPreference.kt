@@ -102,7 +102,7 @@ class SaveUsersInSharedPreference {
             editor.apply()
         }
 
-        fun getCurrentUserShifts(context: Context): List<CurrentUserShiftsDetails> {
+        fun getCurrentUserShifts(context: Context,userName:String): List<CurrentUserShiftsDetails> {
             val preferences: SharedPreferences =
                 context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
             val json: String? = preferences.getString(KEY_CURRENT_USER_SHIFT_DETAILS, "")

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -30,7 +31,7 @@ class LoginByPinMobileScreen : AppCompatActivity() {
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login_by_pin_mobile_screen)
         retrofitInstance = RetrofitInstance.apiInstance
-
+        binding.progressBar.visibility = View.GONE
         binding.btnContinue.setOnClickListener {
             loginUser()
         }
@@ -53,17 +54,20 @@ class LoginByPinMobileScreen : AppCompatActivity() {
             }
 
             override fun afterTextChanged(s: Editable?) {
-              /*  val stringWithoutSpaces = s.toString().replace(" ", "")
-                if (s.toString() != stringWithoutSpaces) {
-                    binding.employeepinEdt.setText(stringWithoutSpaces)
-                    binding.employeepinEdt.setSelection(stringWithoutSpaces.length) // Move cursor to the end
-                }*/
+                /*  val stringWithoutSpaces = s.toString().replace(" ", "")
+                  if (s.toString() != stringWithoutSpaces) {
+                      binding.employeepinEdt.setText(stringWithoutSpaces)
+                      binding.employeepinEdt.setSelection(stringWithoutSpaces.length) // Move cursor to the end
+                  }*/
             }
         })
 
     }
+
     private fun loginUser() {
-        val stringWithoutSpaces = binding.employeeMobileEdt.toString().replace(" ", "")
+        binding.progressBar.visibility = View.VISIBLE
+
+       // val stringWithoutSpaces = binding.employeeMobileEdt.toString().replace(" ", "")
 //        if (binding.employeeMobileEdt.toString() != stringWithoutSpaces) {
 //            binding.employeepinEdt.setText(stringWithoutSpaces)
 //            binding.employeepinEdt.setSelection(stringWithoutSpaces.length) // Move cursor to the end
@@ -73,6 +77,8 @@ class LoginByPinMobileScreen : AppCompatActivity() {
 
             if (binding.employeeMobileEdt.text.toString().length <= 10 && binding.employeepinEdt.text.toString().length <= 4) {
                 Log.d("TAGGGGGGGGG", "loginUser: login successful")
+               binding.employeeMobileEdt.isClickable = false
+                binding.employeepinEdt.isClickable = false
                 retrofitInstance.loginByPIN(
                     "sams",
                     binding.employeeMobileEdt.text.toString().trim(),
@@ -101,11 +107,16 @@ class LoginByPinMobileScreen : AppCompatActivity() {
                                         response.body()?.get(0)?.Designation.toString()
 
                                     )
-                                Log.d("TAGGGG", "onResponse: aaaaaaaaa ${response.body()!![0].EmpName}")
+                                Log.d(
+                                    "TAGGGG",
+                                    "onResponse: aaaaaaaaa ${response.body()!![0].EmpName}"
+                                )
 
                                 SaveUsersInSharedPreference.addUserIfNotExists(
                                     this@LoginByPinMobileScreen,
-                                    usersList, binding.employeepinEdt.text.toString(),response.body()?.get(0)?.EmpName.toString()
+                                    usersList,
+                                    binding.employeepinEdt.text.toString(),
+                                    response.body()?.get(0)?.EmpName.toString()
                                 )
                                 val intent =
                                     Intent(this@LoginByPinMobileScreen, MainActivity::class.java)
@@ -114,34 +125,61 @@ class LoginByPinMobileScreen : AppCompatActivity() {
                                     binding.employeepinEdt.text.toString().trim()
                                 )
                                 intent.putExtra(
-                                    "mMobileFromLogin",
-                                    binding.employeeMobileEdt.text.toString().trim()
+                                    "empId",
+                                   response.body()?.get(0)!!.EmpNumber.toString()
+                                )
+                                intent.putExtra(
+                                    "empName",
+                                   response.body()?.get(0)!!.EmpName.toString()
                                 )
                                 startActivity(intent)
+                                binding.progressBar.visibility = View.GONE
+
                                 binding.employeepinEdt.text.clear()
                                 binding.employeeMobileEdt.text.clear()
-                            }else{
-                                CustomToast.showToast(this@LoginByPinMobileScreen,response.body()?.get(0)?.MessageString.toString())
+                            } else {
+                                CustomToast.showToast(
+                                    this@LoginByPinMobileScreen,
+                                    response.body()?.get(0)?.MessageString.toString()
+                                )
+                                binding.employeeMobileEdt.isClickable = true
+                                binding.employeepinEdt.isClickable = true
+                                binding.progressBar.visibility = View.GONE
+
                             }
 
                         } else {
-                            CustomToast.showToast(this@LoginByPinMobileScreen,"You does not have valid pin or Mobile no.")
-
+                            CustomToast.showToast(
+                                this@LoginByPinMobileScreen,
+                                "You does not have valid pin or Mobile no."
+                            )
+                            binding.employeeMobileEdt.isClickable = true
+                            binding.employeepinEdt.isClickable = true
+                            binding.progressBar.visibility = View.GONE
                         }
                     }
-
                     override fun onFailure(call: Call<LoginByPINResponse?>, t: Throwable) {
+                        binding.progressBar.visibility = View.GONE
+                        binding.employeeMobileEdt.isClickable = true
+                        binding.employeepinEdt.isClickable = true
 
                     }
                 })
 
 
             } else {
-                CustomToast.showToast(this@LoginByPinMobileScreen,"Please enter valid mobile or pin")
+                CustomToast.showToast(
+                    this@LoginByPinMobileScreen,
+                    "Please enter valid mobile or pin"
+                )
+                binding.employeeMobileEdt.isClickable = true
+                binding.employeepinEdt.isClickable = true
             }
 
         } else {
-           CustomToast.showToast(this@LoginByPinMobileScreen,"Please enter all details")
+            CustomToast.showToast(this@LoginByPinMobileScreen, "Please enter all details")
+            binding.employeeMobileEdt.isClickable = true
+            binding.employeepinEdt.isClickable = true
         }
 
 

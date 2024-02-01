@@ -112,7 +112,6 @@ class HomeFragment(
         savedInstanceState: Bundle?
     ): View {
 
-
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false)
         Log.d("TAGGGG", "onCreateView:////////////////////////// $otp")
         currentUser = SaveUsersInSharedPreference.getUserByPin(requireContext(), otp, userName)
@@ -135,8 +134,7 @@ class HomeFragment(
 
         }
         //getCurrentEmployee(otp, mobileNumber)
-
-        binding.userName.text = currentUser?.userName
+        binding.userName.text = "${currentUser?.userName} ($empNumber)"
         binding.designation.text = currentUser?.designation
 
         binding.shiftStartdateText.text = getFormattedDate()
@@ -202,8 +200,6 @@ class HomeFragment(
             }
 
         }
-
-
         binding.checkoutBtn.setOnClickListener {
             binding.checkoutBtn.isEnabled = false
             binding.checkInBtn.setTextColor(resources.getColor(R.color.check_btn))
@@ -216,8 +212,8 @@ class HomeFragment(
             intent.putExtra("mPIN", otp)
             intent.putExtra("empName", userName)
             startActivity(intent)
-
         }
+
         return binding.root
     }
 
@@ -345,8 +341,7 @@ class HomeFragment(
                     shiftSelectionLiveData.postValue(shiftSelect.toString())
                     val shiftTiming = hashMap[selectedItem]
 
-                    loginUser()
-
+                    geoMappedUser()
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -354,7 +349,7 @@ class HomeFragment(
                         if (it.count > 0) {
                             shiftSelect = it.getItemAtPosition(0).toString()
                             shiftSelectionLiveData.postValue(shiftSelect.toString())
-                        loginUser()
+                            geoMappedUser()
                         }
                     }
                 }
@@ -395,8 +390,7 @@ class HomeFragment(
                     mLatitude = location.latitude.toString()
                     mLongitude = location.longitude.toString()
                     mAltitude = location.altitude.toString()
-                    loginUser()
-
+                    geoMappedUser()
                 }
             }
 
@@ -446,12 +440,13 @@ class HomeFragment(
 
             binding.checkInBtn.isEnabled = true
             binding.checkoutBtn.isEnabled = false
-            binding.joiningTime.text = inTime
-            setAmPm(inTime,binding.joiningAm)
-            binding.outTime.text = outTime
-            setAmPm(outTime,binding.outTime)
-            binding.spinnerSelectShift.isClickable = false
-            binding.spinnerSelectSite.isClickable = false
+            binding.joiningTime.text = "- - - -"
+            binding.joiningAm.text = ""
+            binding.outTime.text = "- - - -"
+            binding.outPm.text = ""
+
+            binding.spinnerSelectShift.isClickable = true
+            binding.spinnerSelectSite.isClickable = true
         } else if (inTime.isNotEmpty()&&outTime.isEmpty()) {
             binding.spinnerSelectSite.isEnabled = false
             binding.spinnerSelectShift.isEnabled = false
@@ -465,15 +460,19 @@ class HomeFragment(
             binding.joiningTime.text = inTime
             setAmPm(inTime,binding.joiningAm)
 
-            binding.outTime.text = outTime
-            setAmPm(outTime,binding.outTime)
+            binding.outTime.text = "----"
+            binding.outPm.text = ""
 
             binding.spinnerSelectShift.isClickable = false
             binding.spinnerSelectSite.isClickable = false
         }else{
-            Log.d("TAGGLLLL", "setShiftJoiningTime:...........................calling 1155")
+            Log.d("TAGGLLLL", "setShiftJoiningTime:...............................calling 1155")
             binding.checkInBtn.isEnabled = false
             binding.checkoutBtn.isEnabled = false
+            binding.checkInBtn.setTextColor(resources.getColor(R.color.check_btn))
+            binding.checkInBtn.setBackgroundResource(R.drawable.button_backwhite)
+            binding.checkoutBtn.setTextColor(resources.getColor(R.color.check_btn))
+            binding.checkoutBtn.setBackgroundResource(R.drawable.button_backwhite)
             binding.spinnerSelectSite.isEnabled = false
             binding.spinnerSelectShift.isEnabled = false
 
@@ -487,7 +486,8 @@ class HomeFragment(
             binding.spinnerSelectSite.isClickable = false
         }
 
-    }private fun setAmPm(time:String,joinOut:TextView){
+    }
+    private fun setAmPm(time:String,joinOut:TextView){
         if (time.isNotEmpty()){
             if ( time.substring(0,2).toInt()<12){
                 joinOut.text = "AM"
@@ -497,7 +497,7 @@ class HomeFragment(
         }
     }
 
-    private fun loginUser() {
+    private fun geoMappedUser() {
 
         Log.d("TAGGLLLL", "loginUser: .................$locationAutoId  $mAltitude  $mLongitude")
         retrofitInstance.getGeoMappedSites(
@@ -544,7 +544,6 @@ class HomeFragment(
                     response: Response<DailyAttendanceModel?>
                 ) {
 
-                    CustomToast.showToast(requireContext(), "success 2")
 
                     intTime = response.body()?.get(0)?.InTime.toString()
                     outTime = response.body()?.get(0)?.OutTime.toString()

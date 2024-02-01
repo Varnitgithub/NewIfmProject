@@ -46,6 +46,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         otp = intent.getStringExtra("mPIN")
         otpFromLogin = intent.getStringExtra("mPINFromLogin")
         mobileNumber = intent.getStringExtra("mobileNumber")
@@ -62,7 +63,7 @@ class MainActivity : AppCompatActivity() {
 
         Log.d("TAGGGGGGGGGGG", "onCreateView: this is in out set222 $inout")
 
-        Log.d("TAGGGGGGG", "onResponse: $otp is the new otp  222")
+        Log.d("TAGGGGGGG", "onResponse: $empNumber is the new otp  222")
 
 
         if (otp != null && userName != null) {

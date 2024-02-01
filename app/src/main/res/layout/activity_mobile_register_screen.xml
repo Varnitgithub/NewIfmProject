@@ -12,6 +12,8 @@
         android:layout_height="match_parent"
         tools:context=".activities.SignInScreen">
 
+
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/top_icons_CL"
             android:layout_width="match_parent"
@@ -476,6 +478,14 @@ android:visibility="gone"
             app:layout_constraintEnd_toEndOf="@id/top_icons_CL"
             app:layout_constraintStart_toStartOf="@id/top_icons_CL" />
 
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/progressBar"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -38,7 +39,7 @@ class GnereratePinCodeScreen : AppCompatActivity() {
         retrofitInstance = RetrofitInstance.apiInstance
         mobileNumber = intent.getStringExtra("mobileNumber")
 
-
+binding.progressBar.visibility = View.GONE
 
         edtPincodeLiveData.observe(this) {
             if (it == 4) {
@@ -53,6 +54,7 @@ class GnereratePinCodeScreen : AppCompatActivity() {
 
 
         binding.btnGenerate.setOnClickListener {
+            binding.progressBar.visibility = View.VISIBLE
             binding.edtEnterPinCode.isEnabled = false
             generatePIN()
 
@@ -87,73 +89,114 @@ class GnereratePinCodeScreen : AppCompatActivity() {
                 ) {
                     if (response.isSuccessful) {
 
-if (response.body()?.get(0)?.MessageID?.toInt()==1){
+                        if (response.body()?.get(0)?.MessageID?.toInt() == 1) {
 
-    retrofitInstance.loginByPIN(
-        "sams",
-        mobileNumber.toString(),
-        binding.edtEnterPinCode.text.toString().trim()
-    ).enqueue(object : Callback<LoginByPINResponse?> {
-        override fun onResponse(
-            call: Call<LoginByPINResponse?>,
-            response: Response<LoginByPINResponse?>
-        ) {
-            if (response.isSuccessful && response.body() != null) {
-                if (response.body()?.get(0)?.MessageID?.toInt()==1){
-                    val user = UserListModel(
-                        response.body()?.get(0)?.EmpName.toString(),
-                        binding.edtEnterPinCode.text.toString().trim(),
-                        response.body()?.get(0)?.EmpNumber.toString(),
-                        response.body()?.get(0)?.LocationAutoID.toString(),
-                        response.body()?.get(0)?.Designation.toString()
-                    )
+                            retrofitInstance.loginByPIN(
+                                "sams",
+                                mobileNumber.toString(),
+                                binding.edtEnterPinCode.text.toString().trim()
+                            ).enqueue(object : Callback<LoginByPINResponse?> {
+                                override fun onResponse(
+                                    call: Call<LoginByPINResponse?>,
+                                    response: Response<LoginByPINResponse?>
+                                ) {
+                                    if (response.isSuccessful && response.body() != null) {
+                                        if (response.body()?.get(0)?.MessageID?.toInt() == 1) {
+                                            val user = UserListModel(
+                                                response.body()?.get(0)?.EmpName.toString(),
+                                                binding.edtEnterPinCode.text.toString().trim(),
+                                                response.body()?.get(0)?.EmpNumber.toString(),
+                                                response.body()?.get(0)?.LocationAutoID.toString(),
+                                                response.body()?.get(0)?.Designation.toString()
+                                            )
 
-                    SaveUsersInSharedPreference.addUserIfNotExists(
-                        this@GnereratePinCodeScreen,
-                        user,binding.edtEnterPinCode.text.toString().trim(),  response.body()?.get(0)?.EmpName.toString()
-                    )
-                    startActivity(Intent(this@GnereratePinCodeScreen,DashBoardScreen::class.java))
+                                            SaveUsersInSharedPreference.addUserIfNotExists(
+                                                this@GnereratePinCodeScreen,
+                                                user,
+                                                binding.edtEnterPinCode.text.toString().trim(),
+                                                response.body()?.get(0)?.EmpName.toString()
+                                            )
+                                            var intent =
+                                                Intent(
+                                                    this@GnereratePinCodeScreen,
+                                                    DashBoardScreen::class.java
+
+                                            )
+                                            intent.putExtra(
+                                                "userPin",
+                                                binding.edtEnterPinCode.text.toString().trim()
+                                            )
+                                           /* intent.putExtra(
+                                                "mMobileFromLogin",
+                                                binding.employeeMobileEdt.text.toString().trim()
+                                            )*/
+                                            startActivity(intent)
+
+                                            binding.progressBar.visibility = View.GONE
 
 
-                    Log.d(
-                        "TAGGGGGG",
-                        "onResponse: data called and saved successful"
-                    )
-                }else{
-                    CustomToast.showToast(this@GnereratePinCodeScreen,response.body()?.get(0)?.MessageString.toString())
-                }
+
+                                            Log.d(
+                                                "TAGGGGGG",
+                                                "onResponse: data called and saved successful"
+                                            )
+
+                                        } else {
+                                            CustomToast.showToast(
+                                                this@GnereratePinCodeScreen,
+                                                response.body()?.get(0)?.MessageString.toString()
+                                            )
+                                            binding.progressBar.visibility = View.GONE
+
+                                        }
 
 
-            }
-        }
+                                    }
+                                }
 
-        override fun onFailure(call: Call<LoginByPINResponse?>, t: Throwable) {
+                                override fun onFailure(
+                                    call: Call<LoginByPINResponse?>,
+                                    t: Throwable
+                                ) {
+                                    binding.progressBar.visibility = View.GONE
 
-        }
-    })
-    val intent = Intent(
-        this@GnereratePinCodeScreen,
-        DashBoardScreen::class.java)
+                                }
+                            })
+                            val intent = Intent(
+                                this@GnereratePinCodeScreen,
+                                DashBoardScreen::class.java
+                            )
 
-    startActivity(intent)
-    Log.d("TAGGGGGG", "onResponse: response is successful")
-}else{
-    CustomToast.showToast(this@GnereratePinCodeScreen,response.body()?.get(0)?.MessageString.toString())
-}
+                            startActivity(intent)
+                            Log.d("TAGGGGGG", "onResponse: response is successful")
+                        } else {
+                            CustomToast.showToast(
+                                this@GnereratePinCodeScreen,
+                                response.body()?.get(0)?.MessageString.toString()
+                            )
+                            binding.progressBar.visibility = View.GONE
+
+                        }
 
                     } else {
                         binding.edtEnterPinCode.isEnabled = true
                         Log.d("TAGGGGGG", "onResponse: response is not successful")
+                        binding.progressBar.visibility = View.GONE
+
                     }
                 }
 
                 override fun onFailure(call: Call<VerifyOtpResponse?>, t: Throwable) {
                     binding.edtEnterPinCode.isEnabled = true
                     Log.d("TAGGGGGGGG", "onFailure: pin generation failed")
+                    binding.progressBar.visibility = View.GONE
+
                 }
             })
         } else {
-           CustomToast.showToast(this@GnereratePinCodeScreen,"Please enter 4 digit pin")
+            CustomToast.showToast(this@GnereratePinCodeScreen, "Please enter 4 digit pin")
+            binding.progressBar.visibility = View.GONE
+
         }
     }
 

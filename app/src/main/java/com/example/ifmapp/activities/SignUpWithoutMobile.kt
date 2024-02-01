@@ -35,9 +35,9 @@ class SignUpWithoutMobile : AppCompatActivity() {
         //setContentView(R.layout.activity_sign_up_without_mobile)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_sign_up_without_mobile)
         retrofitInstance = RetrofitInstance.apiInstance
-
+binding.progressBar.visibility = View.GONE
         binding.btnGenerate.isEnabled = false
-
+binding.progressBar.visibility = View.GONE
 
         binding.btnGenerate.setOnClickListener {
             binding.employeeidEdt.isClickable = false
@@ -46,6 +46,7 @@ class SignUpWithoutMobile : AppCompatActivity() {
                 binding.employeeidEdt.text.toString().trim(),
                 binding.employeepinEdt.text.toString().trim()
             )
+            binding.btnGenerate.isClickable = false
         }
 
         binding.employeepinEdt.addTextChangedListener(object : TextWatcher {
@@ -69,7 +70,7 @@ class SignUpWithoutMobile : AppCompatActivity() {
             }
         })
         binding.validatePin.setOnClickListener {
-            if (binding.employeeidEdt.text.toString().length >= 6) {
+            if (binding.employeeidEdt.text.toString().length >= 2) {
                 validateEmployeeId(binding.employeeidEdt.text.toString().trim())
 
             }
@@ -138,6 +139,7 @@ class SignUpWithoutMobile : AppCompatActivity() {
     }
 
     private fun pinGenerationByEmployeeId(connectionKey: String, empId: String, pin: String) {
+        binding.progressBar.visibility = View.VISIBLE
 
         retrofitInstance.pinGenerationByEmpId(connectionKey, empId, pin)
             .enqueue(object : Callback<VerifyOtpResponse?> {
@@ -159,15 +161,19 @@ class SignUpWithoutMobile : AppCompatActivity() {
                                 this@SignUpWithoutMobile,
                                 response.body()?.get(0)?.MessageString.toString()
                             )
+                            binding.btnGenerate.isClickable = true
+
 
                         }
 
                     } else {
-                        Log.d("TAGGGGGG", "onResponse: pin generation is no successful")
+                        binding.btnGenerate.isClickable = true
+
                     }
                 }
 
                 override fun onFailure(call: Call<VerifyOtpResponse?>, t: Throwable) {
+                    binding.btnGenerate.isClickable = true
 
                 }
             })
@@ -209,20 +215,22 @@ class SignUpWithoutMobile : AppCompatActivity() {
                             intent.putExtra("userPin", pin)
 
                             startActivity(intent)
+                            binding.progressBar.visibility = View.GONE
+
                         } else {
                             CustomToast.showToast(
                                 this@SignUpWithoutMobile,
                                 response.body()?.get(0)?.MessageString.toString()
                             )
+                            binding.btnGenerate.isClickable = true
                         }
-
                     } else {
                         Log.d("TAGGGGGG", "onResponse: pin generation is not successful")
+                        binding.btnGenerate.isClickable = true
                     }
                 }
-
                 override fun onFailure(call: Call<LoginByPINResponse?>, t: Throwable) {
-
+                    binding.btnGenerate.isClickable = true
                 }
             })
 
