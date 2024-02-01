@@ -64,10 +64,10 @@ class LoginByPinMobileScreen : AppCompatActivity() {
     }
     private fun loginUser() {
         val stringWithoutSpaces = binding.employeeMobileEdt.toString().replace(" ", "")
-        if (binding.employeeMobileEdt.toString() != stringWithoutSpaces) {
-            binding.employeepinEdt.setText(stringWithoutSpaces)
-            binding.employeepinEdt.setSelection(stringWithoutSpaces.length) // Move cursor to the end
-        }
+//        if (binding.employeeMobileEdt.toString() != stringWithoutSpaces) {
+//            binding.employeepinEdt.setText(stringWithoutSpaces)
+//            binding.employeepinEdt.setSelection(stringWithoutSpaces.length) // Move cursor to the end
+//        }
 
         if (binding.employeeMobileEdt.text != null && binding.employeepinEdt.text != null) {
 

@@ -136,6 +136,14 @@ class CheckInScreen : AppCompatActivity() {
         mUserName = intent.getStringExtra("empName")
         Log.d("TAGGGGG", "onCreate: this is motp.........................$mOTP")
 
+        val usersList = SaveUsersInSharedPreference.getList(this@CheckInScreen)
+
+        for (user in usersList){
+            if (user.pin==mOTP&&user.userName==mUserName){
+                mUserName = user.userName
+                employeeDesignation = user.designation
+            }
+        }
 
 
 
@@ -352,7 +360,7 @@ class CheckInScreen : AppCompatActivity() {
         binding.checkinCL.visibility = View.GONE
 
         binding.finalLayoutCL.visibility = View.VISIBLE
-        binding.nameAtfinal.text = employeeName
+        binding.nameAtfinal.text = mUserName
         binding.designationAtfinal.text = employeeDesignation
         binding.shiftAtfinal.text = "${siteSelect} $shiftSelect $formattedDate"
         binding.latlgTxt.text = "$latitude $longitude"
@@ -585,6 +593,18 @@ class CheckInScreen : AppCompatActivity() {
                         this@CheckInScreen,
                         response.body()?.get(0)?.MessageString.toString()
                     )
+                    binding.progressBar.visibility = View.GONE
+                    Log.d("TAGGGGGGG", "onResponse: $mOTP is the new otp")
+                    Log.d("TAGGGGGGG", "onResponse: $mUserName is the new otp")
+                    val delayMillis = 5000L
+                    Handler().postDelayed({
+                        finish()
+                        val intent = Intent(this@CheckInScreen, MainActivity::class.java)
+                        intent.putExtra("inoutStatus", "OUT")
+                        intent.putExtra("mPIN", mOTP)
+                        intent.putExtra("empName", mUserName)
+                        startActivity(intent)
+                    }, delayMillis)
                 }
             }
 
@@ -781,6 +801,10 @@ class CheckInScreen : AppCompatActivity() {
         super.onBackPressed()
         var intent = Intent(this@CheckInScreen, MainActivity::class.java)
         intent.putExtra("mPIN", otp)
+        intent.putExtra("inoutStatus", "OUT")
+        intent.putExtra("mPIN", mOTP)
+        intent.putExtra("empName", mUserName)
+        Log.d("TAGGGGGGGGGGGGG", "onBackPressed: this is $otp this is $mOTP this is $mUserName")
         startActivity(intent)
     }
 }

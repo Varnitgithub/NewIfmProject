@@ -10,14 +10,18 @@ import com.example.ifmapp.modelclasses.DocumentsModel
 
 class MyDocumentsScreen : AppCompatActivity() {
     private lateinit var documentsAdapter: DocumentsAdapter
-    private var pin: String? = null
+    private var empName:String?=null
+    private var pin:String?=null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_my_documents_screen)
 
         var documentsRecyclerView: RecyclerView = findViewById(R.id.documents_recyclerView)
         documentsAdapter = DocumentsAdapter(this)
-        pin = intent.getStringExtra("MPIN")
+
+        empName  = intent.getStringExtra("empName")
+        pin = intent.getStringExtra("mPIN")
+
         documentsRecyclerView.layoutManager = LinearLayoutManager(this)
         documentsRecyclerView.adapter = documentsAdapter
 
@@ -48,8 +52,9 @@ class MyDocumentsScreen : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        var intent= Intent(this@MyDocumentsScreen,MainActivity::class.java)
-        intent.putExtra("MPIN",pin)
+        var intent = Intent(this@MyDocumentsScreen,MainActivity::class.java)
+        intent.putExtra("empName",empName)
+        intent.putExtra("mPIN",pin)
         startActivity(intent)
         super.onBackPressed()
     }

@@ -61,14 +61,20 @@ class SignUpWithoutMobile : AppCompatActivity() {
             }
 
             override fun afterTextChanged(p0: Editable?) {
-              /*  val stringWithoutSpaces = p0.toString().replace(" ", "")
-                if (p0.toString() != stringWithoutSpaces) {
-                    binding.employeepinEdt.setText(stringWithoutSpaces)
-                    binding.employeepinEdt.setSelection(stringWithoutSpaces.length) // Move cursor to the end
-                }*/
+                /*  val stringWithoutSpaces = p0.toString().replace(" ", "")
+                  if (p0.toString() != stringWithoutSpaces) {
+                      binding.employeepinEdt.setText(stringWithoutSpaces)
+                      binding.employeepinEdt.setSelection(stringWithoutSpaces.length) // Move cursor to the end
+                  }*/
             }
         })
+        binding.validatePin.setOnClickListener {
+            if (binding.employeeidEdt.text.toString().length >= 6) {
+                validateEmployeeId(binding.employeeidEdt.text.toString().trim())
 
+            }
+
+        }
 
         binding.employeeidEdt.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -84,15 +90,12 @@ class SignUpWithoutMobile : AppCompatActivity() {
 
 
             override fun afterTextChanged(s: Editable?) {
-              /*  val stringWithoutSpaces = s.toString().replace(" ", "")
-                if (s.toString() != stringWithoutSpaces) {
-                    binding.employeepinEdt.setText(stringWithoutSpaces)
-                    binding.employeepinEdt.setSelection(stringWithoutSpaces.length) // Move cursor to the end
-                }*/
-                if (binding.employeeidEdt.text.toString().length == 6) {
-                    validateEmployeeId(binding.employeeidEdt.text.toString().trim())
+                /*  val stringWithoutSpaces = s.toString().replace(" ", "")
+                  if (s.toString() != stringWithoutSpaces) {
+                      binding.employeepinEdt.setText(stringWithoutSpaces)
+                      binding.employeepinEdt.setSelection(stringWithoutSpaces.length) // Move cursor to the end
+                  }*/
 
-                }
             }
         })
 
@@ -112,7 +115,7 @@ class SignUpWithoutMobile : AppCompatActivity() {
 
                             binding.employeepinLL.visibility = View.VISIBLE
                             binding.employeepinEdt.inputType = InputType.TYPE_CLASS_NUMBER
-
+                            binding.validatePin.visibility = View.GONE
                             binding.btnGenerate.isEnabled = true
 
                         } else {
@@ -152,7 +155,10 @@ class SignUpWithoutMobile : AppCompatActivity() {
                             )
                             loginByEmployeeId("sams", empId, pin)
                         } else {
-                            CustomToast.showToast(this@SignUpWithoutMobile, response.body()?.get(0)?.MessageString.toString())
+                            CustomToast.showToast(
+                                this@SignUpWithoutMobile,
+                                response.body()?.get(0)?.MessageString.toString()
+                            )
 
                         }
 
@@ -189,7 +195,10 @@ class SignUpWithoutMobile : AppCompatActivity() {
                             )
 
                             SaveUsersInSharedPreference.addUserIfNotExists(
-                                this@SignUpWithoutMobile, user, pin,response.body()?.get(0)?.EmpName.toString()
+                                this@SignUpWithoutMobile,
+                                user,
+                                pin,
+                                response.body()?.get(0)?.EmpName.toString()
                             )
 
                             val intent =

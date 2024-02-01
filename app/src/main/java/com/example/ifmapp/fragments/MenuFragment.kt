@@ -14,9 +14,12 @@ import com.example.ifmapp.activities.ProfileScreen
 import com.example.ifmapp.activities.SalaryScreen
 import com.example.ifmapp.activities.TaskScreen
 import com.example.ifmapp.databinding.FragmentMenuBinding
+import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
 
-class MenuFragment(private var pin:String) : Fragment() {
+class MenuFragment(private var pin:String,private var userName:String) : Fragment() {
     private lateinit var binding: FragmentMenuBinding
+    private var username:String?=null
+    private var designation:String?=null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -30,10 +33,19 @@ class MenuFragment(private var pin:String) : Fragment() {
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_menu, container, false)
 
+        val usersList = SaveUsersInSharedPreference.getList(requireContext())
+
+        for (user in usersList){
+            if (user.pin==pin&&user.userName==userName){
+                username = user.userName
+                designation = user.designation
+            }
+        }
 
         binding.btmProfile.setOnClickListener {
-           var intent = Intent(requireContext(), ProfileScreen::class.java)
+           val intent = Intent(requireContext(), ProfileScreen::class.java)
             intent.putExtra("mPIN",pin)
+            intent.putExtra("empName",username)
             startActivity(intent)
         }
 
@@ -46,12 +58,14 @@ class MenuFragment(private var pin:String) : Fragment() {
         binding.musters.setOnClickListener {
           val intent =   Intent(requireContext(),TaskScreen::class.java)
             intent.putExtra("mPIN",pin)
+            intent.putExtra("empName",username)
             startActivity(intent)
         }
 
         binding.mydoc.setOnClickListener {
             val intent =   Intent(requireContext(),MyDocumentsScreen::class.java)
             intent.putExtra("mPIN",pin)
+            intent.putExtra("empName",username)
             startActivity(intent)
         }
 
@@ -60,6 +74,7 @@ class MenuFragment(private var pin:String) : Fragment() {
         binding.leavesBtm.setOnClickListener {
             val intent = Intent(requireContext(), LeaveScreen::class.java)
             intent.putExtra("mPIN",pin)
+            intent.putExtra("empName",username)
             startActivity(intent)
         }
 

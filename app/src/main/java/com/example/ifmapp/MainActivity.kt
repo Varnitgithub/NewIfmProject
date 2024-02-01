@@ -56,7 +56,6 @@ class MainActivity : AppCompatActivity() {
         userName = intent.getStringExtra("empName")
 
 
-
         binding = DataBindingUtil.setContentView(this, R.layout.main_activity)
 
          inout = intent.getStringExtra("INOUTStatus")
@@ -99,30 +98,30 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (otp != null) {
-            menuFragment = MenuFragment(otp.toString())
-            myTaskFragment = MyTaskFragment(this, otp.toString())
+            menuFragment = MenuFragment(otp.toString(),userName.toString())
+            myTaskFragment = MyTaskFragment(this, otp.toString(),userName.toString())
             eRegisterFragment = ERegisterFragment(otp.toString())
         } else if (otpFromLogin != null) {
-            menuFragment = MenuFragment(otpFromLogin.toString())
-            myTaskFragment = MyTaskFragment(this, otpFromLogin.toString())
+            menuFragment = MenuFragment(otpFromLogin.toString(),userName.toString())
+            myTaskFragment = MyTaskFragment(this, otpFromLogin.toString(),userName.toString())
             eRegisterFragment = ERegisterFragment(otpFromLogin.toString())
 
 
         } else if (otpFromsignUp != null) {
-            menuFragment = MenuFragment(otpFromsignUp.toString())
-            myTaskFragment = MyTaskFragment(this, otpFromsignUp.toString())
+            menuFragment = MenuFragment(otpFromsignUp.toString(),userName.toString())
+            myTaskFragment = MyTaskFragment(this, otpFromsignUp.toString(),userName.toString())
             eRegisterFragment = ERegisterFragment(otpFromsignUp.toString())
 
 
         } else if (pinFromSignin != null) {
-            menuFragment = MenuFragment(pinFromSignin.toString())
-            myTaskFragment = MyTaskFragment(this, pinFromSignin.toString())
+            menuFragment = MenuFragment(pinFromSignin.toString(),userName.toString())
+            myTaskFragment = MyTaskFragment(this, pinFromSignin.toString(),userName.toString())
             eRegisterFragment = ERegisterFragment(pinFromSignin.toString())
 
 
         } else {
-            menuFragment = MenuFragment(mOTP.toString())
-            myTaskFragment = MyTaskFragment(this, mOTP.toString())
+            menuFragment = MenuFragment(mOTP.toString(),userName.toString())
+            myTaskFragment = MyTaskFragment(this, mOTP.toString(),userName.toString())
             eRegisterFragment = ERegisterFragment(mOTP.toString())
 
 
@@ -215,5 +214,10 @@ class MainActivity : AppCompatActivity() {
             }
 
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Log.d("TAGGGGGGGGG", "onStart: thisis on start")
     }
 }

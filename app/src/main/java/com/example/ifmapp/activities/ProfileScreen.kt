@@ -25,22 +25,28 @@ class ProfileScreen() : AppCompatActivity() {
 binding = DataBindingUtil.setContentView(this,R.layout.activity_profile_screen)
 
         pin = intent.getStringExtra("mPIN")
+       empName  = intent.getStringExtra("empName")
 
-        Log.d("TAGGGGGGGGGGGG", "onCreate: $pin is the profile screen otp")
-      //   empDetails = SaveUsersInSharedPreference.getUserByPin(this@ProfileScreen, pin = pin.toString())
-        Log.d("TAGGGGGGGGGGGG", "onCreate: $empDetails is the profile screen otp")
+        val usersList = SaveUsersInSharedPreference.getList(this@ProfileScreen)
 
-        empName = empDetails?.userName
-        empDesignation = empDetails?.designation
+        for (user in usersList){
+            if (user.pin==pin&&user.userName==empName){
+                empName = user.userName
+                empDesignation = user.designation
+                binding.employeeDesignation.text = empDesignation
+                binding.employeeName.text = user.userName
+            }
+        }
 
-        binding.employeeName.text = empName
-        binding.employeeDesignation.text = empDesignation
+
+
 
     }
 
     override fun onBackPressed() {
         val intent = Intent(this@ProfileScreen,MainActivity::class.java)
         intent.putExtra("mPIN",pin)
+        intent.putExtra("empName",empName)
         startActivity(intent)
         super.onBackPressed()
     }

@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.TextView
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -103,7 +104,7 @@ class HomeFragment(
 //            binding.checkoutBtn.isClickable = true
 //        }
 
-        Log.d("TAGGGGG", "onCreate: this is newwww $otp")
+        Log.d("TAGGGGG", "onCreate: this is newwww $otp and $userName")
     }
 
     override fun onCreateView(
@@ -158,7 +159,6 @@ class HomeFragment(
 
             startActivity(Intent(requireContext(), DashBoardScreen::class.java))
         }
-
         siteList = ArrayList()
         shiftList = ArrayList()
         shiftTimingList = ArrayList()
@@ -211,7 +211,11 @@ class HomeFragment(
             binding.checkoutBtn.setTextColor(resources.getColor(R.color.white))
             binding.checkoutBtn.setBackgroundResource(R.drawable.button_back)
 
-            startActivity(Intent(requireContext(), CheckInScreen::class.java))
+            var intent = Intent(requireContext(), CheckInScreen::class.java)
+            intent.putExtra("INOUTStatus", "OUT")
+            intent.putExtra("mPIN", otp)
+            intent.putExtra("empName", userName)
+            startActivity(intent)
 
         }
         return binding.root
@@ -342,6 +346,7 @@ class HomeFragment(
                     val shiftTiming = hashMap[selectedItem]
 
                     loginUser()
+
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -349,7 +354,7 @@ class HomeFragment(
                         if (it.count > 0) {
                             shiftSelect = it.getItemAtPosition(0).toString()
                             shiftSelectionLiveData.postValue(shiftSelect.toString())
-                            loginUser()
+                        loginUser()
                         }
                     }
                 }
@@ -390,6 +395,7 @@ class HomeFragment(
                     mLatitude = location.latitude.toString()
                     mLongitude = location.longitude.toString()
                     mAltitude = location.altitude.toString()
+                    loginUser()
 
                 }
             }
@@ -435,28 +441,65 @@ class HomeFragment(
     }
 
     private fun setShiftJoiningTime(inTime: String, outTime: String) {
-
         if (inTime.isEmpty()) {
+            Log.d("TAGGLLLL", "setShiftJoiningTime:...........................calling 1133")
+
             binding.checkInBtn.isEnabled = true
             binding.checkoutBtn.isEnabled = false
             binding.joiningTime.text = inTime
+            setAmPm(inTime,binding.joiningAm)
             binding.outTime.text = outTime
+            setAmPm(outTime,binding.outTime)
             binding.spinnerSelectShift.isClickable = false
             binding.spinnerSelectSite.isClickable = false
-        } else  {
+        } else if (inTime.isNotEmpty()&&outTime.isEmpty()) {
+            binding.spinnerSelectSite.isEnabled = false
+            binding.spinnerSelectShift.isEnabled = false
+            Log.d("TAGGLLLL", "setShiftJoiningTime:...........................calling 1144")
+            binding.checkInBtn.setTextColor(resources.getColor(R.color.check_btn))
+            binding.checkInBtn.setBackgroundResource(R.drawable.button_backwhite)
+            binding.checkoutBtn.setTextColor(resources.getColor(R.color.white))
+            binding.checkoutBtn.setBackgroundResource(R.drawable.button_back)
             binding.checkInBtn.isEnabled = false
             binding.checkoutBtn.isEnabled = true
             binding.joiningTime.text = inTime
+            setAmPm(inTime,binding.joiningAm)
+
             binding.outTime.text = outTime
+            setAmPm(outTime,binding.outTime)
+
             binding.spinnerSelectShift.isClickable = false
-            binding.spinnerSel ectSite.isClickable = false
+            binding.spinnerSelectSite.isClickable = false
+        }else{
+            Log.d("TAGGLLLL", "setShiftJoiningTime:...........................calling 1155")
+            binding.checkInBtn.isEnabled = false
+            binding.checkoutBtn.isEnabled = false
+            binding.spinnerSelectSite.isEnabled = false
+            binding.spinnerSelectShift.isEnabled = false
+
+            binding.joiningTime.text = inTime
+            setAmPm(inTime,binding.joiningAm)
+
+            binding.outTime.text = outTime
+            setAmPm(outTime,binding.outPm)
+
+            binding.spinnerSelectShift.isClickable = false
+            binding.spinnerSelectSite.isClickable = false
         }
 
+    }private fun setAmPm(time:String,joinOut:TextView){
+        if (time.isNotEmpty()){
+            if ( time.substring(0,2).toInt()<12){
+                joinOut.text = "AM"
+            }else{
+                joinOut.text = "PM"
+            }
+        }
     }
 
     private fun loginUser() {
 
-        Log.d("TAGGGGGGG", "loginUser: .................$locationAutoId  $mAltitude  $mLongitude")
+        Log.d("TAGGLLLL", "loginUser: .................$locationAutoId  $mAltitude  $mLongitude")
         retrofitInstance.getGeoMappedSites(
             "sams",
             locationAutoId.toString(),
@@ -470,7 +513,10 @@ class HomeFragment(
                 if (response.body()?.get(0)?.MessageID?.toInt() == 1) {
                     clientCode = response.body()?.get(0)!!.ClientCode
                     asmtId = response.body()?.get(0)!!.AsmtID
-
+                    Log.d("TAGGLL", "onResponse: ${clientCode.toString()},\n" +
+                            "                        ${asmtId.toString()},\n" +
+                            "                        ${shiftSelect.toString()},\n" +
+                            "                        $empNumber")
                     getAttendanceTime(
                         clientCode.toString(),
                         asmtId.toString(),
@@ -497,6 +543,7 @@ class HomeFragment(
                     call: Call<DailyAttendanceModel?>,
                     response: Response<DailyAttendanceModel?>
                 ) {
+
                     CustomToast.showToast(requireContext(), "success 2")
 
                     intTime = response.body()?.get(0)?.InTime.toString()

@@ -21,7 +21,7 @@ class RegistrationScreen : AppCompatActivity() {
         val newRegistration: Button = findViewById(R.id.new_Registration)
         val alreadyRegistered: Button = findViewById(R.id.already_Registered)
 
-            if (checkPermission()) {
+            if (checkPermission())  {
 if (LocationSpoofChecker.isLocationSpoofed(this@RegistrationScreen)){
     Toast.makeText(this@RegistrationScreen, "You are using location spoofed app, Please disable this", Toast.LENGTH_SHORT).show()
 }
@@ -29,22 +29,19 @@ if (LocationSpoofChecker.isLocationSpoofed(this@RegistrationScreen)){
                 requestPermission()
             }
             newRegistration.setOnClickListener {
-                if (LocationSpoofChecker.isLocationSpoofed(this@RegistrationScreen)){
-                    Toast.makeText(this@RegistrationScreen, "You are using location spoofed app, Please disable this", Toast.LENGTH_SHORT).show()
-                }else{
+//                if (LocationSpoofChecker.isLocationSpoofed(this@RegistrationScreen)){
+//                    Toast.makeText(this@RegistrationScreen, "You are using location spoofed app, Please disable this", Toast.LENGTH_SHORT).show()
+//                }else{
                     startActivity(Intent(this, SignUpWaysScreen::class.java))
 
                 }
-            }
+
             alreadyRegistered.setOnClickListener {
-                if (LocationSpoofChecker.isLocationSpoofed(this@RegistrationScreen)){
-                    Toast.makeText(this@RegistrationScreen, "You are using location spoofed app, Please disable this", Toast.LENGTH_SHORT).show()
-                }
-                else{
+//                if (LocationSpoofChecker.isLocationSpoofed(this@RegistrationScreen)){
+//                    Toast.makeText(this@RegistrationScreen, "You are using location spoofed app, Please disable this", Toast.LENGTH_SHORT).show()
+//                }
+//                else{
                 startActivity(Intent(this, LoginCheckedScreen::class.java))
-
-            }
-
 
             }
         }

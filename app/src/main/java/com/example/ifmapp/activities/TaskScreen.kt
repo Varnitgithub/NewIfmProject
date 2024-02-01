@@ -1,8 +1,10 @@
 package com.example.ifmapp.activities
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
+import com.example.ifmapp.MainActivity
 import com.example.ifmapp.R
 import com.example.ifmapp.databinding.ActivityTaskScreenBinding
 import com.example.ifmapp.utils.CustomGridAdapter
@@ -13,12 +15,15 @@ import java.util.Locale
 class TaskScreen : AppCompatActivity() {
     private lateinit var binding:ActivityTaskScreenBinding
     private lateinit var calendar: Calendar
+    private var empName:String?=null
+    private var pin:String?=null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_task_screen)
         binding = DataBindingUtil.setContentView(this,R.layout.activity_task_screen)
         calendar = Calendar.getInstance()
-
+        empName  = intent.getStringExtra("empName")
+        pin = intent.getStringExtra("mPIN")
 
         updateCalendar()
 
@@ -104,4 +109,12 @@ class TaskScreen : AppCompatActivity() {
             updateCalendar()
 
         }}
+
+    override fun onBackPressed() {
+        var intent = Intent(this@TaskScreen,MainActivity::class.java)
+        intent.putExtra("empName",empName)
+        intent.putExtra("mPIN",pin)
+        startActivity(intent)
+        super.onBackPressed()
+    }
 }

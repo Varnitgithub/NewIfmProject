@@ -102,7 +102,6 @@ interface ApiInterface {
         @Field("EmployeeNumber") EmployeeNumber: String
     ):Call<DailyAttendanceModel>
 
-
     @FormUrlEncoded
     @POST("InsertEmployeeAttendance")
     fun insertAttendance(
