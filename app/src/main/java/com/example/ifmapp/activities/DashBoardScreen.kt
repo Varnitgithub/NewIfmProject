@@ -46,13 +46,23 @@ class DashBoardScreen : AppCompatActivity(), AddAccountAdapter.OnClickedInterfac
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dash_board_screen)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dash_board_screen)
-
-        currentUser = SaveUsersInSharedPreference.getList(this)[0]
-        empName = currentUser.userName
-        binding.userName.text = "Hi, ${currentUser.userName}"
         usersList = ArrayList()
         allUsersList = ArrayList()
-        empNumber = currentUser.empId
+        val newlist = SaveUsersInSharedPreference.getList(this).size
+      //  currentUser = SaveUsersInSharedPreference.getList(this)[0]
+        for (user in 0 until newlist) {
+            usersList.add(SaveUsersInSharedPreference.getList(this)[user])
+
+        }
+        if (usersList.size>0){
+            empName = usersList[0].userName
+            binding.userName.text = "Hi, ${usersList[0].userName}"
+            empNumber = usersList[0].empId
+        }
+
+
+
+
 
         otpTextView = findViewById(R.id.otp_view)
 
@@ -62,11 +72,10 @@ class DashBoardScreen : AppCompatActivity(), AddAccountAdapter.OnClickedInterfac
         binding.accountsRecyclerView.adapter = addAccountAdapter
         val employeesList = ArrayList<AddAccountModel>()
 
-        val newlist = SaveUsersInSharedPreference.getList(this).size
-        for (user in 0 until newlist) {
-            usersList.add(SaveUsersInSharedPreference.getList(this)[user])
 
-        }
+
+
+
 
         for (user in 0 until newlist) {
             if (SaveUsersInSharedPreference.getList(this@DashBoardScreen)[user].userName != empName) {
@@ -74,6 +83,7 @@ class DashBoardScreen : AppCompatActivity(), AddAccountAdapter.OnClickedInterfac
             }
         }
         if (allUsersList.size > 0) {
+
             addAccountAdapter.updateList(allUsersList)
         } else {
             addAccountAdapter.updateList(emptyList())
@@ -172,7 +182,6 @@ class DashBoardScreen : AppCompatActivity(), AddAccountAdapter.OnClickedInterfac
                 requestPermission()
             }
             //Permission Granted
-
 
         }
     }

@@ -20,16 +20,11 @@ class MenuFragment(private var pin:String,private var userName:String) : Fragmen
     private lateinit var binding: FragmentMenuBinding
     private var username:String?=null
     private var designation:String?=null
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_menu, container, false)
 
@@ -58,6 +53,7 @@ class MenuFragment(private var pin:String,private var userName:String) : Fragmen
         }
 
         binding.musters.setOnClickListener {
+
           val intent =   Intent(requireContext(),TaskScreen::class.java)
             intent.putExtra("mPIN",pin)
             intent.putExtra("empName",username)

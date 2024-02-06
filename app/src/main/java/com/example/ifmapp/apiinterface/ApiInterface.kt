@@ -6,6 +6,7 @@ import com.example.ifmapp.modelclasses.geomappedsite_model.GeoMappedResponse
 import com.example.ifmapp.modelclasses.loginby_pin.LoginByPINResponse
 import com.example.ifmapp.modelclasses.shift_selection_model.ShiftSelectionResponse
 import com.example.ifmapp.modelclasses.shift_selection_model.ShiftSelectionResponseItem
+import com.example.ifmapp.modelclasses.shiftwithtime_model.ShiftWithTimeResponse
 import com.example.ifmapp.modelclasses.verifymobile.OtpSend
 import com.example.ifmapp.modelclasses.verifymobile.VerifyOtpResponse
 import retrofit2.Call
@@ -77,7 +78,7 @@ interface ApiInterface {
 
     @FormUrlEncoded
     @POST("GetStandardShifts")
-    fun shiftSelectionApi(
+    fun  shiftSelectionApi(
         @Field("connectionKey") connectionKey: String,
         @Field("LocationAutoID") LocationAutoID: String,
        ):Call<ShiftSelectionResponse>
@@ -121,6 +122,18 @@ interface ApiInterface {
         @Field("ShiftCode") ShiftCode: String,
         @Field("LocationName") LocationName: String,
     ):Call<AttendanceResponse>
+
+
+    @FormUrlEncoded
+    @POST("GetEmployeeAttendanceDailyWithShift")
+    fun getAttendancDailyWithShift(
+        @Field("connectionKey") connectionKey: String,
+        @Field("ClientCode") ClientCode: String,
+        @Field("AsmtId") AsmtId: String,
+        @Field("LocationAutoID") LocationAutoID: String,
+        @Field("EmployeeNumber") EmployeeNumber: String
+    ):Call<ShiftWithTimeResponse>
+
 
 }
 

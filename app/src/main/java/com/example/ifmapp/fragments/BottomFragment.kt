@@ -14,10 +14,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 class BottomFragment : BottomSheetDialogFragment() {
 
 private lateinit var binding:FragmentBottomBinding
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
 
-    }
     companion object {
         fun newInstance(): BottomFragment {
             return BottomFragment()
@@ -27,7 +24,7 @@ private lateinit var binding:FragmentBottomBinding
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_bottom,container,false)
 

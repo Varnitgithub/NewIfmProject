@@ -51,8 +51,6 @@ binding.progressBar.visibility = View.GONE
             }
         }
 
-
-
         binding.btnGenerate.setOnClickListener {
             binding.progressBar.visibility = View.VISIBLE
             binding.edtEnterPinCode.isEnabled = false
@@ -68,12 +66,10 @@ binding.progressBar.visibility = View.GONE
                 val currentLength = s?.length ?: 0
                 edtPincodeLiveData.postValue(currentLength)
             }
-
             override fun afterTextChanged(s: Editable?) {
             }
         })
     }
-
     private fun generatePIN() {
         if (binding.edtEnterPinCode.text != null) {
 
@@ -114,7 +110,7 @@ binding.progressBar.visibility = View.GONE
                                                 this@GnereratePinCodeScreen,
                                                 user,
                                                 binding.edtEnterPinCode.text.toString().trim(),
-                                                response.body()?.get(0)?.EmpName.toString()
+                                                response.body()?.get(0)?.EmpNumber.toString()
                                             )
                                             var intent =
                                                 Intent(

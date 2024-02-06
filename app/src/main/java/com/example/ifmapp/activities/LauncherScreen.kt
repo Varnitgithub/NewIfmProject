@@ -11,6 +11,7 @@ import androidx.core.app.ActivityCompat
 import com.example.ifmapp.R
 import com.example.ifmapp.checked
 import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
+import com.example.ifmapp.toast.CustomToast
 
 class LauncherScreen : AppCompatActivity() {
     private var LOCATION_PERMISSION_REQUEST_CODE=111
@@ -82,11 +83,7 @@ class LauncherScreen : AppCompatActivity() {
 
 
             } else {
-                Toast.makeText(
-                    this,
-                    "please allow for location",
-                    Toast.LENGTH_SHORT
-                ).show()
+              CustomToast.showToast(this@LauncherScreen,"please allow for location")
             }
             //Permission Granted
 

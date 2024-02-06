@@ -27,9 +27,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var menuFragment: MenuFragment
 
     private var otp: String? = null
-
     private var otpFromLogin: String? = null
-
     private var otpFromsignUp: String? = null
     private var mOTP: String? = null
 
@@ -48,6 +46,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         otp = intent.getStringExtra("mPIN")
+
+
         otpFromLogin = intent.getStringExtra("mPINFromLogin")
         mobileNumber = intent.getStringExtra("mobileNumber")
         otpFromsignUp = intent.getStringExtra("userPin")
@@ -59,43 +59,37 @@ class MainActivity : AppCompatActivity() {
 
         binding = DataBindingUtil.setContentView(this, R.layout.main_activity)
 
+
          inout = intent.getStringExtra("INOUTStatus")
 
-        Log.d("TAGGGGGGGGGGG", "onCreateView: this is in out set222 $inout")
-
-        Log.d("TAGGGGGGG", "onResponse: $empNumber is the new otp  222")
-
-
-        if (otp != null && userName != null) {
+        if (otp != null) {
+            Log.d("TAGGGGGGGGGG", "onCreateView: 222........$otp $empNumber")
             homeFragment =
-                HomeFragment(this, otp.toString(), mobileNumber.toString()
-                    , empNumber.toString(),userName.toString(),inout.toString()
+                HomeFragment(this, otp.toString()
+                    , empNumber.toString(),userName.toString()
                 )
         } else if (otpFromLogin != null) {
             homeFragment = HomeFragment(
                 this,
                 otpFromLogin.toString(),
-                mobileNumber.toString(),
-                empNumber.toString(), userName.toString(),inout.toString()
+                empNumber.toString(), userName.toString()
             )
         } else if (otpFromsignUp != null) {
             homeFragment = HomeFragment(
                 this,
                 otpFromsignUp.toString(),
-                mobileNumber.toString(),
-                empNumber.toString(), userName.toString(),inout.toString()
+                empNumber.toString(), userName.toString()
             )
         } else if (pinFromSignin != null) {
             homeFragment = HomeFragment(
                 this,
                 pinFromSignin.toString(),
-                mobileNumber.toString(),
-                empNumber.toString(), userName.toString(),inout.toString()
+                empNumber.toString(), userName.toString()
             )
         } else {
             homeFragment =
-                HomeFragment(this, mOTP.toString(), mobileNumber.toString(),
-                    empNumber.toString(),userName.toString(),inout.toString())
+                HomeFragment(this, mOTP.toString(),
+                    empNumber.toString(),userName.toString())
         }
 
         if (otp != null) {
@@ -217,8 +211,4 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        Log.d("TAGGGGGGGGG", "onStart: thisis on start")
-    }
 }

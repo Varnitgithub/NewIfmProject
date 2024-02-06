@@ -19,14 +19,11 @@ import java.util.Locale
 
 class MyTaskFragment(private var context: Context,private var pin:String,private var username:String) : Fragment() {
     private lateinit var binding: FragmentMustersBinding
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_musters, container, false)
 

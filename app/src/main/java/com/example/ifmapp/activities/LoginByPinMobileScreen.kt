@@ -76,7 +76,6 @@ class LoginByPinMobileScreen : AppCompatActivity() {
         if (binding.employeeMobileEdt.text != null && binding.employeepinEdt.text != null) {
 
             if (binding.employeeMobileEdt.text.toString().length <= 10 && binding.employeepinEdt.text.toString().length <= 4) {
-                Log.d("TAGGGGGGGGG", "loginUser: login successful")
                binding.employeeMobileEdt.isClickable = false
                 binding.employeepinEdt.isClickable = false
                 retrofitInstance.loginByPIN(
@@ -90,12 +89,10 @@ class LoginByPinMobileScreen : AppCompatActivity() {
                     ) {
                         if (response.isSuccessful
                         ) {
-                            Log.d("TAGGGGGGGGG", "loginUser: login successful_2")
 
                             if (response.body()
                                     ?.get(0)?.MessageID?.toInt() == 1
                             ) {
-                                Log.d("TAGGGGGGGGG", "loginUser: login successful_3")
 
                                 val userPin = binding.employeepinEdt.text.toString().trim()
                                 val usersList =
@@ -107,16 +104,13 @@ class LoginByPinMobileScreen : AppCompatActivity() {
                                         response.body()?.get(0)?.Designation.toString()
 
                                     )
-                                Log.d(
-                                    "TAGGGG",
-                                    "onResponse: aaaaaaaaa ${response.body()!![0].EmpName}"
-                                )
+
 
                                 SaveUsersInSharedPreference.addUserIfNotExists(
                                     this@LoginByPinMobileScreen,
                                     usersList,
                                     binding.employeepinEdt.text.toString(),
-                                    response.body()?.get(0)?.EmpName.toString()
+                                    response.body()?.get(0)?.EmpNumber.toString()
                                 )
                                 val intent =
                                     Intent(this@LoginByPinMobileScreen, MainActivity::class.java)

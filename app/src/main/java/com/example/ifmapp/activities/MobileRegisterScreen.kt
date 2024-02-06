@@ -41,7 +41,7 @@ class MobileRegisterScreen : AppCompatActivity() {
     private var oneTimeResend = true
     private val BACKGROUND_LOCATION_CODE = 111
     private var countDownTimer: CountDownTimer? = null
-    private val initialTimeMillis: Long = 60000 // 60 seconds
+    private val initialTimeMillis: Long = 30000 // 30 seconds
     private val countDownIntervalMillis: Long = 1000 // 1 second
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,11 +71,12 @@ class MobileRegisterScreen : AppCompatActivity() {
 
         binding.resentOtp.setOnClickListener {
             if (oneTimeResend) {
-                startCountdownTimer()
                 sendOTP()
                 binding.resentOtp.isEnabled = false
                 binding.resentOtp.visibility = View.GONE
                 oneTimeResend = false
+
+
             }
 
 
@@ -237,7 +238,6 @@ class MobileRegisterScreen : AppCompatActivity() {
                             if (response.body()?.get(0)?.MessageID?.toInt() == 1) {
 
 
-                                Log.d("TAGGGGGGGG", "onResponse: user is valid")
 
                                 if (binding.otp1.text.isEmpty() && binding.otp2.text.isEmpty()
                                     && binding.otp3.text.isEmpty() && binding.otp4.text.isEmpty()
@@ -259,10 +259,6 @@ class MobileRegisterScreen : AppCompatActivity() {
                                                     if (response.isSuccessful) {
                                                         binding.progressBar.visibility = View.GONE
 
-                                                        Log.d(
-                                                            "TAGGGGGGGG",
-                                                            "onResponse: otp send successfully"
-                                                        )
                                                         binding.mobileNoEdt.isEnabled = false
                                                         binding.btnContinue.isEnabled = false
                                                         binding.btnContinue.isClickable = false
@@ -273,10 +269,6 @@ class MobileRegisterScreen : AppCompatActivity() {
 
                                                     } else {
 
-                                                        Log.d(
-                                                            "TAGGGGGGGG",
-                                                            "onResponse: otp send failure"
-                                                        )
                                                         binding.progressBar.visibility = View.GONE
 
 
@@ -339,10 +331,7 @@ class MobileRegisterScreen : AppCompatActivity() {
                                                         if (response.body()
                                                                 ?.get(0)?.MessageID?.toInt() == 1
                                                         ) {
-                                                            Log.d(
-                                                                "TAGGGGGGGGGG",
-                                                                "onResponse: verify otp"
-                                                            )
+
                                                             val intent = Intent(
                                                                 this@MobileRegisterScreen,
                                                                 GnereratePinCodeScreen::class.java
@@ -375,10 +364,6 @@ class MobileRegisterScreen : AppCompatActivity() {
 
                                                     } else {
 
-                                                        Log.d(
-                                                            "TAGGGGGGGGGG",
-                                                            "onResponse: otp verification failed"
-                                                        )
                                                         binding.progressBar.visibility = View.GONE
                                                     }
                                                 }
@@ -416,7 +401,6 @@ class MobileRegisterScreen : AppCompatActivity() {
                     }
 
                     override fun onFailure(call: Call<VerifyOtpResponse?>, t: Throwable) {
-                        Log.d("TAGGGGGGGGGGG", "onFailure: user validation failed")
                         binding.progressBar.visibility = View.GONE
                     }
                 })
@@ -430,7 +414,6 @@ class MobileRegisterScreen : AppCompatActivity() {
             CustomToast.showToast(this@MobileRegisterScreen, "Please enter your mobile number")
 
         }
-
 
     }
 
@@ -465,36 +448,6 @@ class MobileRegisterScreen : AppCompatActivity() {
             Settings.Secure.ALLOW_MOCK_LOCATION
         ) != "0"
     }
-
-    //    override fun onRequestPermissionsResult(
-//        requestCode: Int,
-//        permissions: Array<out String>,
-//        grantResults: IntArray
-//    ) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-//        when (requestCode) {
-//            IMEIGetter.PERMISSION_REQUEST_READ_PHONE_STATE -> {
-//                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                    // Permission granted, you can now proceed with the logic
-//                    // For example, you might call getIMEI() here
-//                    val imeiGetter = IMEIGetter(this)
-//                    val imei = imeiGetter.getIMEI()
-//                    // Do something with the IMEI
-//                } else {
-//                    // Permission denied, handle accordingly
-//                    // For example, inform the user or take appropriate action
-//                    // You can also check if shouldShowRequestPermissionRationale(Manifest.permission.READ_PHONE_STATE)
-//                    // is true to show a rationale to the user
-//                    Toast.makeText(
-//                        this,
-//                        "Permission denied for READ_PHONE_STATE",
-//                        Toast.LENGTH_SHORT
-//                    ).show()
-//                }
-//            }
-//            // Handle other permission requests if needed
-//        }
-//    }
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -504,7 +457,6 @@ class MobileRegisterScreen : AppCompatActivity() {
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 if (!isMockLocation()) {
-                    Log.d("TAGGGGGGGGGG", "onRequestPermissionsResult: getting location")
                 } else {
                     CustomToast.showToast(
                         this@MobileRegisterScreen,
@@ -545,10 +497,6 @@ class MobileRegisterScreen : AppCompatActivity() {
                 READ_PHONE_PERMISSION
             )
         }
-    }
-
-    override fun onPause() {
-        super.onPause()
     }
 
 

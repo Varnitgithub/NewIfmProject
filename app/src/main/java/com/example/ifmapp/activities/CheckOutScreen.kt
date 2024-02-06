@@ -63,8 +63,6 @@ class CheckOutScreen : AppCompatActivity() {
             }
 
         }else{
-
-
             if (getCurrentTime().substring(0,2).toInt()<12){
                 binding.outTime.text = getCurrentTime()
                 binding.outPm.text = "AM"
@@ -80,21 +78,6 @@ class CheckOutScreen : AppCompatActivity() {
 
         }
 
-       /* currentTime = finalData?.currentTime
-        employeeName = finalData?.employeeName
-        address = finalData?.address
-        siteSelect = finalSiteSelectionData?.site
-        shiftSelect = finalSiteSelectionData?.shift
-        shiftTimingList = finalSiteSelectionData?.shiftTiming
-
-        binding.shifts.text = finalSiteSelectionData?.shift
-
-        binding.userName.text = finalSiteSelectionData?.empName
-
-        binding.designation.text = finalSiteSelectionData?.empDesignation
-
-        binding.currentSiteTxt.text = siteSelect
-*/
         for (i in 0 until shiftTimingList?.size!!) {
             if (shiftSelect.toString() == shiftTimingList!![i].substring(0, 1)) {
                 shiftStartTiming = shiftTimingList!![i].substring(4, 9)

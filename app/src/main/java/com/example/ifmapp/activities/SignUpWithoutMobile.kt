@@ -5,7 +5,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.InputType
+import android.text.SpannableString
+import android.text.Spanned
 import android.text.TextWatcher
+import android.text.style.UnderlineSpan
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -35,12 +38,28 @@ class SignUpWithoutMobile : AppCompatActivity() {
         //setContentView(R.layout.activity_sign_up_without_mobile)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_sign_up_without_mobile)
         retrofitInstance = RetrofitInstance.apiInstance
-binding.progressBar.visibility = View.GONE
+        binding.progressBar.visibility = View.GONE
         binding.btnGenerate.isEnabled = false
-binding.progressBar.visibility = View.GONE
+        binding.progressBar.visibility = View.GONE
+        val textToUnderline = binding.validatePin.text.toString()
+        binding.validatePin.visibility = View.VISIBLE
+        // Create a SpannableString with the text you want to underline
+        val underlinedText = SpannableString(textToUnderline)
+
+        // Apply the UnderlineSpan to the entire text
+        underlinedText.setSpan(
+            UnderlineSpan(),
+            0,
+            textToUnderline.length,
+            Spanned.SPAN_INCLUSIVE_INCLUSIVE
+        )
+
+        // Set the SpannableString to the TextView
+        binding.validatePin.text = underlinedText
 
         binding.btnGenerate.setOnClickListener {
             binding.employeeidEdt.isClickable = false
+            binding.employeeidEdt.isEnabled = false
             pinGenerationByEmployeeId(
                 "sams",
                 binding.employeeidEdt.text.toString().trim(),
@@ -71,8 +90,12 @@ binding.progressBar.visibility = View.GONE
         })
         binding.validatePin.setOnClickListener {
             if (binding.employeeidEdt.text.toString().length >= 2) {
+                binding.employeeidEdt.isClickable = false
+                binding.employeeidEdt.isEnabled = false
                 validateEmployeeId(binding.employeeidEdt.text.toString().trim())
 
+            }else{
+                CustomToast.showToast(this@SignUpWithoutMobile,"Please Enter Employee Id")
             }
 
         }
@@ -83,12 +106,8 @@ binding.progressBar.visibility = View.GONE
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
-                Log.d("TAGGGGGGGGGG", "onTextChanged: onChangeee")
-
-
+                binding.validatePin.visibility = View.VISIBLE
             }
-
 
             override fun afterTextChanged(s: Editable?) {
                 /*  val stringWithoutSpaces = s.toString().replace(" ", "")
@@ -96,13 +115,9 @@ binding.progressBar.visibility = View.GONE
                       binding.employeepinEdt.setText(stringWithoutSpaces)
                       binding.employeepinEdt.setSelection(stringWithoutSpaces.length) // Move cursor to the end
                   }*/
-
             }
         })
-
-
     }
-
 
     private fun validateEmployeeId(empId: String) {
         retrofitInstance.validateEmployeeId("sams", empId)
@@ -120,6 +135,8 @@ binding.progressBar.visibility = View.GONE
                             binding.btnGenerate.isEnabled = true
 
                         } else {
+                            binding.employeeidEdt.isClickable = true
+                            binding.employeeidEdt.isEnabled = true
                             CustomToast.showToast(
                                 this@SignUpWithoutMobile,
                                 response.body()?.get(0)?.MessageString.toString()
@@ -128,17 +145,20 @@ binding.progressBar.visibility = View.GONE
 
 
                     } else {
-                        Log.d("TAGGGGGGG", "onResponse: response is not successful")
+                        binding.employeeidEdt.isClickable = true
+                        binding.employeeidEdt.isEnabled = true
                     }
                 }
 
                 override fun onFailure(call: Call<VerifyOtpResponse?>, t: Throwable) {
-                    Log.d("TAGGGGGGGG", "onFailure: this is falied msg....................")
+                    binding.employeeidEdt.isClickable = true
+                    binding.employeeidEdt.isEnabled = true
                 }
             })
     }
 
     private fun pinGenerationByEmployeeId(connectionKey: String, empId: String, pin: String) {
+
         binding.progressBar.visibility = View.VISIBLE
 
         retrofitInstance.pinGenerationByEmpId(connectionKey, empId, pin)
@@ -177,8 +197,6 @@ binding.progressBar.visibility = View.GONE
 
                 }
             })
-
-
     }
 
     private fun loginByEmployeeId(connectionKey: String, empId: String, pin: String) {
@@ -204,7 +222,7 @@ binding.progressBar.visibility = View.GONE
                                 this@SignUpWithoutMobile,
                                 user,
                                 pin,
-                                response.body()?.get(0)?.EmpName.toString()
+                                response.body()?.get(0)?.EmpNumber.toString()
                             )
 
                             val intent =
@@ -225,16 +243,14 @@ binding.progressBar.visibility = View.GONE
                             binding.btnGenerate.isClickable = true
                         }
                     } else {
-                        Log.d("TAGGGGGG", "onResponse: pin generation is not successful")
                         binding.btnGenerate.isClickable = true
                     }
                 }
+
                 override fun onFailure(call: Call<LoginByPINResponse?>, t: Throwable) {
                     binding.btnGenerate.isClickable = true
                 }
             })
-
-
     }
 
 }

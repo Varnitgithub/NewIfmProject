@@ -32,7 +32,7 @@ class SignInScreen : AppCompatActivity() {
         retrofitInstance = RetrofitInstance.apiInstance
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_sign_up_screen)
-binding.progressBar.visibility = View.GONE
+        binding.progressBar.visibility = View.GONE
         binding.btnContinue.isEnabled = false
 
         binding.btnContinue.setOnClickListener {
@@ -40,11 +40,11 @@ binding.progressBar.visibility = View.GONE
 
             binding.employeepinEdt.isClickable = false
             binding.employeeidEdt.isClickable = false
-         /*   val stringWithoutSpaces = binding.employeeidEdt.toString().replace(" ", "")
-            if (binding.employeeidEdt.toString() != stringWithoutSpaces) {
-                binding.employeeidEdt.setText(stringWithoutSpaces)
-                binding.employeeidEdt.setSelection(stringWithoutSpaces.length) // Move cursor to the end
-            }*/
+            /*   val stringWithoutSpaces = binding.employeeidEdt.toString().replace(" ", "")
+               if (binding.employeeidEdt.toString() != stringWithoutSpaces) {
+                   binding.employeeidEdt.setText(stringWithoutSpaces)
+                   binding.employeeidEdt.setSelection(stringWithoutSpaces.length) // Move cursor to the end
+               }*/
             loginByEmployeeId(
                 binding.employeeidEdt.text.toString().trim(),
                 binding.employeepinEdt.text.toString().trim()
@@ -56,7 +56,7 @@ binding.progressBar.visibility = View.GONE
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (binding.employeeidEdt.text.toString().trim().length <=12
+                if (binding.employeeidEdt.text.toString().trim().length <= 12
                     && binding.employeepinEdt.text.toString().trim().length == 4
                 ) {
                     binding.btnContinue.isEnabled = true
@@ -69,13 +69,14 @@ binding.progressBar.visibility = View.GONE
 
             override fun afterTextChanged(s: Editable?) {
                 val stringWithoutSpaces = s.toString().replace(" ", "")
-              /*  if (s.toString() != stringWithoutSpaces) {
-                    binding.employeepinEdt.setText(stringWithoutSpaces)
-                    binding.employeepinEdt.setSelection(stringWithoutSpaces.length) // Move cursor to the end
-                }*/
+                /*  if (s.toString() != stringWithoutSpaces) {
+                      binding.employeepinEdt.setText(stringWithoutSpaces)
+                      binding.employeepinEdt.setSelection(stringWithoutSpaces.length) // Move cursor to the end
+                  }*/
             }
         })
     }
+
     private fun loginByEmployeeId(empId: String, pin: String) {
 
         retrofitInstance.loginByemployeeId("sams", empId, pin)
@@ -85,7 +86,6 @@ binding.progressBar.visibility = View.GONE
                     response: Response<LoginByPINResponse?>
                 ) {
                     if (response.isSuccessful) {
-                        Log.d("TAGGGGGGGGG", "onResponse: here")
                         if (response.body()?.get(0)?.MessageID.toString().toInt() == 1) {
 
                             val user = UserListModel(
@@ -97,9 +97,11 @@ binding.progressBar.visibility = View.GONE
                             )
 
                             SaveUsersInSharedPreference.addUserIfNotExists(
-                                this@SignInScreen, user, pin,response.body()?.get(0)?.EmpName.toString()
+                                this@SignInScreen,
+                                user,
+                                pin,
+                                response.body()?.get(0)?.EmpNumber.toString()
                             )
-                            Log.d("TAGGGGGGGGG", "onResponse: user saved successfully")
 
                             val intent =
                                 Intent(
@@ -113,13 +115,15 @@ binding.progressBar.visibility = View.GONE
                             binding.progressBar.visibility = View.GONE
 
                         } else {
-                          CustomToast.showToast(this@SignInScreen,response.body()?.get(0)?.MessageString.toString())
+                            CustomToast.showToast(
+                                this@SignInScreen,
+                                response.body()?.get(0)?.MessageString.toString()
+                            )
                             binding.progressBar.visibility = View.GONE
 
                         }
 
                     } else {
-                        Log.d("TAGGGGGG", "onResponse: pin generation is no successful")
                         binding.progressBar.visibility = View.GONE
 
                     }
@@ -133,7 +137,6 @@ binding.progressBar.visibility = View.GONE
 
 
     }
-
 
 
 }

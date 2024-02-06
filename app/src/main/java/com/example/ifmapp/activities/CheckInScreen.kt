@@ -15,11 +15,9 @@ import android.location.Location
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
-import android.telephony.TelephonyManager
 import android.util.Base64
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
@@ -39,7 +37,6 @@ import com.example.ifmapp.databinding.ActivityCheckInScreenBinding
 import com.example.ifmapp.modelclasses.attendance_response.AttendanceResponse
 import com.example.ifmapp.modelclasses.geomappedsite_model.GeoMappedResponse
 import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
-import com.example.ifmapp.shared_preference.shared_preference_models.CheckOutModel
 import com.example.ifmapp.shared_preference.shared_preference_models.CurrentUserShiftsDetails
 import com.example.ifmapp.toast.CustomToast
 import com.example.ifmapp.utils.IMEIGetter
@@ -48,6 +45,7 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -55,10 +53,9 @@ import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.FileInputStream
 import java.io.IOException
+import java.nio.file.Files
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -66,11 +63,8 @@ import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-import java.nio.file.Files
-
 class CheckInScreen : AppCompatActivity() {
     private lateinit var imageCapture: ImageCapture
-
     private var employeeId: String? = null
     private lateinit var binding: ActivityCheckInScreenBinding
     private var fusedLocationProviderClient: FusedLocationProviderClient? = null
@@ -82,25 +76,17 @@ class CheckInScreen : AppCompatActivity() {
     private var mOTP: String? = null
     private var mUserName: String? = null
     private val LOCATION_REQUEST_CODE = 111
-
     private var rotatedBitmap: Bitmap? = null
-
     private lateinit var photoFile: File
-
     private lateinit var cameraExecutor: ExecutorService
     private var mAltitude: String? = null
-    private var empImageUrl: String? = null
-    private var empUserBitmap: Bitmap? = null
-    private val REQUEST_IMAGE_CAPTURE = 1
     private val CAMERA_PERMISSION_CODE = 101
     private lateinit var imeiGetter: IMEIGetter
-    private var imageInString: String? = null
     private var employeeName: String? = null
     private var inoutStatus: String? = null
     private var employeeDesignation: String? = null
     private var otp: String? = null
     private var base64Image: String? = null
-    private var imagesString: String? = null
     private var imagesBitmap: Bitmap? = null
     private var siteSelect: String? = null
     private var shiftSelect: String? = null
@@ -109,22 +95,14 @@ class CheckInScreen : AppCompatActivity() {
     private var empNumber: String? = null
     private lateinit var retrofitInstance: ApiInterface
     private lateinit var formattedDate: String
-    private var currenTtime: String? = null
+    private var shiftTimingList: String? = null
     private lateinit var currentDate: Date
-    private val CAMERA_REQUEST_CODE = 1
-    private val REQUEST_READ_PHONE_STATE = 123
-
-    var inStatus = "IN"
-    var outStatus = "OUT"
+    private var asmtId: String? = null
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //setContentView(R.layout.activity_check_in_screen)
-
         binding = DataBindingUtil.setContentView(this, R.layout.activity_check_in_screen)
-
-
 
         binding.progressBar.visibility = View.GONE
 
@@ -137,16 +115,13 @@ class CheckInScreen : AppCompatActivity() {
         inoutStatus = intent.getStringExtra("INOUTStatus")
         mOTP = intent.getStringExtra("mPIN")
         mUserName = intent.getStringExtra("empName")
-        Log.d("TAGGGGG", "onCreate: this is motp.........................$mOTP")
-
-        val usersList = SaveUsersInSharedPreference.getList(this@CheckInScreen)
-
-        for (user in usersList) {
-            if (user.pin == mOTP && user.userName == mUserName) {
-                mUserName = user.userName
-                employeeDesignation = user.designation
-            }
-        }
+        shiftTimingList = intent.getStringExtra("shiftTimingList")
+        shiftSelect = intent.getStringExtra("shiftSelect")
+        siteSelect = intent.getStringExtra("siteSelect")
+        shiftTimingList = intent.getStringExtra("shiftTimingList")
+        mLatitude = "28.4062994"
+        mLongitude = "77.0685759"
+        mAltitude = "55.0"
         imageCapture = ImageCapture.Builder().build()
         retrofitInstance = RetrofitInstance.apiInstance
         imeiGetter = IMEIGetter(this)
@@ -158,38 +133,21 @@ class CheckInScreen : AppCompatActivity() {
 
         cameraExecutor = Executors.newSingleThreadExecutor()
 
-
         val usersLists = SaveUsersInSharedPreference.getList(this@CheckInScreen)
 
-        for (user in usersLists){
-            if (user.pin==mOTP&&user.userName==mUserName){
+        for (user in usersLists) {
+            if (user.pin == mOTP && user.userName == mUserName) {
                 binding.userName.text = user.userName
+                mUserName = user.userName
+                locationAutoID = user.LocationAutoId
+                employeeDesignation = user.designation
                 binding.designation.text = user.designation
+                employeeId = user.empId
 
             }
         }
-
-       var size =      SaveUsersInSharedPreference.getCurrentUserShifts(this,mUserName.toString())
-            for (i in size){
-                if (i.empName== mUserName){
-
-                    otp = i.pin
-                    siteSelect = i.site
-                    shiftSelect = i.shift
-                    empNumber = i.empId
-                    binding.userName.text = i.empName
-                    binding.designation.text = i.empDesignation
-                    locationAutoID = i.locationAutoId
-                    Log.d("TAGGGGGGGG", "onCreate: current user.............${i.site}" +
-                            " ${i.empId} ${i.empDesignation} $")
-                }
-
-            }
-        Log.d("TAGGGGGGGG", "onCreate: current user.............$mUserName")
-
         binding.shifts.text = shiftSelect
 
-        Log.d("TAGGGGGGGG", "onCreate: this is $locationAutoID")
         time = getCurrentTime()
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
@@ -200,8 +158,10 @@ class CheckInScreen : AppCompatActivity() {
 
         binding.finalLayoutCL.visibility = View.GONE
         binding.checkinCL.visibility = View.VISIBLE
+        CoroutineScope(Dispatchers.IO).launch {
+            getLastLocation()
 
-        getLastLocation()
+        }
 
         binding.btnSubmit.setOnClickListener {
 
@@ -209,10 +169,15 @@ class CheckInScreen : AppCompatActivity() {
             binding.btnSubmit.setBackgroundResource(R.drawable.button_back)
             binding.btnRetake.setTextColor(resources.getColor(R.color.check_btn))
             binding.btnRetake.setBackgroundResource(R.drawable.button_backwhite)
-
+            Log.d("TAGGGGGGGG", "onCreate: .....................id 2")
+            Log.d(
+                "TAGGGGGGGG",
+                "onCreate: .....................id $locationAutoID $mLatitude $mLongitude $mAltitude "
+            )
             if (base64Image != null && mLatitude != null && mLongitude != null && locationAutoID != null && mAltitude != null) {
-                Log.d("TAGGGGGGGG", "onCreate:;llllll $locationAutoID")
                 binding.progressBar.visibility = View.VISIBLE
+                Log.d("TAGGGGGGGG", "onCreate: .....................id 3")
+
                 getGeoMappedSites(
                     "sams",
                     locationAutoID.toString(),
@@ -220,21 +185,8 @@ class CheckInScreen : AppCompatActivity() {
                     mLongitude.toString()
                 )
                 binding.btnSubmit.isClickable = false
+                binding.btnRetake.isClickable = false
                 AnimationClass.startBlinkAnimation(binding.attendanceMarkedTxt)
-
-                val saveCurrentUserFinalList = ArrayList<CheckOutModel>()
-                val saveCurrentUserFinal = CheckOutModel(
-                    time.toString(), employeeName.toString(),
-                    employeeDesignation.toString(),
-                    myaddress.toString(), siteSelect.toString(), shiftSelect.toString()
-                )
-                saveCurrentUserFinalList.add(saveCurrentUserFinal)
-
-                SaveUsersInSharedPreference.saveCurrentUserFinalCheckout(
-                    this@CheckInScreen,
-                    saveCurrentUserFinalList
-                )
-
 
             }
 
@@ -255,6 +207,7 @@ class CheckInScreen : AppCompatActivity() {
         }
 
 
+
         binding.bigProfile.setOnClickListener {
             if (checkCameraPermission()) {
                 startCamera()
@@ -265,7 +218,11 @@ class CheckInScreen : AppCompatActivity() {
 
         }
         binding.btnCross.setOnClickListener {
-            startActivity(Intent(this, DashBoardScreen::class.java))
+            val intent = Intent(this@CheckInScreen, MainActivity::class.java)
+            intent.putExtra("inoutStatus", "OUT")
+            intent.putExtra("mPIN", mOTP)
+            intent.putExtra("empName", mUserName)
+            startActivity(intent)
         }
     }
 
@@ -360,7 +317,6 @@ class CheckInScreen : AppCompatActivity() {
 
             LOCATION_REQUEST_CODE -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    getLastLocation()
                 } else {
                     CustomToast.showToast(this@CheckInScreen, "Please Allow Location permission")
                 }
@@ -369,7 +325,6 @@ class CheckInScreen : AppCompatActivity() {
         }
 
     }
-
 
     private fun setFinalDialog(
 
@@ -419,8 +374,7 @@ class CheckInScreen : AppCompatActivity() {
     }
 
     @SuppressLint("MissingPermission")
-    private fun getLastLocation() {
-        Log.d("TAGGGG", "getLastLocation: i got location")
+    suspend fun getLastLocation() {
         fusedLocationProviderClient?.lastLocation
             ?.addOnSuccessListener { location: Location? ->
                 // Got last known location
@@ -480,28 +434,26 @@ class CheckInScreen : AppCompatActivity() {
                                 .toInt() == 1
                         ) {
 
-                            Log.d("TAGGGGGGGGGG", "onResponse: response Successfulllll")
 
                             val emp = response.body()?.get(0)
-                            Log.d("TAGGGGGGG", "onResponse: this is $mAltitude")
 
                             if (myaddress != null) {
-
-                                val imeiPhone = imeiGetter.getIMEI()
+                                asmtId = response.body()?.get(0)?.AsmtID
+                                val imeiPhone = "no imei"
                                 Log.d(
                                     "TAGGGGG",
-                                    "onResponse:1${time} \n2 ${imeiPhone}\n" +
-                                            "3${empNumber} 4${emp?.AsmtID} 5${mLatitude.toString()} 6 ${mLongitude.toString()}" +
-                                            "7${mAltitude.toString()} 8${
+                                    "onResponse:1 ${time} \n2 ${imeiPhone}\n" +
+                                            "3 ${employeeId} 4 ${emp?.AsmtID} 5 ${mLatitude.toString()} 6 ${mLongitude.toString()}" +
+                                            "7 ${mAltitude.toString()} 8 ${
                                                 base64Image?.substring(
                                                     1,
                                                     10
                                                 )
-                                            } 9${LocationAutoID} 10${emp?.ClientCode}" +
-                                            "11${siteSelect} 12${shiftSelect} 13${myaddress}"
+                                            } 9 ${LocationAutoID} 10 ${emp?.ClientCode}" +
+                                            "11 ${siteSelect} 12 ${shiftSelect} 13 ${myaddress}"
                                 )
 
-                                if (empNumber.toString().isNotEmpty() && emp?.AsmtID.toString()
+                                if (employeeId.toString().isNotEmpty() && emp?.AsmtID.toString()
                                         .isNotEmpty() && inoutStatus.toString().isNotEmpty() &&
                                     time.toString()
                                         .isNotEmpty() && emp?.ClientCode != null && siteSelect != null && myaddress != null
@@ -509,10 +461,10 @@ class CheckInScreen : AppCompatActivity() {
                                 ) {
                                     insertAttendance(
                                         "sams",
-                                        imeiPhone,
-                                        empNumber.toString(),
+                                        "",
+                                        employeeId.toString(),
                                         emp.AsmtID,
-                                        empNumber.toString(),
+                                        employeeId.toString(),
                                         inoutStatus.toString(),
                                         time.toString(),
                                         latitude = mLatitude.toString(),
@@ -520,7 +472,7 @@ class CheckInScreen : AppCompatActivity() {
                                         mAltitude.toString(),
                                         base64Image ?: "",
                                         emp.LocationAutoID,
-                                        emp.ClientCode, shiftSelect.toString(),
+                                        siteSelect.toString(), shiftSelect.toString(),
                                         myaddress.toString()
                                     )
                                 } else {
@@ -538,7 +490,6 @@ class CheckInScreen : AppCompatActivity() {
                             )
                         }
                     } else {
-                        Log.d("TAGGGGGGGG", "onResponse: attendance not success")
                     }
                 }
 
@@ -546,7 +497,6 @@ class CheckInScreen : AppCompatActivity() {
                     call: Call<GeoMappedResponse?>,
                     t: Throwable
                 ) {
-                    Log.d("TAGGGGGGGGGG", "onFailure: falied")
                 }
             })
 
@@ -570,6 +520,7 @@ class CheckInScreen : AppCompatActivity() {
         ShiftCode: String,
         LocationName: String
     ) {
+
         retrofitInstance.insertAttendance(
             connectionKey, IMEI ?: "", userId, AsmtID, employeeNumber, InOutStatus,
             DutyDateTime, latitude, longitude, altitude, employeeImageBase64,
@@ -579,50 +530,62 @@ class CheckInScreen : AppCompatActivity() {
                 call: Call<AttendanceResponse?>,
                 response: Response<AttendanceResponse?>
             ) {
-                if (response.isSuccessful && response.body()?.get(0)?.MessageID?.toInt() == 1) {
+                if (response.isSuccessful) {
 
-                    Log.d("TAGGGGGGGG", "onResponse: attendance inserted")
-                    binding.cameraPreviewView.visibility = View.GONE
+                    if (response.body()?.get(0)?.MessageID?.toInt() == 1) {
+                        Log.d("TAGGGGGGGG", "onResponse: ${response.body()?.get(0)?.MessageString}")
+                        Log.d("TAGGGGGGGG", "onResponse: ${response.body()?.get(0)?.MessageID}")
+                        Log.d("TAGGGGGGGG", "onResponse: attendance inserted")
+                        binding.cameraPreviewView.visibility = View.GONE
 
-                    binding.checkinCL.visibility = View.GONE
+                        binding.checkinCL.visibility = View.GONE
 
 
-                    binding.progressBar.visibility = View.VISIBLE
-                    binding.attendanceMarkedTxt.text =
-                        "Attendance Marked ${inoutStatus} Successfully!"
-                    setFinalDialog(
-                        mLatitude.toString(),
-                        mLongitude.toString(),
-                        myaddress.toString()
-                    )
+                        binding.progressBar.visibility = View.VISIBLE
+                        binding.attendanceMarkedTxt.text =
+                            "Attendance Marked ${inoutStatus} Successfully!"
+                        saveUserIntoShaPref()
+                        if (inoutStatus=="OUT"){
+                            SaveUsersInSharedPreference.deleteCurrentUserShifts(this@CheckInScreen,userId)
+                            Log.d("TAGGGGGGGGG", "insertAttendance: data delete from checkin successfully")
+                        }
+                        setFinalDialog(
+                            mLatitude.toString(),
+                            mLongitude.toString(),
+                            myaddress.toString()
+                        )
 
-                    SaveUsersInSharedPreference.setAttendanceStatus(this@CheckInScreen, "IN")
-                    Log.d("TAGGGGGGG", "onResponse: $mOTP is the new otp")
-                    val delayMillis = 5000L
-                    Handler().postDelayed({
-                        finish()
-                        val intent = Intent(this@CheckInScreen, MainActivity::class.java)
-                        intent.putExtra("inoutStatus", "OUT")
-                        intent.putExtra("mPIN", mOTP)
-                        intent.putExtra("empName", mUserName)
-                        startActivity(intent)
-                    }, delayMillis)
+                        SaveUsersInSharedPreference.setAttendanceStatus(this@CheckInScreen, "IN")
+                        val delayMillis = 5000L
+                        Handler().postDelayed({
+                            finish()
+                            val intent = Intent(this@CheckInScreen, MainActivity::class.java)
+                            intent.putExtra("inoutStatus", "OUT")
+                            intent.putExtra("mPIN", mOTP)
+                            intent.putExtra("empName", mUserName)
+                            startActivity(intent)
+                        }, delayMillis)
+                    } else {
+                        CustomToast.showToast(
+                            this@CheckInScreen,
+                            response.body()?.get(0)?.MessageString.toString()
+                        )
+                        binding.progressBar.visibility = View.GONE
 
+                    }
                 } else {
                     CustomToast.showToast(
                         this@CheckInScreen,
                         response.body()?.get(0)?.MessageString.toString()
                     )
                     binding.progressBar.visibility = View.GONE
-                    Log.d("TAGGGGGGG", "onResponse: $mOTP is the new otp")
-                    Log.d("TAGGGGGGG", "onResponse: $mUserName is the new otp")
                     val delayMillis = 5000L
                     Handler().postDelayed({
                         finish()
                         val intent = Intent(this@CheckInScreen, MainActivity::class.java)
                         intent.putExtra("inoutStatus", "OUT")
-                      //   intent.putExtra("mPIN", mOTP)
-                    //    intent.putExtra("empName", mUserName)
+                        //   intent.putExtra("mPIN", mOTP)
+                        //    intent.putExtra("empName", mUserName)
                         startActivity(intent)
                     }, delayMillis)
                 }
@@ -634,33 +597,6 @@ class CheckInScreen : AppCompatActivity() {
         })
 
     }
-
-
-    /* @SuppressLint("MissingPermission")
-    private fun getDeviceIds(): String? {
-        val telephonyManager = getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-        Log.d("TAGGGGGGG", "getDeviceIds: ${telephonyManager.allCellInfo}")
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            telephonyManager.deviceId
-
-            null // The IMEI information is restricted on Android 10 and above
-        } else {
-            // Handling for Android versions below 10
-            telephonyManager.deviceId
-        }
-    }*/
-
-
-    private fun bitmapToString(bitmap: Bitmap): String {
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
-        val byteArray = byteArrayOutputStream.toByteArray()
-        return Base64.encodeToString(byteArray, Base64.DEFAULT)
-    }
-
-    /* fun onOpenCameraButtonClicked(view: android.view.View) {
-         startCamera()
-     }*/
 
     private fun startCamera() {
 
@@ -685,7 +621,9 @@ class CheckInScreen : AppCompatActivity() {
                 .build()
 
             // Set up the camera selector to use the front camera
-            val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
+            val cameraSelector = CameraSelector.Builder()
+                .requireLensFacing(CameraSelector.LENS_FACING_FRONT)
+                .build()
 
             try {
                 // Unbind any existing camera use cases before rebinding
@@ -727,19 +665,25 @@ class CheckInScreen : AppCompatActivity() {
                     // Image is saved, now process the image
                     base64Image = imageToBase64(photoFile)
                     imagesBitmap = fileToBitmap(photoFile)
+                    rotatedBitmap = rotateBitmap(imagesBitmap!!, 270f)
                     binding.cameraPreviewView.visibility = View.GONE
                     binding.allLayout.visibility = View.VISIBLE
-
-                    binding.bigProfile.setImageBitmap(imagesBitmap)
+                    //imagesBitmap = rotateBitmap(imagesBitmap!!, 180f)
+                    binding.bigProfile.setImageBitmap(rotatedBitmap)
                     binding.btnRetake.isEnabled = true
 
                 }
-
                 override fun onError(exception: ImageCaptureException) {
                     CustomToast.showToast(this@CheckInScreen, "Error capturing image")
                 }
             }
         )
+    }
+
+    private fun rotateBitmap(source: Bitmap, angle: Float): Bitmap {
+        val matrix = Matrix()
+        matrix.postRotate(angle)
+        return Bitmap.createBitmap(source, 0, 0, source.width, source.height, matrix, true)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -754,80 +698,65 @@ class CheckInScreen : AppCompatActivity() {
         }
     }
 
-
     fun fileToBitmap(imageFile: File): Bitmap? {
-        try {
-            // Decode the file into a Bitmap
-            var bitmap = BitmapFactory.decodeFile(imageFile.path)
-
-            // Get Exif orientation information
-            val exif = android.media.ExifInterface(FileInputStream(imageFile))
-            val orientation = exif.getAttributeInt(android.media.ExifInterface.TAG_ORIENTATION, 1)
-
-            // Rotate the Bitmap based on the Exif orientation
-            val matrix = Matrix()
-            when (orientation) {
-                3 -> matrix.postRotate(180f)
-                6 -> matrix.postRotate(90f)
-                8 -> matrix.postRotate(270f)
-            }
-
-            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
-
-            return bitmap
+        return try {
+            BitmapFactory.decodeFile(imageFile.absolutePath)
         } catch (e: Exception) {
-            println("Error converting file to Bitmap: ${e.message}")
-            return null
+            e.printStackTrace()
+            null
         }
     }
-
 
     private fun checkLocationPermission(): Boolean {
         return (ActivityCompat.checkSelfPermission(
             this,
-            android.Manifest.permission.ACCESS_FINE_LOCATION
+            Manifest.permission.ACCESS_FINE_LOCATION
         )
                 == PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(
             this,
-            android.Manifest.permission.ACCESS_COARSE_LOCATION
+            Manifest.permission.ACCESS_COARSE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED)
     }
 
     private fun requestLocationPermission() {
         ActivityCompat.requestPermissions(
             this, arrayOf(
-                android.Manifest.permission.ACCESS_FINE_LOCATION,
-                android.Manifest.permission.ACCESS_COARSE_LOCATION
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
             ), LOCATION_REQUEST_CODE
+        )
+    }
+
+    fun saveUserIntoShaPref() {
+        val currentUserShiftList = ArrayList<CurrentUserShiftsDetails>()
+        val currentUserShift = CurrentUserShiftsDetails(
+            shiftSelect.toString(),
+            siteSelect.toString(),
+            employeeId.toString(), asmtId.toString()
+        )
+
+        currentUserShiftList.add(currentUserShift)
+        SaveUsersInSharedPreference.saveCurrentUserShifts(
+            this@CheckInScreen,
+            currentUserShiftList, employeeId.toString()
         )
     }
 
     override fun onBackPressed() {
         super.onBackPressed()
         var intent = Intent(this@CheckInScreen, MainActivity::class.java)
-      //  intent.putExtra("mPIN", otp)
+        intent.putExtra("mPIN", otp)
         intent.putExtra("inoutStatus", "OUT")
-      //  intent.putExtra("mPIN", mOTP)
-      //  intent.putExtra("empName", mUserName)
-        Log.d("TAGGGGGGGGGGGGG", "onBackPressed: this is $otp this is $mOTP this is $mUserName")
+        intent.putExtra("mPIN", mOTP)
+        intent.putExtra("empName", mUserName)
         startActivity(intent)
     }
 
-    /*  private fun checkPhonePermission(): Boolean {
-        return ContextCompat.checkSelfPermission(
-            this@CheckInScreen,
-            Manifest.permission.READ_PHONE_STATE
-        ) == PackageManager.PERMISSION_GRANTED
+    private fun getCurrentFormattedDate(): String {
+        val currentDate = Calendar.getInstance().time
+        val dateFormat = SimpleDateFormat("EEE d MMM", Locale.getDefault())
+        return dateFormat.format(currentDate)
     }
-
-    private fun requestPhonePermission(){
-        ActivityCompat.requestPermissions(
-            this@CheckInScreen,
-            arrayOf(Manifest.permission.READ_PHONE_STATE),
-            REQUEST_READ_PHONE_STATE
-        )
-    }
-}*/
 
 }

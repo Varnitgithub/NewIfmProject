@@ -13,7 +13,7 @@ import com.example.ifmapp.modelclasses.usermodel_sharedpreference.UserListModel
 import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
 import com.example.ifmapp.shared_preference.shared_preference_models.CurrentUserShiftsDetails
 
-class ProfileScreen() : AppCompatActivity() {
+class ProfileScreen : AppCompatActivity() {
     private lateinit var binding: ActivityProfileScreenBinding
     private var empName:String?=null
     private var empDesignation:String?=null

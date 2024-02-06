@@ -47,7 +47,6 @@ class MyDocumentsScreen : AppCompatActivity() {
         documentList.add(DocumentsModel(1, R.drawable.aadhar, "Aadhar Card", "1234 5678 1357 2468"))
         documentList.add(DocumentsModel(1, R.drawable.aadhar, "Aadhar Card", "1234 5678 1357 2468"))
         documentList.add(DocumentsModel(1, R.drawable.aadhar, "Aadhar Card", "1234 5678 1357 2468"))
-
         return documentList
     }
 

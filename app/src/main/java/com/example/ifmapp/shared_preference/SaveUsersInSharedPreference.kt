@@ -12,10 +12,10 @@ import com.google.gson.reflect.TypeToken
 
 class SaveUsersInSharedPreference {
     companion object {
-        private const val PREF_NAME = "USERS"
-        private const val KEY_MY_LIST = "user_list"
-        private const val KEY_CURRENT_USER_SHIFT_DETAILS = "current_user_shift_details"
-        private const val KEY_FINAL_CHECKOUT_DETAILS = "current_user_final_checkout_details"
+        private const val PREF_NAME = "EMPLOYEES"
+        private const val KEY_MY_LIST = "USER_LIST"
+        private const val KEY_CURRENT_USER_SHIFT_DETAILS = "Current_User_Shift_Detail"
+        private const val KEY_FINAL_CHECKOUT_DETAILS = "Current_User_Final_Checkout_Details"
         private fun saveList(context: Context, myList: List<UserListModel>) {
             val preferences: SharedPreferences =
                 context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
@@ -28,29 +28,23 @@ class SaveUsersInSharedPreference {
             editor.apply()
         }
 
-        private fun isPinExists(context: Context, pin: String,userName:String): Boolean {
+        private fun isPinExists(context: Context, pin: String,userId:String): Boolean {
             val userList: List<UserListModel> = getList(context)
 
             for (user in userList) {
-                Log.d("TAGGGGGGGG", "isPinExists: ${user.pin}==${pin}")
-                if (user.pin == pin && user.userName == userName) {
+                if (user.pin == pin && user.empId == userId) {
                     return false
                 }
             }
-                Log.d("TAGGGGGGGG", "isPinExists: not exists")
                 return true
         }
 
-        fun addUserIfNotExists(context: Context,  user: UserListModel,pin:String,userName:String) {
-            if (isPinExists(context, pin,userName)) {
+        fun addUserIfNotExists(context: Context,  user: UserListModel,pin:String,userId:String) {
+            if (isPinExists(context, pin,userId)) {
                 val userList: MutableList<UserListModel> = getList(context).toMutableList()
-                Log.d("TAGGGGGGGGGG", "addUserIfNotExists: user not added ${userList.size}")
-
                 userList.add(user)
-                Log.d("TAGGGGGGGGGG", "addUserIfNotExists: user added ${userList.size}")
                 saveList(context, userList)
             }else{
-                Log.d("TAGGGGGGGG", "addUserIfNotExists: this user is not exists")
             }
         }
 
@@ -90,7 +84,7 @@ class SaveUsersInSharedPreference {
             }
         }
 
-          fun saveCurrentUserShifts(context: Context, myList: List<CurrentUserShiftsDetails>) {
+          fun saveCurrentUserShifts(context: Context, myList: List<CurrentUserShiftsDetails>,userid:String) {
             val preferences: SharedPreferences =
                 context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
             val editor: SharedPreferences.Editor = preferences.edit()
@@ -98,19 +92,31 @@ class SaveUsersInSharedPreference {
             val gson = Gson()
             val json: String = gson.toJson(myList)
 
-            editor.putString(KEY_CURRENT_USER_SHIFT_DETAILS, json)
+            editor.putString(userid, json)
             editor.apply()
         }
 
-        fun getCurrentUserShifts(context: Context,userName:String): List<CurrentUserShiftsDetails> {
+        fun getCurrentUserShifts(context: Context,userId:String): List<CurrentUserShiftsDetails> {
             val preferences: SharedPreferences =
                 context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-            val json: String? = preferences.getString(KEY_CURRENT_USER_SHIFT_DETAILS, "")
+            val json: String? = preferences.getString(userId, "")
 
             val gson = Gson()
             val type: Type = object : TypeToken<List<CurrentUserShiftsDetails>>() {}.type
             return gson.fromJson(json, type) ?: ArrayList()
         }
+
+        fun deleteCurrentUserShifts(context: Context, userId: String) {
+            val preferences: SharedPreferences =
+                context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+            val editor: SharedPreferences.Editor = preferences.edit()
+
+            // Remove the entry for the specified user ID
+            editor.remove(userId)
+
+            editor.apply()
+        }
+
 
         fun saveCurrentUserFinalCheckout(context: Context, myList: List<CheckOutModel>) {
             val preferences: SharedPreferences =
@@ -162,7 +168,7 @@ class SaveUsersInSharedPreference {
         fun getAttendanceStatus(context: Context): String? {
             val preferences: SharedPreferences =
                 context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-            var attendanceStatus = preferences.getString("attendanceStatus","")
+            val attendanceStatus = preferences.getString("attendanceStatus","")
             return attendanceStatus
         }
         fun clearAllUsers(){

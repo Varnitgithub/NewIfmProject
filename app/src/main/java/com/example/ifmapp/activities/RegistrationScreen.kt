@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.ifmapp.R
+import com.example.ifmapp.toast.CustomToast
 
 class RegistrationScreen : AppCompatActivity() {
     private var LOCATION_PERMISSION_REQUEST_CODE = 111
@@ -19,9 +20,11 @@ class RegistrationScreen : AppCompatActivity() {
         setContentView(R.layout.activity_registration_screen)
 
         val newRegistration: Button = findViewById(R.id.new_Registration)
+
         val alreadyRegistered: Button = findViewById(R.id.already_Registered)
 
             if (checkPermission())  {
+
 if (LocationSpoofChecker.isLocationSpoofed(this@RegistrationScreen)){
     Toast.makeText(this@RegistrationScreen, "You are using location spoofed app, Please disable this", Toast.LENGTH_SHORT).show()
 }
@@ -81,14 +84,10 @@ if (LocationSpoofChecker.isLocationSpoofed(this@RegistrationScreen)){
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 if (LocationSpoofChecker.isLocationSpoofed(this@RegistrationScreen)){
-                    Toast.makeText(this@RegistrationScreen, "You are using location spoofed app, Please disable this", Toast.LENGTH_SHORT).show()
+                CustomToast.showToast(this@RegistrationScreen,"You are using location spoofed app, Please disable this")
                 }
             } else {
-                Toast.makeText(
-                    this,
-                    "please allow for location",
-                    Toast.LENGTH_SHORT
-                ).show()
+               CustomToast.showToast(this@RegistrationScreen,"please allow for location")
             }
             //Permission Granted
 

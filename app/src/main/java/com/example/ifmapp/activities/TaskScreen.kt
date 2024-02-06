@@ -104,12 +104,12 @@ class TaskScreen : AppCompatActivity() {
     }
 
     //kotlin.UninitializedPropertyAccessException: lateinit property calendar has not been initialized
+
     private fun checkCalendar() {
         if ( ::binding.isInitialized) {
             updateCalendar()
 
         }}
-
     override fun onBackPressed() {
         var intent = Intent(this@TaskScreen,MainActivity::class.java)
         intent.putExtra("empName",empName)
