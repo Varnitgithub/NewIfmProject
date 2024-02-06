@@ -84,10 +84,10 @@ dependencies {
     implementation("com.google.android.material:material:1.11.0")
     implementation ("androidx.constraintlayout:constraintlayout:2.1.4")
 
-    implementation("org.greenrobot:eventbus:3.2.0")
+   // implementation("org.greenrobot:eventbus:3.2.0")
     implementation ("com.google.android.gms:play-services-location:21.0.0")
 
-    implementation ("com.github.yuriy-budiyev:code-scanner:2.3.2")
+ //   implementation ("com.github.yuriy-budiyev:code-scanner:2.3.2")
 
     implementation ("de.hdodenhof:circleimageview:3.1.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")
@@ -104,13 +104,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
 
-    //Room Database
 
-    implementation("androidx.room:room-runtime:2.6.1")
-    kapt("androidx.room:room-compiler:2.6.1")
-
-    // Optional: Kotlin Extensions and Coroutines support for Room
-    implementation("androidx.room:room-ktx:2.6.1")
 
     //implementation ("androidx.camera:camera-camera2:1.1.0")
     //implementation ("androidx.camera:camera-lifecycle:1.1.0")

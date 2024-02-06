@@ -140,11 +140,14 @@ class MobileRegisterScreen : AppCompatActivity() {
             })
             editTexts[i].setOnKeyListener { _, keyCode, event ->
                 if (keyCode == KeyEvent.KEYCODE_DEL && event.action == KeyEvent.ACTION_DOWN) {
-                    if (i > 0) {
+
+                      if (i > 0) {
                         editTexts[i].inputType =
                             InputType.TYPE_CLASS_NUMBER or InputType.TYPE_TEXT_VARIATION_PASSWORD
                         editTexts[i].text.clear()
                         editTexts[i - 1].requestFocus()
+                    }else{
+                          editTexts[i].text.clear()
                     }
                     true
                 } else {
@@ -199,7 +202,7 @@ class MobileRegisterScreen : AppCompatActivity() {
             override fun onFinish() {
                 // Countdown timer finished, handle the event
                 if (oneTimeResend){
-                binding.resentOtp.isEnabled = true
+                    binding.resentOtp.isEnabled = true
                     binding.resentOtp.visibility = View.VISIBLE
                 }
 
