@@ -48,8 +48,7 @@ class HomeFragment(
     private var otp: String,
     private var empNumber: String,
     private var userName: String
-) : Fragment(),
-    AddAccountAdapter.OnClickedInterface {
+) : Fragment(){
     private lateinit var binding: FragmentHomeBinding
     private var retrofitInstance: ApiInterface = RetrofitInstance.apiInstance
     private lateinit var addAccountAdapter: AddAccountAdapter
@@ -84,7 +83,7 @@ class HomeFragment(
         super.onCreate(savedInstanceState)
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
 
-        addAccountAdapter = AddAccountAdapter(requireContext(), this)
+       // addAccountAdapter = AddAccountAdapter(requireContext(), this)
 
     }
 
@@ -187,10 +186,12 @@ class HomeFragment(
                     priority = LocationRequest.PRIORITY_HIGH_ACCURACY
                     interval = 5000 // Update interval in milliseconds
                     fastestInterval = 3000 // Fastest update interval in milliseconds
-                }, locationCallback!!, null)
+                }, locationCallback!!, null
+            )
         } catch (e: Exception) {
             e.printStackTrace()
-        } }
+        }
+    }
 
     @SuppressLint("MissingPermission")
     suspend fun getLastLocation() {
@@ -201,24 +202,31 @@ class HomeFragment(
                     mLatitude = location.latitude.toString()
                     mLongitude = location.longitude.toString()
                     mAltitude = location.altitude.toString()
-                    Log.d("TAGGGGGGGG", "getLastLocation: $mLatitude $mLongitude and $mAltitude are coming")
+                    Log.d(
+                        "TAGGGGGGGG",
+                        "getLastLocation: $mLatitude $mLongitude and $mAltitude are coming"
+                    )
                 }
             }
     }
+
     private fun removeLocationUpdates() {
         locationCallback.let {
             if (it != null) {
                 fusedLocationProviderClient?.removeLocationUpdates(it)
-            }} }
+            }
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         removeLocationUpdates()
     }
 
-    @SuppressLint("MissingPermission")
+  /*  @SuppressLint("MissingPermission")
     override fun onclick(employeeModel: UserListModel, position: Int) {
 
-    }
+    }*/
 
     private fun getFormattedDate(): String {
         val currentDate = Calendar.getInstance().time

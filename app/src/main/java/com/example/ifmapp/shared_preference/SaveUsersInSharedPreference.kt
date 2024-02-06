@@ -3,6 +3,8 @@ package com.example.ifmapp.shared_preference
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.example.ifmapp.modelclasses.usermodel_sharedpreference.UserListModel
 import com.example.ifmapp.shared_preference.shared_preference_models.CheckOutModel
 import com.example.ifmapp.shared_preference.shared_preference_models.CurrentUserShiftsDetails
@@ -70,13 +72,13 @@ class SaveUsersInSharedPreference {
             return null
         }
 
-        fun removeUserByPin(context: Context, pinToRemove: String) {
+        fun removeUserByPin(context: Context, userId:String) {
             val userList: MutableList<UserListModel> = getList(context).toMutableList()
 
             val iterator = userList.iterator()
             while (iterator.hasNext()) {
                 val user = iterator.next()
-                if (user.pin == pinToRemove) {
+                if (user.empId == userId) {
                     iterator.remove()
                     saveList(context, userList)
                     break // Assuming each PIN is unique, we can break after removing the user.
@@ -171,11 +173,37 @@ class SaveUsersInSharedPreference {
             val attendanceStatus = preferences.getString("attendanceStatus","")
             return attendanceStatus
         }
-        fun clearAllUsers(){
 
+        private val realTimeUserListLiveData = MutableLiveData<List<UserListModel>>()
+
+        fun getRealTimeUsers(context: Context): LiveData<List<UserListModel>> {
+            // Retrieve the initial list
+            val preferences: SharedPreferences =
+                context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+            val initialListJson: String? = preferences.getString(KEY_MY_LIST, "")
+            val initialList: List<UserListModel> =
+                Gson().fromJson(initialListJson, object : TypeToken<List<UserListModel>>() {}.type)
+            realTimeUserListLiveData.value = initialList
+
+            // Observe the SharedPreferences for changes
+            val listener =
+                SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+                    if (key == KEY_MY_LIST) {
+                        val userList: List<UserListModel> = getList(context)
+                        realTimeUserListLiveData.value = userList
+                        // Update the list in SharedPreferences
+                        preferences.edit()
+                            .putString(KEY_MY_LIST, Gson().toJson(userList)).apply()
+                    }
+                }
+            preferences.registerOnSharedPreferenceChangeListener(listener)
+
+            return realTimeUserListLiveData
         }
 
+        // ... (other existing functions)
     }
 }
+
 
 //

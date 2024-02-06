@@ -24,6 +24,7 @@ class AddAccountAdapter(private var context: Context,private var listener:OnClic
         var addAccountImage:ImageView = itemView.findViewById(R.id.addAccount_imageview)
         var addAccountName:TextView = itemView.findViewById(R.id.add_accountName)
         var addAccountLL:LinearLayout = itemView.findViewById(R.id.addAccountLLayout)
+        var crossAccount:ImageView = itemView.findViewById(R.id.cross_account)
 
     }
 
@@ -34,6 +35,9 @@ class AddAccountAdapter(private var context: Context,private var listener:OnClic
 
         view.addAccountLL.setOnClickListener {
             listener.onclick(documentsList[view.adapterPosition],view.adapterPosition)
+        }
+        view.crossAccount.setOnClickListener {
+            listener.onCrossAccount(documentsList[view.adapterPosition],view.adapterPosition)
         }
        return view
     }
@@ -77,5 +81,6 @@ class AddAccountAdapter(private var context: Context,private var listener:OnClic
 
     interface OnClickedInterface{
        fun onclick(employeeModel:UserListModel,position: Int)
+       fun onCrossAccount(employeeModel:UserListModel,position: Int)
     }
 }

@@ -146,6 +146,24 @@ class DashBoardScreen : AppCompatActivity(), AddAccountAdapter.OnClickedInterfac
         addAccountAdapter.updateList(allUsersList)
     }
 
+    override fun onCrossAccount(employeeModel: UserListModel, position: Int) {
+        SaveUsersInSharedPreference.removeUserByPin(this@DashBoardScreen,employeeModel.empId)
+        SaveUsersInSharedPreference.getRealTimeUsers(this@DashBoardScreen).observe(this@DashBoardScreen){
+            Log.d("TAGGGGGGGGGG", "onCrossAccount:observing clicked on cross")
+
+            val newlist = SaveUsersInSharedPreference.getList(this).size
+            allUsersList.clear()
+            for (user in 0 until newlist) {
+                if (SaveUsersInSharedPreference.getList(this@DashBoardScreen)[user].userName != empName) {
+                    allUsersList.add(SaveUsersInSharedPreference.getList(this)[user])
+                }
+            }
+            addAccountAdapter.updateList(allUsersList)
+
+        }
+        Log.d("TAGGGGGGGGGG", "onCrossAccount: clicked on cross")
+    }
+
     private fun checkPermission(): Boolean {
         return ActivityCompat.checkSelfPermission(
             this,

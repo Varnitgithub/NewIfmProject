@@ -3,6 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+
+
     <LinearLayout
         android:id="@+id/addAccountLLayout"
         android:layout_width="0dp"
@@ -13,6 +17,7 @@
         android:orientation="vertical"
         android:gravity="center"
         android:paddingStart="10dp"
+
         android:paddingEnd="10dp"
         android:layout_marginEnd="4dp"
 android:paddingBottom="3dp"
@@ -24,10 +29,13 @@ android:paddingBottom="3dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="6dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="5dp"
             android:layout_gravity="center"
             android:src="@drawable/account_user_profile" />
 
         <TextView
+
             android:id="@+id/add_accountName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -39,5 +47,13 @@ android:paddingBottom="3dp"
             android:text="Varnit"
             android:fontFamily="@font/roboto"/>
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/cross_account"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/cross"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
