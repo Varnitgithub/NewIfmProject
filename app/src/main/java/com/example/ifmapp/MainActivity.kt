@@ -93,31 +93,31 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (otp != null) {
-            menuFragment = MenuFragment(otp.toString(),userName.toString())
-            myTaskFragment = MyTaskFragment(this, otp.toString(),userName.toString())
-            eRegisterFragment = ERegisterFragment(otp.toString())
+            menuFragment = MenuFragment(otp.toString(),userName.toString(),empNumber.toString())
+            myTaskFragment = MyTaskFragment(this, otp.toString(),userName.toString(),empNumber.toString())
+            eRegisterFragment = ERegisterFragment(otp.toString(),empNumber.toString())
         } else if (otpFromLogin != null) {
-            menuFragment = MenuFragment(otpFromLogin.toString(),userName.toString())
-            myTaskFragment = MyTaskFragment(this, otpFromLogin.toString(),userName.toString())
-            eRegisterFragment = ERegisterFragment(otpFromLogin.toString())
+            menuFragment = MenuFragment(otpFromLogin.toString(),userName.toString(),empNumber.toString())
+            myTaskFragment = MyTaskFragment(this, otpFromLogin.toString(),userName.toString(),empNumber.toString())
+            eRegisterFragment = ERegisterFragment(otpFromLogin.toString(),empNumber.toString())
 
 
         } else if (otpFromsignUp != null) {
-            menuFragment = MenuFragment(otpFromsignUp.toString(),userName.toString())
-            myTaskFragment = MyTaskFragment(this, otpFromsignUp.toString(),userName.toString())
-            eRegisterFragment = ERegisterFragment(otpFromsignUp.toString())
+            menuFragment = MenuFragment(otpFromsignUp.toString(),userName.toString(),empNumber.toString())
+            myTaskFragment = MyTaskFragment(this, otpFromsignUp.toString(),userName.toString(),empNumber.toString())
+            eRegisterFragment = ERegisterFragment(otpFromsignUp.toString(),empNumber.toString())
 
 
         } else if (pinFromSignin != null) {
-            menuFragment = MenuFragment(pinFromSignin.toString(),userName.toString())
-            myTaskFragment = MyTaskFragment(this, pinFromSignin.toString(),userName.toString())
-            eRegisterFragment = ERegisterFragment(pinFromSignin.toString())
+            menuFragment = MenuFragment(pinFromSignin.toString(),userName.toString(),empNumber.toString())
+            myTaskFragment = MyTaskFragment(this, pinFromSignin.toString(),userName.toString(),empNumber.toString())
+            eRegisterFragment = ERegisterFragment(pinFromSignin.toString(),empNumber.toString())
 
 
         } else {
-            menuFragment = MenuFragment(mOTP.toString(),userName.toString())
-            myTaskFragment = MyTaskFragment(this, mOTP.toString(),userName.toString())
-            eRegisterFragment = ERegisterFragment(mOTP.toString())
+            menuFragment = MenuFragment(mOTP.toString(),userName.toString(),empNumber.toString())
+            myTaskFragment = MyTaskFragment(this, mOTP.toString(),userName.toString(),empNumber.toString())
+            eRegisterFragment = ERegisterFragment(mOTP.toString(),empNumber.toString())
 
 
         }

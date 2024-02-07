@@ -39,7 +39,9 @@ import com.example.ifmapp.modelclasses.geomappedsite_model.GeoMappedResponse
 import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
 import com.example.ifmapp.shared_preference.shared_preference_models.CurrentUserShiftsDetails
 import com.example.ifmapp.toast.CustomToast
+import com.example.ifmapp.utils.GlobalLocation
 import com.example.ifmapp.utils.IMEIGetter
+import com.example.ifmapp.utils.UtilModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -119,8 +121,7 @@ class CheckInScreen : AppCompatActivity() {
         shiftSelect = intent.getStringExtra("shiftSelect")
         siteSelect = intent.getStringExtra("siteSelect")
         shiftTimingList = intent.getStringExtra("shiftTimingList")
-        mLatitude = "28.4062994"
-        mLongitude = "77.0685759"
+
         mAltitude = "55.0"
         imageCapture = ImageCapture.Builder().build()
         retrofitInstance = RetrofitInstance.apiInstance
@@ -174,7 +175,7 @@ class CheckInScreen : AppCompatActivity() {
                 "TAGGGGGGGG",
                 "onCreate: .....................id $locationAutoID $mLatitude $mLongitude $mAltitude "
             )
-            if (base64Image != null && mLatitude != null && mLongitude != null && locationAutoID != null && mAltitude != null) {
+            if (base64Image != null && locationAutoID != null) {
                 binding.progressBar.visibility = View.VISIBLE
                 Log.d("TAGGGGGGGG", "onCreate: .....................id 3")
 
@@ -379,12 +380,15 @@ class CheckInScreen : AppCompatActivity() {
             ?.addOnSuccessListener { location: Location? ->
                 // Got last known location
                 location?.let {
-                    mLatitude = location.latitude.toString()
-                    mLongitude = location.longitude.toString()
-                    mAltitude = location.altitude.toString()
-                    getAddressFromLocation(this, mLatitude!!.toDouble(), mLongitude!!.toDouble())
-                    binding.checkInlatitude.text = mLatitude
-                    binding.checkInlongitude.text = mLongitude
+                    GlobalLocation.location = UtilModel(
+                        location.latitude.toString(),
+                        location.longitude.toString(),
+                        location.altitude.toString()
+                    )
+                    getAddressFromLocation(this, GlobalLocation.location.latitude.toDouble()
+                            ,GlobalLocation.location.longitude.toDouble())
+                    binding.checkInlatitude.text = location.latitude.toString()
+                    binding.checkInlongitude.text =location.longitude.toString()
                 }
             }
     }
@@ -421,7 +425,8 @@ class CheckInScreen : AppCompatActivity() {
     ) {
 
 
-        retrofitInstance.getGeoMappedSites(connectionKey, LocationAutoID, Latitude, Longitude)
+        retrofitInstance.getGeoMappedSites(connectionKey, LocationAutoID, GlobalLocation.location.latitude
+            , GlobalLocation.location.longitude)
             .enqueue(object : Callback<GeoMappedResponse?> {
                 @RequiresApi(Build.VERSION_CODES.O)
                 override fun onResponse(
@@ -467,9 +472,9 @@ class CheckInScreen : AppCompatActivity() {
                                         employeeId.toString(),
                                         inoutStatus.toString(),
                                         time.toString(),
-                                        latitude = mLatitude.toString(),
-                                        mLongitude.toString(),
-                                        mAltitude.toString(),
+                                       GlobalLocation.location.latitude,
+                                        GlobalLocation.location.longitude,
+                                        GlobalLocation.location.altitude,
                                         base64Image ?: "",
                                         emp.LocationAutoID,
                                         siteSelect.toString(), shiftSelect.toString(),

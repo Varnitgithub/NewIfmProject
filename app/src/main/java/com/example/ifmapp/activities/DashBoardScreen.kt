@@ -121,8 +121,10 @@ class DashBoardScreen : AppCompatActivity(), AddAccountAdapter.OnClickedInterfac
 
                 // If no correct PIN is found in the loop
                 CustomToast.showToast(this@DashBoardScreen, "Please Enter Correct Pin")
-                otpTextView.setOTP(" ")
-                otpTextView.requestFocusOTP()
+                otpTextView.setOTP("")
+                otpTextView.resetState()
+
+
             }
 
         }

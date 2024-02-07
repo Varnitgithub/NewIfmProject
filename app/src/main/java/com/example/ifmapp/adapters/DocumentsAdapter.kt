@@ -7,26 +7,31 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.ifmapp.R
 import com.example.ifmapp.modelclasses.DocumentsModel
 
-class DocumentsAdapter(private var context: Context):RecyclerView.Adapter<DocumentsAdapter.DocumentsViewHolder>() {
+class DocumentsAdapter(private var context: Context,private var listener:Clicked):RecyclerView.Adapter<DocumentsAdapter.DocumentsViewHolder>() {
 
     var documentsList=ArrayList<DocumentsModel>()
 
     class DocumentsViewHolder(itemView: View) :RecyclerView.ViewHolder(itemView){
         var docImage:ImageView = itemView.findViewById(R.id.doc_image)
         var docName:TextView = itemView.findViewById(R.id.doc_name)
-        var docNumber:TextView = itemView.findViewById(R.id.doc_no)
-        var doc_LL:LinearLayout = itemView.findViewById(R.id.doc_LL)
+       // var docNumber:TextView = itemView.findViewById(R.id.doc_no)
+        var doc_Card:CardView = itemView.findViewById(R.id.document_cardview)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DocumentsViewHolder {
-        var view = LayoutInflater.from(parent.context).inflate(R.layout.document_items,parent,false)
-
-       return DocumentsViewHolder(view)
+        var view = DocumentsViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.document_items,parent,false)
+        )
+        view.doc_Card.setOnClickListener {
+            listener.onclick(documentsList,view.adapterPosition)
+        }
+       return view
     }
 
     override fun getItemCount(): Int {
@@ -37,8 +42,7 @@ class DocumentsAdapter(private var context: Context):RecyclerView.Adapter<Docume
      val currentItem = documentsList[position]
 
         holder.docName.text = currentItem.doc_name
-        holder.docNumber.text = currentItem.doc_no
-       // Glide.with(context).load(currentItem.doc_image).placeholder(R.drawable.aadhar).into(holder.docImage)
+        Glide.with(context).load(currentItem.doc_image).placeholder(R.drawable.aadhar).into(holder.docImage)
     }
     fun updateList(newList: List<DocumentsModel>) {
         val diffCallback = DocumentsDiffCallback(documentsList, newList)
@@ -64,5 +68,8 @@ class DocumentsAdapter(private var context: Context):RecyclerView.Adapter<Docume
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
             return oldList[oldItemPosition] == newList[newItemPosition]
         }
+    }
+    interface Clicked{
+        fun onclick(model: ArrayList<DocumentsModel>,position: Int)
     }
 }

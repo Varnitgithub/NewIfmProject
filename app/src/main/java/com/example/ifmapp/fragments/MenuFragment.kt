@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import com.example.ifmapp.MyDocumentsScreen
+import com.example.ifmapp.activities.MyDocumentsScreen
 import com.example.ifmapp.R
 import com.example.ifmapp.activities.LeaveScreen
 import com.example.ifmapp.activities.ProfileScreen
@@ -16,7 +16,7 @@ import com.example.ifmapp.activities.TaskScreen
 import com.example.ifmapp.databinding.FragmentMenuBinding
 import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
 
-class MenuFragment(private var pin:String,private var userName:String) : Fragment() {
+class MenuFragment(private var pin:String,private var userName:String,private var empNumber:String) : Fragment() {
     private lateinit var binding: FragmentMenuBinding
     private var username:String?=null
     private var designation:String?=null
@@ -61,9 +61,10 @@ class MenuFragment(private var pin:String,private var userName:String) : Fragmen
         }
 
         binding.mydoc.setOnClickListener {
-            val intent =   Intent(requireContext(),MyDocumentsScreen::class.java)
+            val intent =   Intent(requireContext(), MyDocumentsScreen::class.java)
             intent.putExtra("mPIN",pin)
             intent.putExtra("empName",username)
+            intent.putExtra("empId",empNumber)
             startActivity(intent)
         }
 

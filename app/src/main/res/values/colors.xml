@@ -10,4 +10,9 @@
     <color name="check_btn">#6C6B6B</color>
     <color name="btn_continue">#acacac</color>
     <color name="transparent">#00000000</color>
+    <color name="taskButton">#ACACAC</color>
+    <color name="red_task">#D14334</color>
+    <color name="grey_task">#989898</color>
+    <color name="green_task">#00AC60</color>
+    <color name="blue_task">#064277</color>
 </resources>

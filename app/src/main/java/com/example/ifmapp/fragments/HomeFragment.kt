@@ -28,6 +28,8 @@ import com.example.ifmapp.modelclasses.shiftwithtime_model.ShiftWithTimeResponse
 import com.example.ifmapp.modelclasses.usermodel_sharedpreference.UserListModel
 import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
 import com.example.ifmapp.toast.CustomToast
+import com.example.ifmapp.utils.GlobalLocation
+import com.example.ifmapp.utils.UtilModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -96,8 +98,7 @@ class HomeFragment(
         currentUser = SaveUsersInSharedPreference.getUserByPin(requireContext(), otp, userName)
         locationAutoId = currentUser?.LocationAutoId.toString()
         empName = currentUser?.userName
-        mLatitude = "28.4062994"
-        mLongitude = "77.0685759"
+
 
         empNumber = currentUser?.empId.toString()
         empDesignation = currentUser?.designation
@@ -199,9 +200,11 @@ class HomeFragment(
             ?.addOnSuccessListener { location: Location? ->
                 // Got last known location
                 location?.let {
-                    mLatitude = location.latitude.toString()
-                    mLongitude = location.longitude.toString()
-                    mAltitude = location.altitude.toString()
+                    GlobalLocation.location = UtilModel(
+                        location.latitude.toString(),
+                        location.longitude.toString(),
+                        location.altitude.toString()
+                    )
                     Log.d(
                         "TAGGGGGGGG",
                         "getLastLocation: $mLatitude $mLongitude and $mAltitude are coming"
@@ -285,8 +288,8 @@ class HomeFragment(
         }
         getSitesFromServer(
             locationAutoId.toString(),
-            mLatitude.toString(),
-            mLongitude.toString(),
+            GlobalLocation.location.latitude,
+            GlobalLocation.location.longitude,
             empNumber
         )
     }
