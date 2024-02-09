@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">GroupL</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -5,13 +6,10 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
-
-
-    <string name="office_floor_are_free_of_stairs_amp_orderless"><![CDATA[Office floor are free of stairs & orderless]]></string>
+    <string name="office_floor_are_free_of_stairs_amp_orderless"><![CDATA[प्रवेश द्वार का शीशा साफ़ और मुफ़्त\n"+
+                "धब्बे से]]></string>
     <string name="pending">pending</string>
     <string name="add_photo">Add Photo</string>
     <string name="view_photo">View Photo</string>
-
-
-    <string name="hindiLang">Hindi</string>
+    <string name="hindiLang">हिंदी</string>
 </resources>

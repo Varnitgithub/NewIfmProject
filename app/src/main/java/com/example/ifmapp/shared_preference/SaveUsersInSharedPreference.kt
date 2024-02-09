@@ -30,7 +30,7 @@ class SaveUsersInSharedPreference {
             editor.apply()
         }
 
-        private fun isPinExists(context: Context, pin: String,userId:String): Boolean {
+        private fun isPinExists(context: Context, pin: String, userId: String): Boolean {
             val userList: List<UserListModel> = getList(context)
 
             for (user in userList) {
@@ -38,19 +38,19 @@ class SaveUsersInSharedPreference {
                     return false
                 }
             }
-                return true
+            return true
         }
 
-        fun addUserIfNotExists(context: Context,  user: UserListModel,pin:String,userId:String) {
-            if (isPinExists(context, pin,userId)) {
+        fun addUserIfNotExists(context: Context, user: UserListModel, pin: String, userId: String) {
+            if (isPinExists(context, pin, userId)) {
                 val userList: MutableList<UserListModel> = getList(context).toMutableList()
                 userList.add(user)
                 saveList(context, userList)
-            }else{
+            } else {
             }
         }
 
-          fun getList(context: Context): List<UserListModel> {
+        fun getList(context: Context): List<UserListModel> {
             val preferences: SharedPreferences =
                 context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
             val json: String? = preferences.getString(KEY_MY_LIST, "")
@@ -60,11 +60,11 @@ class SaveUsersInSharedPreference {
             return gson.fromJson(json, type) ?: ArrayList()
         }
 
-        fun getUserByPin(context: Context, pin: String,name:String): UserListModel? {
+        fun getUserByPin(context: Context, pin: String, name: String): UserListModel? {
             val userList: List<UserListModel> = getList(context)
 
             for (user in userList) {
-                if (user.pin == pin && user.userName==name) {
+                if (user.pin == pin && user.userName == name) {
                     return user
                 }
             }
@@ -72,7 +72,7 @@ class SaveUsersInSharedPreference {
             return null
         }
 
-        fun removeUserByPin(context: Context, userId:String) {
+        fun removeUserByPin(context: Context, userId: String) {
             val userList: MutableList<UserListModel> = getList(context).toMutableList()
 
             val iterator = userList.iterator()
@@ -86,7 +86,11 @@ class SaveUsersInSharedPreference {
             }
         }
 
-          fun saveCurrentUserShifts(context: Context, myList: List<CurrentUserShiftsDetails>,userid:String) {
+        fun saveCurrentUserShifts(
+            context: Context,
+            myList: List<CurrentUserShiftsDetails>,
+            userid: String
+        ) {
             val preferences: SharedPreferences =
                 context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
             val editor: SharedPreferences.Editor = preferences.edit()
@@ -98,7 +102,7 @@ class SaveUsersInSharedPreference {
             editor.apply()
         }
 
-        fun getCurrentUserShifts(context: Context,userId:String): List<CurrentUserShiftsDetails> {
+        fun getCurrentUserShifts(context: Context, userId: String): List<CurrentUserShiftsDetails> {
             val preferences: SharedPreferences =
                 context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
             val json: String? = preferences.getString(userId, "")
@@ -142,7 +146,7 @@ class SaveUsersInSharedPreference {
             return gson.fromJson(json, type) ?: ArrayList()
         }
 
-          fun setShiftJoiningTime(context: Context,time:String,amPm:String){
+        fun setShiftJoiningTime(context: Context, time: String, amPm: String) {
             val preferences: SharedPreferences =
                 context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
             val editor: SharedPreferences.Editor = preferences.edit()
@@ -154,11 +158,11 @@ class SaveUsersInSharedPreference {
         fun getShiftJoiningTime(context: Context): String? {
             val preferences: SharedPreferences =
                 context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-            var setShiftTime = preferences.getString("shiftStartTime","")
+            var setShiftTime = preferences.getString("shiftStartTime", "")
             return setShiftTime
         }
 
-        fun setAttendanceStatus(context: Context,status:String){
+        fun setAttendanceStatus(context: Context, status: String) {
             val preferences: SharedPreferences =
                 context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
             val editor: SharedPreferences.Editor = preferences.edit()
@@ -170,7 +174,7 @@ class SaveUsersInSharedPreference {
         fun getAttendanceStatus(context: Context): String? {
             val preferences: SharedPreferences =
                 context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-            val attendanceStatus = preferences.getString("attendanceStatus","")
+            val attendanceStatus = preferences.getString("attendanceStatus", "")
             return attendanceStatus
         }
 
@@ -202,6 +206,22 @@ class SaveUsersInSharedPreference {
         }
 
         // ... (other existing functions)
+
+        fun setHindiEnglish(context: Context, status: String) {
+            val preferences: SharedPreferences =
+                context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+            val editor: SharedPreferences.Editor = preferences.edit()
+            editor.putString("STATUS_HINDI_ENGLISH", status)
+            editor.apply()
+
+        }
+
+        fun getHindiEnglish(context: Context): String? {
+            val preferences: SharedPreferences =
+                context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+            val attendanceStatus = preferences.getString("STATUS_HINDI_ENGLISH", "")
+            return attendanceStatus
+        }
     }
 }
 

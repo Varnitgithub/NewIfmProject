@@ -39,10 +39,10 @@ class MyDocumentsScreen : AppCompatActivity(), DocumentsAdapter.Clicked {
 
         val documentList = arrayListOf<DocumentsModel>()
 
-        documentList.add(DocumentsModel(1, R.drawable.aadhar, "Aadhar Card", ""))
-        documentList.add(DocumentsModel(1, R.drawable.pan, "Pan Card", " "))
-        documentList.add(DocumentsModel(1, R.drawable.voterid, "VoterId Card", " "))
-        documentList.add(DocumentsModel(1, R.drawable.drivinglicense, "Driving License", " "))
+        documentList.add(DocumentsModel(1, R.drawable.aadhar, "Adhar Card", "","AdharCard"))
+        documentList.add(DocumentsModel(1, R.drawable.pan, "Pan Card", " ","PanCard"))
+        documentList.add(DocumentsModel(1, R.drawable.voterid, "Voter Id", " ","VoterId"))
+        documentList.add(DocumentsModel(1, R.drawable.drivinglicense, "Driving License", " ","DrivingLicense"))
         return documentList
     }
 
@@ -56,7 +56,7 @@ class MyDocumentsScreen : AppCompatActivity(), DocumentsAdapter.Clicked {
 
     override fun onclick(model: ArrayList<DocumentsModel>, position: Int) {
         val intent = Intent(this@MyDocumentsScreen, DocumentImages::class.java)
-        intent.putExtra(Keys.ID_TYPE, model[position].doc_name)
+        intent.putExtra(Keys.ID_TYPE, model[position].docType)
         intent.putExtra("empId", empId)
     }
 }

@@ -40,6 +40,8 @@ class MyTaskFragment(
                 }*/
         binding.englishRadioBtn.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
+                SaveUsersInSharedPreference.setHindiEnglish(requireContext(),"english")
+
                 binding.hindiRadioBtn.isChecked = false
                 binding.btnDone.setBackgroundResource(R.drawable.button_back)
                 binding.btnDone.setTextColor(resources.getColor(R.color.white))
@@ -47,6 +49,7 @@ class MyTaskFragment(
         }
         binding.hindiRadioBtn.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
+                SaveUsersInSharedPreference.setHindiEnglish(requireContext(),"hindi")
                 binding.englishRadioBtn.isChecked = false
                 binding.btnDone.setBackgroundResource(R.drawable.button_back)
                 binding.btnDone.setTextColor(resources.getColor(R.color.white))
@@ -61,6 +64,7 @@ class MyTaskFragment(
     }
 
     private fun languageSelectionDone() {
+
         if (binding.englishRadioBtn.isChecked || binding.hindiRadioBtn.isChecked) {
             var intent = Intent(requireContext(), TaskProfileScreen::class.java)
             intent.putExtra("empId", empId)

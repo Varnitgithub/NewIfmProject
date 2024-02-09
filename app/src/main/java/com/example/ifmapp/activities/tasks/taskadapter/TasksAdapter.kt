@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -29,7 +30,7 @@ class TasksAdapter(
     }
 
     inner class PreviousTaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var previousCL: LinearLayout = itemView.findViewById(R.id.previous_CL)
+        var previousCL: ConstraintLayout = itemView.findViewById(R.id.previous_CL)
         var previousDate: TextView = itemView.findViewById(R.id.previousTaskDate)
         var previousTaskNo: TextView = itemView.findViewById(R.id.previousTaskNo)
         var previousStatus: TextView = itemView.findViewById(R.id.previousTaskStatus)
@@ -46,7 +47,7 @@ class TasksAdapter(
     }
 
     inner class TodoTaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var todoCL: LinearLayout = itemView.findViewById(R.id.todo_CL)
+        var todoCL: ConstraintLayout = itemView.findViewById(R.id.todo_CL)
         var todoDate: TextView = itemView.findViewById(R.id.todoDate)
         var todoTaskNo: TextView = itemView.findViewById(R.id.todoTaskNo)
         var todoStatus: TextView = itemView.findViewById(R.id.todoStatus)
@@ -63,7 +64,7 @@ class TasksAdapter(
     }
 
     inner class UpcomingTaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var upComingCL: LinearLayout = itemView.findViewById(R.id.upComing_CL)
+        var upComingCL: ConstraintLayout = itemView.findViewById(R.id.upComing_CL)
         var upComingTaskDate: TextView = itemView.findViewById(R.id.upComingTaskDate)
         var upComingTaskNo: TextView = itemView.findViewById(R.id.upcoming_taskno)
         var upComingTaskStatus: TextView = itemView.findViewById(R.id.upComingTaskStatus)
@@ -118,30 +119,12 @@ class TasksAdapter(
     }
 
     fun updateList(newList: List<TaskModel>) {
-        val diffCallback = DocumentsDiffCallback(taskList, newList)
-        val diffResult = DiffUtil.calculateDiff(diffCallback)
-
         taskList.clear()
         taskList.addAll(newList)
 
-        diffResult.dispatchUpdatesTo(this)
+      notifyDataSetChanged()
     }
 
-    class DocumentsDiffCallback(
-        private val oldList: List<TaskModel>,
-        private val newList: List<TaskModel>
-    ) : DiffUtil.Callback() {
-        override fun getOldListSize(): Int = oldList.size
-        override fun getNewListSize(): Int = newList.size
-
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldList[oldItemPosition].id == newList[newItemPosition].id
-        }
-
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldList[oldItemPosition] == newList[newItemPosition]
-        }
-    }
 
     interface Clicked {
         fun onclick(model: TaskModel, position: Int)

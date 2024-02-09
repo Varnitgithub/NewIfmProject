@@ -1,5 +1,7 @@
 package com.example.ifmapp.apiinterface
 
+import com.example.ifmapp.activities.tasks.TaskModel
+import com.example.ifmapp.activities.tasks.taskapi_response.TaskApiResponse
 import com.example.ifmapp.modelclasses.attendance_response.AttendanceResponse
 import com.example.ifmapp.modelclasses.daily_attendance_model.DailyAttendanceModel
 import com.example.ifmapp.modelclasses.geomappedsite_model.GeoMappedResponse
@@ -134,6 +136,36 @@ interface ApiInterface {
         @Field("EmployeeNumber") EmployeeNumber: String
     ):Call<ShiftWithTimeResponse>
 
+    @FormUrlEncoded
+    @POST("GetTourCode")
+    fun getTourTasks(
+        @Field("connectionKey") connectionKey: String,
+    ):Call<TaskApiResponse>
 
+
+
+    @FormUrlEncoded
+    @POST("GetEmployeeDocs")
+    fun getEmployeeDocs(
+        @Field("connectionKey") connectionKey: String,
+        @Field("EmpID") EmpID: String,
+        @Field("LocationAutoID") LocationAutoID: String,
+        @Field("DocType") DocType: String
+    ):Call<TaskModel>
+
+
+    @FormUrlEncoded
+    @POST("InsertRegisterEntry")
+    fun insertRegisterEntry(
+        @Field("connectionKey") connectionKey: String,
+        @Field("EmployeeID") EmployeeID: String,
+        @Field("EmployeeName") EmployeeName: String,
+        @Field("VisitorImageBase64") VisitorImageBase64: String,
+        @Field("LocationAutoId") LocationAutoId: String,
+        @Field("ClientCode") ClientCode: String,
+        @Field("VisitorName") VisitorName: String,
+        @Field("Purpose") Purpose: String,
+        @Field("Mobile") Mobile: String,
+    ):Call<VerifyOtpResponse>
 }
 

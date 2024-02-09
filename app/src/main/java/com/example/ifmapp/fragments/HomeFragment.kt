@@ -418,7 +418,7 @@ class HomeFragment(
                         siteList.add(response.body()!!.get(i).ClientCode)
                     }
                     asmtId = response.body()?.get(0)?.AsmtID.toString()
-
+                    Log.d("TAGGGGGGGGGGGGG", "onResponse: this is site list..............$siteList")
                     setSiteSelection(locationAutoid, userId, asmtId.toString(), siteList)
                 }
             }

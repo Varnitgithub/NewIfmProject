@@ -27,6 +27,7 @@ binding = DataBindingUtil.setContentView(this,R.layout.activity_profile_screen)
         pin = intent.getStringExtra("mPIN")
        empName  = intent.getStringExtra("empName")
 
+
         val usersList = SaveUsersInSharedPreference.getList(this@ProfileScreen)
 
         for (user in usersList){
@@ -37,9 +38,6 @@ binding = DataBindingUtil.setContentView(this,R.layout.activity_profile_screen)
                 binding.employeeName.text = user.userName
             }
         }
-
-
-
 
     }
 

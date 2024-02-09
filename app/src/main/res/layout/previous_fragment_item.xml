@@ -29,16 +29,11 @@
                 android:orientation="horizontal"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
+                app:layout_constraintEnd_toStartOf="@id/previousTaskDate"
                 android:background="@drawable/previous_taskno_back"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:padding="6dp"
-                    android:src="@drawable/task_icon"/>
                 <TextView
                     android:id="@+id/previousTaskNo"
                     android:layout_width="match_parent"
@@ -70,6 +65,8 @@
                 android:textSize="15sp"
                 android:textStyle="bold"
                 app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/previousTaskStatus"
                 app:layout_constraintStart_toEndOf="@id/previousTask_LL"
 
                 />
@@ -84,6 +81,8 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
                 tools:text="Completed"
+                app:layout_constraintStart_toEndOf="@id/previousTaskDate"
+                app:layout_constraintBottom_toBottomOf="parent"
                 android:textColor="@color/green_task"
                 android:textSize="18sp"
                 android:textStyle="bold"

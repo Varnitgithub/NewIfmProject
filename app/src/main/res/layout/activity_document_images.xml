@@ -59,7 +59,7 @@
             android:layout_height="match_parent"
             android:padding="4dp"
 
-            android:src="@drawable/aadhar"/>
+            tools:src="@drawable/aadhar"/>
 
 
     </androidx.cardview.widget.CardView>
@@ -83,7 +83,7 @@
             android:layout_height="match_parent"
             android:padding="4dp"
 
-            android:src="@drawable/aadhar"/>
+            tools:src="@drawable/aadhar"/>
 
 
     </androidx.cardview.widget.CardView>

@@ -14,11 +14,11 @@
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -54,88 +54,13 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-                <LinearLayout
-                    android:id="@+id/user_LL"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-
-                    android:orientation="vertical"
-                    android:weightSum="3"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/leavetxt_CL"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:id="@+id/user_name_txt"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:fontFamily="@font/roboto"
-                            android:text="Employee Name : "
-                            android:textColor="@color/black"
-                            android:textSize="15sp"
-
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/user_name"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:fontFamily="@font/roboto"
-                            android:textColor="@color/black"
-                            android:textSize="15sp"
-                            tools:text="Cameron Williamson" />
-
-                    </LinearLayout>
-
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:id="@+id/user_number_txt"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:fontFamily="@font/roboto"
-                            android:text="Employee Number : "
-                            android:textColor="@color/black"
-                            android:textSize="15sp"
-
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/user_number"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:fontFamily="@font/roboto"
-                            android:textColor="@color/black"
-                            android:textSize="15sp"
-                            tools:text="Cameron Williamson" />
-
-                    </LinearLayout>
-
-
-                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
                     android:background="@drawable/main_deshboard_back"
                     android:orientation="vertical"
-                    android:layout_marginTop="20dp"
                     android:padding="12dp">
 
                     <TextView
@@ -201,62 +126,6 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-                    <TextView
-                        android:id="@+id/txt_selectShift"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:fontFamily="@font/roboto"
-                        android:padding="8dp"
-                        android:text="Select Shift"
-                        android:textColor="#121212"
-                        android:textSize="15sp"
-
-                        android:textStyle="bold"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="@+id/txt_selectSite"
-                        tools:layout_editor_absoluteY="60dp" />
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="3dp"
-                        android:background="@drawable/site_selection_back"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="@id/txt_selectSite"
-                        app:layout_constraintStart_toStartOf="@id/txt_selectSite"
-                        app:layout_constraintTop_toBottomOf="@id/txt_selectShift">
-
-                        <Spinner
-                            android:id="@+id/spinner_select_shift"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
-
-                            />
-
-                        <TextView
-                            android:id="@+id/shiftTxt"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:fontFamily="@font/roboto"
-                            android:padding="8dp"
-                            android:text="Select Shift"
-                            android:textColor="#121212"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-
-                            android:visibility="gone"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
-                            tools:layout_editor_absoluteY="60dp" />
-
-                    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
                 </LinearLayout>
@@ -275,6 +144,9 @@
                         android:layout_marginTop="6dp"
                         android:background="@drawable/site_selection_back"
                         android:hint="Enter Name"
+
+                        android:padding="2dp"
+
                         app:layout_constraintBaseline_toTopOf="@id/txt_selectShift"
                         app:layout_constraintBottom_toTopOf="@id/txt_selectShift"
                         app:layout_constraintEnd_toEndOf="@id/txt_selectSite"
@@ -282,14 +154,13 @@
                         app:layout_constraintTop_toBottomOf="@id/txt_selectSite">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/visitorEdittext"
+                            android:id="@+id/visitorNameEdittext"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="Enter Name"
                             android:background="@drawable/site_selection_back"
-                            android:paddingBottom="6dp"
                             android:paddingStart="6dp"
                             android:paddingEnd="6dp"
+                            android:paddingBottom="6dp"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
@@ -303,6 +174,8 @@
                         android:layout_marginTop="18dp"
                         android:background="@drawable/site_selection_back"
                         android:hint="Enter Purpose"
+                        android:padding="2dp"
+
                         app:layout_constraintBaseline_toTopOf="@id/txt_selectShift"
                         app:layout_constraintBottom_toTopOf="@id/txt_selectShift"
                         app:layout_constraintEnd_toEndOf="@id/txt_selectSite"
@@ -310,14 +183,13 @@
                         app:layout_constraintTop_toBottomOf="@id/txt_selectSite">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/purpose"
+                            android:id="@+id/visitorPurpose"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="Enter Purpose"
                             android:background="@drawable/site_selection_back"
-                            android:paddingBottom="6dp"
                             android:paddingStart="6dp"
                             android:paddingEnd="6dp"
+                            android:paddingBottom="6dp"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
@@ -329,24 +201,20 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
+                        android:padding="2dp"
                         android:layout_marginTop="18dp"
                         android:background="@drawable/site_selection_back"
                         android:hint="Contact Number"
-                        app:layout_constraintBaseline_toTopOf="@id/txt_selectShift"
-                        app:layout_constraintBottom_toTopOf="@id/txt_selectShift"
-                        app:layout_constraintEnd_toEndOf="@id/txt_selectSite"
-                        app:layout_constraintStart_toStartOf="@id/txt_selectSite"
-                        app:layout_constraintTop_toBottomOf="@id/txt_selectSite">
+                        >
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/contactNumber"
+                            android:id="@+id/visitorContactNumber"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="Contact Number"
                             android:background="@drawable/site_selection_back"
-                            android:paddingBottom="6dp"
                             android:paddingStart="6dp"
                             android:paddingEnd="6dp"
+                            android:paddingBottom="6dp"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
@@ -357,12 +225,87 @@
 
                 </LinearLayout>
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/addPhoto_Txt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:fontFamily="@font/roboto"
+                        android:text="Add Photo (Optional)"
+                        android:textColor="@color/black"
+
+                        android:textSize="16sp"
+
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:id="@+id/addPhotoTxtBtn_LL"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:padding="6dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/add_photo_back"
+                        android:layout_gravity="center">
+
+                        <TextView
+                            android:id="@+id/addPhotoTxtBtn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:fontFamily="@font/roboto"
+                            android:text="Add Photo"
+                            android:padding="3dp"
+                            android:textColor="@color/red_task"
+
+                            android:textSize="17sp"
+
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+
+
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/addPhotoImage"
+                    android:layout_width="300dp"
+                    tools:src="@drawable/big_profile"
+                    android:layout_marginTop="15dp"
+                    android:layout_gravity="center"
+                    android:layout_height="250dp"/>
+
+                <Button
+                    android:id="@+id/btn_Submit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/button_back"
+                    android:fontFamily="@font/roboto"
+                    android:gravity="center"
+                    android:text="Submit"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="60dp"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="15sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@id/top_icons_CL"
+                    app:layout_constraintStart_toStartOf="@id/top_icons_CL" />
+
 
             </LinearLayout>
 
         </ScrollView>
-
-
 
 
     </FrameLayout>

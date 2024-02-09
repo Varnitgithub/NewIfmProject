@@ -29,16 +29,12 @@
                 android:orientation="horizontal"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/upComingTaskDate"
                 android:background="@drawable/upcoming_taskno_back"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:padding="6dp"
-                    android:src="@drawable/task_icon"/>
                 <TextView
                     android:id="@+id/upcoming_taskno"
                     android:layout_width="match_parent"
@@ -64,7 +60,8 @@
                 android:padding="6dp"
                 tools:text="02 feb 2024"
                 android:layout_marginTop="8dp"
-
+app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/upComingTaskStatus"
                 android:layout_marginStart="10dp"
                 android:textColor="@color/grey_task"
                 android:textSize="15sp"
@@ -84,6 +81,8 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
                 tools:text="New"
+                app:layout_constraintStart_toEndOf="@id/upComingTaskDate"
+                app:layout_constraintBottom_toBottomOf="parent"
                 android:textColor="@color/red_task"
                 android:textSize="18sp"
                 android:textStyle="bold"

@@ -12,5 +12,14 @@
         tools:context=".activities.tasks.taskfragments.PreviousTaskFragment">
 
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/previousRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:listitem="@layout/previous_fragment_item"/>
+
     </FrameLayout>
+
+
+
 </layout>
