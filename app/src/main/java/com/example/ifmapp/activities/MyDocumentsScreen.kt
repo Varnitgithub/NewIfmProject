@@ -50,6 +50,8 @@ class MyDocumentsScreen : AppCompatActivity(), DocumentsAdapter.Clicked {
         var intent = Intent(this@MyDocumentsScreen, MainActivity::class.java)
         intent.putExtra("empName", empName)
         intent.putExtra("mPIN", pin)
+        intent.putExtra("empId", empId)
+
         startActivity(intent)
         super.onBackPressed()
     }
@@ -58,5 +60,6 @@ class MyDocumentsScreen : AppCompatActivity(), DocumentsAdapter.Clicked {
         val intent = Intent(this@MyDocumentsScreen, DocumentImages::class.java)
         intent.putExtra(Keys.ID_TYPE, model[position].docType)
         intent.putExtra("empId", empId)
+        startActivity(intent)
     }
 }

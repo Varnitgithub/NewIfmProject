@@ -1,26 +1,56 @@
 package com.example.ifmapp.activities.checklists
 
 import CheckListAdapter
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.LinearLayout
+import android.provider.MediaStore
+import android.util.Base64
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.ifmapp.MainActivity
 import com.example.ifmapp.R
+import com.example.ifmapp.RetrofitInstance
 import com.example.ifmapp.apiinterface.ApiInterface
 import com.example.ifmapp.databinding.ActivityCheckListForHousekeepingBinding
+import com.example.ifmapp.modelclasses.verifymobile.VerifyOtpResponse
 import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
+import com.example.ifmapp.toast.CustomToast
+import com.example.ifmapp.utils.UserObject
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.io.ByteArrayOutputStream
 
 class CheckListForHousekeeping : AppCompatActivity(), CheckListAdapter.Clicked {
-
+    private var CAMERA_PERMISSION_REQUEST_CODE = 111
     private var empId: String? = null
     private var empName: String? = null
     private var pin: String? = null
+    private var siteSelect: String? = null
+    private var tourCode: String? = null
     private lateinit var retrofitInstance: ApiInterface
     private lateinit var binding: ActivityCheckListForHousekeepingBinding
     private lateinit var checkListAdapter: CheckListAdapter
+
+    private val takePictureLauncher: ActivityResultLauncher<Intent> =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                val imageBitmap = result.data?.extras?.get("data") as Bitmap?
+                if (imageBitmap != null) {
+                    addPhotoApi(imageBitmap)
+                }
+            }
+        }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //  setContentView(R.layout.activity_check_list_for_housekeeping)
@@ -29,15 +59,17 @@ class CheckListForHousekeeping : AppCompatActivity(), CheckListAdapter.Clicked {
             R.layout.activity_check_list_for_housekeeping
         )
         empId = intent.getStringExtra("empId")
+        siteSelect = intent.getStringExtra("siteSelect")
+        tourCode = intent.getStringExtra("tourCode")
 
         for (users in SaveUsersInSharedPreference.getList(this@CheckListForHousekeeping)) {
-            if (users.empId == empId) {
+            if (users.empId == UserObject.userId) {
                 empId = users.empId
                 empName = users.userName
                 pin = users.pin
             }
         }
-
+        retrofitInstance = RetrofitInstance.apiInstance
         checkListAdapter = CheckListAdapter(this, this)
         binding.houseKeepingRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.houseKeepingRecyclerView.adapter = checkListAdapter
@@ -137,16 +169,21 @@ class CheckListForHousekeeping : AppCompatActivity(), CheckListAdapter.Clicked {
     }
 
     override fun onAddPhotoClick(checkListModel: CheckListModel, position: Int) {
-
+        if (checkCameraPermission()) {
+            openCamera()
+        } else {
+            requestCameraPermission()
+        }
     }
 
     override fun onViewPhotoClick(checkListModel: CheckListModel, position: Int) {
-
+        viewPhoto()
     }
 
-    override fun onMarkStatusClick(checkListModel: CheckListModel, position: Int) {
-
+    override fun onSwitchOnClick(checkListModel: CheckListModel, position: Int) {
+        makeStatusComplete()
     }
+
 
     override fun onBackPressed() {
         val intent = Intent(this@CheckListForHousekeeping, MainActivity::class.java)
@@ -157,4 +194,175 @@ class CheckListForHousekeeping : AppCompatActivity(), CheckListAdapter.Clicked {
         super.onBackPressed()
     }
 
+    fun bitmapToBase64(bitmap: Bitmap): String {
+        val byteArrayOutputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+        val byteArray = byteArrayOutputStream.toByteArray()
+        return Base64.encodeToString(byteArray, Base64.DEFAULT)
+    }
+
+    fun addPhotoApi(base64Image: Bitmap) {
+        var imageIntoBase64 = bitmapToBase64(base64Image)
+        retrofitInstance.insertCheckListImageHouseKeeping(
+            "sams",
+            UserObject.userId,
+            UserObject.userNames,
+            "",
+            imageIntoBase64,
+            UserObject.locationAutoId,
+            siteSelect.toString(),
+            "",
+            tourCode.toString()
+        ).enqueue(object : Callback<VerifyOtpResponse?> {
+            override fun onResponse(
+                call: Call<VerifyOtpResponse?>,
+                response: Response<VerifyOtpResponse?>
+            ) {
+                if (response.isSuccessful) {
+                    if (response.body()?.get(0)?.MessageID?.toInt() == 1) {
+                        CustomToast.showToast(
+                            this@CheckListForHousekeeping,
+                            response.body()?.get(0)?.MessageString.toString()
+                        )
+                    } else {
+                        CustomToast.showToast(
+                            this@CheckListForHousekeeping,
+                            response.body()?.get(0)?.MessageString.toString()
+                        )
+                    }
+                } else {
+                    CustomToast.showToast(
+                        this@CheckListForHousekeeping,
+                        "Response not successful"
+                    )
+                }
+            }
+
+            override fun onFailure(call: Call<VerifyOtpResponse?>, t: Throwable) {
+                CustomToast.showToast(
+                    this@CheckListForHousekeeping,
+                    "Response Failed"
+                )
+            }
+        })
+    }
+
+    fun viewPhoto() {
+        retrofitInstance.getChecklistImageUpdatedHouseKeeping(
+            "sams",
+            UserObject.userId,
+            "",
+            "",
+            UserObject.locationAutoId.toString(),
+            siteSelect.toString(),
+            tourCode.toString()
+        ).enqueue(object : Callback<VerifyOtpResponse?> {
+            override fun onResponse(
+                call: Call<VerifyOtpResponse?>,
+                response: Response<VerifyOtpResponse?>
+            ) {
+                if (response.isSuccessful) {
+                    CustomToast.showToast(
+                        this@CheckListForHousekeeping,
+                        "Response   successful"
+                    )
+                } else {
+                    CustomToast.showToast(
+                        this@CheckListForHousekeeping,
+                        "Response not successful"
+                    )
+                }
+            }
+
+            override fun onFailure(call: Call<VerifyOtpResponse?>, t: Throwable) {
+                CustomToast.showToast(
+                    this@CheckListForHousekeeping,
+                    "Response failed"
+                )
+            }
+        })
+    }
+
+    private fun checkCameraPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this@CheckListForHousekeeping,
+            Manifest.permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun requestCameraPermission() {
+        ActivityCompat.requestPermissions(
+            this@CheckListForHousekeeping,
+            arrayOf(Manifest.permission.CAMERA),
+            CAMERA_PERMISSION_REQUEST_CODE
+        )
+    }
+
+    private fun openCamera() {
+        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        takePictureLauncher.launch(takePictureIntent)
+    }
+
+    // Handle permission request result
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                openCamera()
+            } else {
+                // Handle permission denied
+            }
+        }
+    }
+
+    private fun makeStatusComplete() {
+        retrofitInstance.updateChecklistStatustoCompletedHouseKeeping(
+            "sams",
+            UserObject.userId,
+            UserObject.userNames,
+            "",
+            UserObject.locationAutoId,
+            siteSelect.toString(),
+            tourCode.toString()
+        ).enqueue(object : Callback<VerifyOtpResponse?> {
+            override fun onResponse(
+                call: Call<VerifyOtpResponse?>,
+                response: Response<VerifyOtpResponse?>
+            ) {
+                if (response.isSuccessful) {
+
+                    if (response.body()?.get(0)?.MessageID?.toInt() == 1) {
+                        CustomToast.showToast(
+                            this@CheckListForHousekeeping,
+                            response.body()?.get(0)!!.MessageString
+                        )
+                    } else {
+                        CustomToast.showToast(
+                            this@CheckListForHousekeeping,
+                            response.body()?.get(0)!!.MessageString
+                        )
+                    }
+
+
+                } else {
+                    CustomToast.showToast(
+                        this@CheckListForHousekeeping,
+                        "Response not successful"
+                    )
+                }
+            }
+
+            override fun onFailure(call: Call<VerifyOtpResponse?>, t: Throwable) {
+                CustomToast.showToast(
+                    this@CheckListForHousekeeping,
+                    "Response failed"
+                )
+            }
+        })
+    }
 }

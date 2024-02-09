@@ -20,6 +20,7 @@ import com.example.ifmapp.fragments.LongLeaveFragment
 import com.example.ifmapp.fragments.MultipleLeaveFragment
 import com.example.ifmapp.fragments.SingleLeaveFragment
 import com.example.ifmapp.utils.CommonCalendarUtils
+import com.example.ifmapp.utils.UserObject
 import java.util.Calendar
 
 class LeaveDateScreen : AppCompatActivity() {
@@ -105,5 +106,13 @@ class LeaveDateScreen : AppCompatActivity() {
         }
 
         dialog.show()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("TARRRRRRRRRRRRRR", "onCreate: TRRRRRR............name ${UserObject.userNames}")
+        Log.d("TARRRRRRRRRRRRRR", "onCreate: TRRRRRR............empid ${UserObject.userId}")
+        Log.d("TARRRRRRRRRRRRRR", "onCreate: TRRRRRR............pin ${UserObject.userPin}")
+
     }
 }

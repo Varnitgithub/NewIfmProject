@@ -12,6 +12,7 @@ import com.example.ifmapp.databinding.ActivityProfileScreenBinding
 import com.example.ifmapp.modelclasses.usermodel_sharedpreference.UserListModel
 import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
 import com.example.ifmapp.shared_preference.shared_preference_models.CurrentUserShiftsDetails
+import com.example.ifmapp.utils.UserObject
 
 class ProfileScreen : AppCompatActivity() {
     private lateinit var binding: ActivityProfileScreenBinding
@@ -31,7 +32,7 @@ binding = DataBindingUtil.setContentView(this,R.layout.activity_profile_screen)
         val usersList = SaveUsersInSharedPreference.getList(this@ProfileScreen)
 
         for (user in usersList){
-            if (user.pin==pin&&user.userName==empName){
+            if (user.pin==UserObject.userPin&&user.userName==UserObject.userNames){
                 empName = user.userName
                 empDesignation = user.designation
                 binding.employeeDesignation.text = empDesignation

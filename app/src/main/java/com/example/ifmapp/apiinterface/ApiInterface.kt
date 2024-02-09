@@ -167,5 +167,44 @@ interface ApiInterface {
         @Field("Purpose") Purpose: String,
         @Field("Mobile") Mobile: String,
     ):Call<VerifyOtpResponse>
+
+    @FormUrlEncoded
+    @POST("InsertCheckListImageHouseKeeping")
+    fun insertCheckListImageHouseKeeping(
+        @Field("connectionKey") connectionKey: String,
+        @Field("EmployeeID") EmployeeID: String,
+        @Field("EmployeeName") EmployeeName: String,
+        @Field("ChecklistId") ChecklistId: String,
+        @Field("ChecklistImageBase64") ChecklistImageBase64: String,
+        @Field("LocationAutoId") LocationAutoId: String,
+        @Field("ClientCode") ClientCode: String,
+        @Field("DutyDateTime") DutyDateTime: String,
+        @Field("TourCode") TourCode: String,
+    ):Call<VerifyOtpResponse>
+
+    @FormUrlEncoded
+    @POST("UpdateChecklistStatustoCompletedHouseKeeping")
+    fun updateChecklistStatustoCompletedHouseKeeping(
+        @Field("connectionKey") connectionKey: String,
+        @Field("EmployeeID") EmployeeID: String,
+        @Field("EmployeeName") EmployeeName: String,
+        @Field("ChecklistID") ChecklistID: String,
+        @Field("LocationAutoId") LocationAutoId: String,
+        @Field("ClientCode") ClientCode: String,
+        @Field("TourCode") TourCode: String,
+    ):Call<VerifyOtpResponse>
+    @FormUrlEncoded
+    @POST("GetChecklistImageUpdatedHouseKeeping")
+    fun getChecklistImageUpdatedHouseKeeping(
+        @Field("connectionKey") connectionKey: String,
+        @Field("EmployeeID") EmployeeID: String,
+        @Field("DutyDateTime") DutyDateTime: String,
+        @Field("ChecklistId") ChecklistId: String,
+        @Field("LocationAutoId") LocationAutoId: String,
+        @Field("ClientCode") ClientCode: String,
+        @Field("TourCode") TourCode: String,
+    ):Call<VerifyOtpResponse>
+
+
 }
 

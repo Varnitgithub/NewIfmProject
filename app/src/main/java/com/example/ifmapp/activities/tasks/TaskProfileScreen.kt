@@ -4,16 +4,15 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import com.example.ifmapp.MainActivity
 import com.example.ifmapp.R
 import com.example.ifmapp.RetrofitInstance
-import com.example.ifmapp.activities.HouseKeepingChecklistScreen
-import com.example.ifmapp.activities.checklists.CheckListForHousekeeping
 import com.example.ifmapp.activities.tasks.taskapi_response.TaskApiResponse
 import com.example.ifmapp.activities.tasks.taskapi_response.TaskApiResponseItem
 import com.example.ifmapp.activities.tasks.taskfragments.PreviousTaskFragment
@@ -21,12 +20,14 @@ import com.example.ifmapp.activities.tasks.taskfragments.TodoTaskFragment
 import com.example.ifmapp.activities.tasks.taskfragments.UpComingTaskFragment
 import com.example.ifmapp.apiinterface.ApiInterface
 import com.example.ifmapp.databinding.ActivityTaskProfileScreenBinding
+import com.example.ifmapp.modelclasses.geomappedsite_model.GeoMappedResponse
 import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
 import com.example.ifmapp.toast.CustomToast
+import com.example.ifmapp.utils.GlobalLocation
+import com.example.ifmapp.utils.UserObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -36,6 +37,8 @@ class TaskProfileScreen : AppCompatActivity() {
     private var empId: String? = null
     private var empName: String? = null
     private var pin: String? = null
+    private var siteSelect: String? = null
+    private lateinit var siteList: ArrayList<String>
     private lateinit var retrofitInstance: ApiInterface
 
     private lateinit var previousTaskList: ArrayList<TaskApiResponseItem>
@@ -53,11 +56,12 @@ class TaskProfileScreen : AppCompatActivity() {
         previousTaskList = ArrayList()
         todoTaskList = ArrayList()
         upComingTaskList = ArrayList()
+        siteList = ArrayList()
 
         Log.d("TAGGGGGGGG", "onCreate: task profile screen...............$empId")
 
         for (users in SaveUsersInSharedPreference.getList(this@TaskProfileScreen)) {
-            if (users.empId == empId) {
+            if (users.empId == UserObject.userId) {
                 binding.userId.text = users.empId
                 binding.userName.text = users.userName
                 empName = users.userName
@@ -65,13 +69,15 @@ class TaskProfileScreen : AppCompatActivity() {
                 binding.designation.text = users.designation
             }
         }
+        getSitesFromServer(UserObject.locationAutoId,GlobalLocation.location.latitude
+            ,GlobalLocation.location.longitude,UserObject.userId)
 
         binding.previousTask.setOnClickListener {
             if (previousTaskList.isNotEmpty()){
                 makeButtonHighlighted(binding.previousTask)
                 makeButtonNonHighlighted(binding.todoTask)
                 makeButtonNonHighlighted(binding.upComingTask)
-                addFragment(PreviousTaskFragment(previousTaskList))
+                addFragment(PreviousTaskFragment(siteSelect.toString(),previousTaskList))
             }
 
         }
@@ -80,7 +86,7 @@ class TaskProfileScreen : AppCompatActivity() {
                 makeButtonHighlighted(binding.todoTask)
                 makeButtonNonHighlighted(binding.previousTask)
                 makeButtonNonHighlighted(binding.upComingTask)
-                addFragment(TodoTaskFragment(todoTaskList))
+                addFragment(TodoTaskFragment(siteSelect.toString(),todoTaskList))
             }
 
         }
@@ -89,7 +95,7 @@ class TaskProfileScreen : AppCompatActivity() {
                 makeButtonHighlighted(binding.upComingTask)
                 makeButtonNonHighlighted(binding.todoTask)
                 makeButtonNonHighlighted(binding.previousTask)
-                addFragment(UpComingTaskFragment(upComingTaskList))
+                addFragment(UpComingTaskFragment(siteSelect.toString(),upComingTaskList))
             }
 
         }
@@ -184,7 +190,7 @@ getTasksList()
                             upComingTaskList.add(response.body()!![i])
                         }
                     }
-                    addFragment(TodoTaskFragment(todoTaskList))
+                    addFragment(TodoTaskFragment(siteSelect.toString(),todoTaskList))
                     Log.d("TASSSSKKKK", "onResponse:todo.................${todoTaskList} ")
                     Log.d("TASSSSKKKK", "onResponse:previous.................${previousTaskList} ")
                     Log.d("TASSSSKKKK", "onResponse:upcoming.................${upComingTaskList} ")
@@ -198,4 +204,85 @@ getTasksList()
         })
     }
 
+    fun setSiteSelection(
+        userId: String,
+        sites: ArrayList<String>
+    ) {
+        val _SiteList = ArrayList<String>()
+        _SiteList.clear()
+        _SiteList.addAll(sites)
+
+        val adapterSelectionShift = ArrayAdapter(
+            this@TaskProfileScreen,
+            com.google.android.material.R.layout.support_simple_spinner_dropdown_item,
+            ArrayList<String>()
+        )
+
+        for (site in SaveUsersInSharedPreference.getCurrentUserShifts(this@TaskProfileScreen, userId)) {
+            if (sites.contains(site.site)) {
+                _SiteList.clear()
+                _SiteList.add(site.site)
+            }
+        }
+        adapterSelectionShift.addAll(_SiteList)
+
+        adapterSelectionShift.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.spinnerSelectSite.adapter = adapterSelectionShift
+
+        binding.spinnerSelectSite.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    val selectedItem = parent?.getItemAtPosition(position).toString()
+                    siteSelect = selectedItem
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    parent?.let {
+                        if (it.count > 0) {
+                            siteSelect = it.getItemAtPosition(0).toString()
+                        }
+                    }
+                }
+            }
+    }
+
+    private fun getSitesFromServer(
+        locationAutoid: String,
+        latitude: String,
+        longitude: String,
+        userId: String
+    ) {
+        siteList.clear()
+        retrofitInstance.getGeoMappedSites(
+            "sams", locationAutoid, latitude,
+            longitude
+        ).enqueue(object : Callback<GeoMappedResponse?> {
+            override fun onResponse(
+                call: Call<GeoMappedResponse?>,
+                response: Response<GeoMappedResponse?>
+            ) {
+                if (response.isSuccessful) {
+
+                    val sizes = response.body()?.size?.minus(1)
+                    for (i in 0..sizes!!) {
+                        siteList.add(response.body()!!.get(i).ClientCode)
+                    }
+                    Log.d("TAGGGGGGGGGGGGG", "onResponse: this is site list..............$siteList")
+                    setSiteSelection(userId, siteList)
+                }
+            }
+
+            override fun onFailure(
+                call: Call<GeoMappedResponse?>,
+                t: Throwable
+            ) {
+
+            }
+        })
+    }
 }

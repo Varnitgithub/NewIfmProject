@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
+import com.example.ifmapp.MainActivity
 import com.example.ifmapp.R
 import com.example.ifmapp.databinding.ActivityLeaveScreen2Binding
 import com.example.ifmapp.databinding.ActivityLeaveScreenBinding
@@ -34,5 +35,11 @@ class LeaveScreen : AppCompatActivity() {
             intent.putExtra("leave", "Leave Records")
             startActivity(intent)
         }
+    }
+
+    override fun onBackPressed() {
+        startActivity(Intent(this@LeaveScreen,MainActivity::class.java))
+        super.onBackPressed()
+
     }
 }

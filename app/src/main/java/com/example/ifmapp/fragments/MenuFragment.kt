@@ -15,6 +15,7 @@ import com.example.ifmapp.activities.SalaryScreen
 import com.example.ifmapp.activities.TaskScreen
 import com.example.ifmapp.databinding.FragmentMenuBinding
 import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
+import com.example.ifmapp.utils.UserObject
 
 class MenuFragment(private var pin:String,private var userName:String,private var empNumber:String) : Fragment() {
     private lateinit var binding: FragmentMenuBinding
@@ -31,7 +32,7 @@ class MenuFragment(private var pin:String,private var userName:String,private va
         val usersList = SaveUsersInSharedPreference.getList(requireContext())
 
         for (user in usersList){
-            if (user.pin==pin&&user.userName==userName){
+            if (user.pin==UserObject.userPin&&user.userName==UserObject.userNames){
                 username = user.userName
                 designation = user.designation
             }

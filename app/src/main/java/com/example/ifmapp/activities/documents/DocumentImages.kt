@@ -13,6 +13,7 @@ import com.example.ifmapp.apiinterface.ApiInterface
 import com.example.ifmapp.keys.Keys
 import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
 import com.example.ifmapp.toast.CustomToast
+import com.example.ifmapp.utils.UserObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -33,7 +34,7 @@ class DocumentImages : AppCompatActivity() {
 
         retrofitInstance = RetrofitInstance.apiInstance
         for (users in SaveUsersInSharedPreference.getList(this@DocumentImages)) {
-            if (users.empId == empId) {
+            if (users.empId == UserObject.userId) {
                 empName = users.userName
                 pin = users.pin
                 locationAutoId = users.LocationAutoId
@@ -41,10 +42,11 @@ class DocumentImages : AppCompatActivity() {
 
 
         }
+        getImagesOfDocuments()
     }
 
 
-    fun getImagesOfDocuments() {
+    private fun getImagesOfDocuments() {
         retrofitInstance.getEmployeeDocs(
             "sams", empId.toString(), locationAutoId.toString(), docType.toString()
         ).enqueue(object : Callback<TaskModel?> {

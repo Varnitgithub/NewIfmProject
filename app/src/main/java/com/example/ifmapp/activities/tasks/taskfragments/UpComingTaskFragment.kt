@@ -2,6 +2,7 @@ package com.example.ifmapp.activities.tasks.taskfragments
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.ifmapp.R
 import com.example.ifmapp.activities.HouseKeepingChecklistScreen
+import com.example.ifmapp.activities.checklists.CheckListForHousekeeping
 import com.example.ifmapp.activities.tasks.TaskModel
 import com.example.ifmapp.activities.tasks.taskadapter.TasksAdapter
 import com.example.ifmapp.activities.tasks.taskapi_response.TaskApiResponseItem
@@ -18,7 +20,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-class UpComingTaskFragment(private var upcomingLists: ArrayList<TaskApiResponseItem>) : Fragment(),
+class UpComingTaskFragment(private var siteSelect:String,private var upcomingLists: ArrayList<TaskApiResponseItem>) : Fragment(),
     TasksAdapter.Clicked {
     private lateinit var binding: FragmentUpComingTaskBinding
     private lateinit var tasksAdapter: TasksAdapter
@@ -50,10 +52,6 @@ class UpComingTaskFragment(private var upcomingLists: ArrayList<TaskApiResponseI
         tasksAdapter.updateList(mList)
 
 
-
-
-
-
         return binding.root
     }
 
@@ -64,7 +62,12 @@ class UpComingTaskFragment(private var upcomingLists: ArrayList<TaskApiResponseI
     }
 
     override fun onclick(model: TaskModel, position: Int) {
-        startActivity(Intent(requireContext(), HouseKeepingChecklistScreen::class.java))
+        var intent = Intent(requireContext(), CheckListForHousekeeping::class.java)
+        intent.putExtra("siteSelect", siteSelect)
+
+        intent.putExtra("tourCode", upcomingLists[position].TourCode)
+        Log.d("TAGGGGGGGGGG", "onclick:...................... ${upcomingLists[position].TourCode}")
+        startActivity(intent)
     }
 
 

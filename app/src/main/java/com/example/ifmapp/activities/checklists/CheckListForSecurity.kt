@@ -12,6 +12,7 @@ import com.example.ifmapp.apiinterface.ApiInterface
 import com.example.ifmapp.databinding.ActivityCheckListForSecurityBinding
 import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
 import com.example.ifmapp.toast.CustomToast
+import com.example.ifmapp.utils.UserObject
 
 class CheckListForSecurity : AppCompatActivity(), CheckListAdapter.Clicked {
     private lateinit var binding:ActivityCheckListForSecurityBinding
@@ -32,7 +33,7 @@ class CheckListForSecurity : AppCompatActivity(), CheckListAdapter.Clicked {
         empId = intent.getStringExtra("empId")
 
         for (users in SaveUsersInSharedPreference.getList(this@CheckListForSecurity)) {
-            if (users.empId == empId) {
+            if (users.empId == UserObject.userId) {
                 empId = users.empId
                 empName = users.userName
                 pin = users.pin
@@ -84,8 +85,11 @@ class CheckListForSecurity : AppCompatActivity(), CheckListAdapter.Clicked {
 
     }
 
-    override fun onMarkStatusClick(checkListModel: CheckListModel, position: Int) {
+    override fun onSwitchOnClick(checkListModel: CheckListModel, position: Int) {
+
     }
+
+
     override fun onBackPressed() {
         val intent = Intent(this@CheckListForSecurity, MainActivity::class.java)
         intent.putExtra("mPIN", pin)

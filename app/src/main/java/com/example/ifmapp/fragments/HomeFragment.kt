@@ -29,6 +29,7 @@ import com.example.ifmapp.modelclasses.usermodel_sharedpreference.UserListModel
 import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
 import com.example.ifmapp.toast.CustomToast
 import com.example.ifmapp.utils.GlobalLocation
+import com.example.ifmapp.utils.UserObject
 import com.example.ifmapp.utils.UtilModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
@@ -50,7 +51,7 @@ class HomeFragment(
     private var otp: String,
     private var empNumber: String,
     private var userName: String
-) : Fragment(){
+) : Fragment() {
     private lateinit var binding: FragmentHomeBinding
     private var retrofitInstance: ApiInterface = RetrofitInstance.apiInstance
     private lateinit var addAccountAdapter: AddAccountAdapter
@@ -85,7 +86,7 @@ class HomeFragment(
         super.onCreate(savedInstanceState)
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
 
-       // addAccountAdapter = AddAccountAdapter(requireContext(), this)
+        // addAccountAdapter = AddAccountAdapter(requireContext(), this)
 
     }
 
@@ -95,10 +96,27 @@ class HomeFragment(
     ): View {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false)
+
+        /*  for (users in SaveUsersInSharedPreference.getList(requireContext())) {
+              if (users.empId == empId) {
+                  binding.userId.text = users.empId
+                  binding.userName.text = users.userName
+                  empName = users.userName
+                  pin = users.pin
+                  binding.designation.text = users.designation
+              }
+          }*/
+
         currentUser = SaveUsersInSharedPreference.getUserByPin(requireContext(), otp, userName)
+
+
         locationAutoId = currentUser?.LocationAutoId.toString()
         empName = currentUser?.userName
-
+        UserObject.userNames = currentUser?.userName.toString()
+        UserObject.userId = currentUser?.empId.toString()
+        UserObject.userPin = currentUser?.pin.toString()
+        UserObject.designation = currentUser?.designation.toString()
+        UserObject.locationAutoId = currentUser?.LocationAutoId.toString()
 
         empNumber = currentUser?.empId.toString()
         empDesignation = currentUser?.designation
@@ -226,10 +244,10 @@ class HomeFragment(
         removeLocationUpdates()
     }
 
-  /*  @SuppressLint("MissingPermission")
-    override fun onclick(employeeModel: UserListModel, position: Int) {
+    /*  @SuppressLint("MissingPermission")
+      override fun onclick(employeeModel: UserListModel, position: Int) {
 
-    }*/
+      }*/
 
     private fun getFormattedDate(): String {
         val currentDate = Calendar.getInstance().time
@@ -286,8 +304,12 @@ class HomeFragment(
                 }
             }
         }
+        binding.userName.text = UserObject.userNames
+        binding.userId.text = UserObject.userId
+
+        binding.designation.text = UserObject.designation
         getSitesFromServer(
-            locationAutoId.toString(),
+            UserObject.locationAutoId,
             GlobalLocation.location.latitude,
             GlobalLocation.location.longitude,
             empNumber
@@ -477,7 +499,7 @@ class HomeFragment(
         })
     }
 
-    fun userNoExists(inTime: String, outTime: String) {
+    private fun userNoExists(inTime: String, outTime: String) {
         binding.joiningTime.text = inTime
         binding.outTime.text = outTime
         binding.checkInBtn.isClickable = true
@@ -490,7 +512,7 @@ class HomeFragment(
         binding.checkInBtn.setBackgroundResource(R.drawable.button_back)
     }
 
-    fun userInExists(inTime: String, outTime: String) {
+    private fun userInExists(inTime: String, outTime: String) {
 
         binding.joiningTime.text = inTime
         setAmPm(inTime, binding.joiningAm)

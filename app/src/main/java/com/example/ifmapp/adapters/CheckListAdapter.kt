@@ -23,12 +23,12 @@ class CheckListAdapter(private val context: Context,private var listener:Clicked
         var statusPendingDone: TextView = itemView.findViewById(R.id.statusDone_pending)
         var addPhoto:Button = itemView.findViewById(R.id.btn_addphoto)
         var viewPhoto:Button = itemView.findViewById(R.id.btn_viewPhoto)
+        var switchButton:Button = itemView.findViewById(R.id.switchButton)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DocumentsViewHolder {
         val view =
-            DocumentsViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.checklist_for_housekeeping_item, parent, false)
-            )
+            DocumentsViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.checklist_for_housekeeping_item, parent, false))
 
         view.addPhoto.setOnClickListener {
             listener.onAddPhotoClick(checkList[view.adapterPosition],view.adapterPosition)
@@ -36,9 +36,10 @@ class CheckListAdapter(private val context: Context,private var listener:Clicked
         view.viewPhoto.setOnClickListener {
             listener.onViewPhotoClick(checkList[view.adapterPosition],view.adapterPosition)
         }
-        view.statusPendingDone.setOnClickListener {
-            listener.onMarkStatusClick(checkList[view.adapterPosition],view.adapterPosition)
+        view.switchButton.setOnClickListener {
+            listener.onSwitchOnClick(checkList[view.adapterPosition],view.adapterPosition)
         }
+
         return view
     }
 
@@ -82,6 +83,6 @@ class CheckListAdapter(private val context: Context,private var listener:Clicked
     interface Clicked{
         fun onAddPhotoClick(checkListModel: CheckListModel,position: Int)
         fun onViewPhotoClick(checkListModel: CheckListModel,position: Int)
-        fun onMarkStatusClick(checkListModel: CheckListModel,position: Int)
+        fun onSwitchOnClick(checkListModel: CheckListModel,position: Int)
     }
 }
