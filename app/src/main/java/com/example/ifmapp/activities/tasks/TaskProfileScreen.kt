@@ -47,7 +47,6 @@ class TaskProfileScreen : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //setContentView(R.layout.activity_task_profile_screen)
-
         binding = DataBindingUtil.setContentView(this, R.layout.activity_task_profile_screen)
         empId = intent.getStringExtra("empId")
 
@@ -73,33 +72,51 @@ class TaskProfileScreen : AppCompatActivity() {
             ,GlobalLocation.location.longitude,UserObject.userId)
 
         binding.previousTask.setOnClickListener {
+            binding.progressBar.visibility = View.VISIBLE
+
             if (previousTaskList.isNotEmpty()){
                 makeButtonHighlighted(binding.previousTask)
                 makeButtonNonHighlighted(binding.todoTask)
                 makeButtonNonHighlighted(binding.upComingTask)
                 addFragment(PreviousTaskFragment(siteSelect.toString(),previousTaskList))
             }
+            binding.progressBar.visibility = View.GONE
+
 
         }
         binding.todoTask.setOnClickListener {
+            binding.progressBar.visibility = View.VISIBLE
+
             if (todoTaskList.isNotEmpty()){
                 makeButtonHighlighted(binding.todoTask)
                 makeButtonNonHighlighted(binding.previousTask)
                 makeButtonNonHighlighted(binding.upComingTask)
                 addFragment(TodoTaskFragment(siteSelect.toString(),todoTaskList))
             }
+            binding.progressBar.visibility = View.GONE
+
 
         }
         binding.upComingTask.setOnClickListener {
+            binding.progressBar.visibility = View.VISIBLE
+
             if (upComingTaskList.isNotEmpty()){
                 makeButtonHighlighted(binding.upComingTask)
                 makeButtonNonHighlighted(binding.todoTask)
                 makeButtonNonHighlighted(binding.previousTask)
                 addFragment(UpComingTaskFragment(siteSelect.toString(),upComingTaskList))
             }
+            binding.progressBar.visibility = View.GONE
+
 
         }
 getTasksList()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        binding.progressBar.visibility = View.VISIBLE
+
     }
 
 
@@ -182,7 +199,7 @@ getTasksList()
                             todoTaskList.add(response.body()!![i])
 
 
-                        } else if (fromTimeInSeconds > currentTimeInSeconds) {
+                        } else if (fromTimeInSeconds < currentTimeInSeconds) {
                             previousTaskList.add(response.body()!![i])
 
 
@@ -191,6 +208,8 @@ getTasksList()
                         }
                     }
                     addFragment(TodoTaskFragment(siteSelect.toString(),todoTaskList))
+                    binding.progressBar.visibility = View.GONE
+
                     Log.d("TASSSSKKKK", "onResponse:todo.................${todoTaskList} ")
                     Log.d("TASSSSKKKK", "onResponse:previous.................${previousTaskList} ")
                     Log.d("TASSSSKKKK", "onResponse:upcoming.................${upComingTaskList} ")

@@ -6,4 +6,6 @@ object GlobalLocation {
 
     var location :UtilModel = UtilModel("","","")
 
+
+
 }

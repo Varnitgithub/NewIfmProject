@@ -2,7 +2,7 @@ package com.example.ifmapp.viewModel
 
 import androidx.lifecycle.ViewModel
 
-class ViewModelClass(){
+class ViewModelClass {
 //    var value = ""
 //    fun setValue(tempValue:String){
 //        this.value = tempValue

@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import com.example.ifmapp.MainActivity
 import com.example.ifmapp.R
 import com.example.ifmapp.databinding.ActivityLeaveScreen2Binding
 import com.example.ifmapp.databinding.ActivityLeaveScreenBinding
@@ -60,5 +61,9 @@ class LeaveReasonScreen : AppCompatActivity() {
 
             }
         }
+    }
+    override fun onBackPressed() {
+        startActivity(Intent(this@LeaveReasonScreen, MainActivity::class.java))
+        super.onBackPressed()
     }
 }

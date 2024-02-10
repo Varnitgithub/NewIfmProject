@@ -1,5 +1,6 @@
 package com.example.ifmapp.apiinterface
 
+import com.example.ifmapp.activities.checklists.housekeeping_model.ViewPhotoResponse
 import com.example.ifmapp.activities.tasks.TaskModel
 import com.example.ifmapp.activities.tasks.taskapi_response.TaskApiResponse
 import com.example.ifmapp.modelclasses.attendance_response.AttendanceResponse
@@ -203,7 +204,7 @@ interface ApiInterface {
         @Field("LocationAutoId") LocationAutoId: String,
         @Field("ClientCode") ClientCode: String,
         @Field("TourCode") TourCode: String,
-    ):Call<VerifyOtpResponse>
+    ):Call<ViewPhotoResponse>
 
 
 }

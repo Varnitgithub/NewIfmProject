@@ -16,7 +16,7 @@
             android:id="@+id/top_icons_CL"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@id/frameLayout"
+            app:layout_constraintBottom_toTopOf="@id/frameLayout_Main"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
@@ -35,32 +35,12 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <ImageView
-                android:id="@+id/refresh_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
 
-                android:src="@drawable/refresh"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/m_icon"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:id="@+id/m_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:src="@drawable/m_icon"
-
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <FrameLayout
-            android:id="@+id/frameLayout"
+            android:id="@+id/frameLayout_Main"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
@@ -76,9 +56,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:background="#6894BC"
-            android:paddingTop="5dp"
-            android:paddingBottom="15dp"
-
+            android:paddingBottom="5dp"
+app:layout_constraintTop_toBottomOf="@id/frameLayout_Main"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

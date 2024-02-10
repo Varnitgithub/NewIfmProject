@@ -25,11 +25,6 @@ class PreviousTaskFragment(private var siteSelect:String,private var previousLis
     private lateinit var tasksAdapter: TasksAdapter
 
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -67,7 +62,9 @@ class PreviousTaskFragment(private var siteSelect:String,private var previousLis
 
         intent.putExtra("tourCode", previousLists[position].TourCode)
         intent.putExtra("siteSelect", siteSelect)
-        Log.d("TAGGGGGGGGGG", "onclick:...................... ${previousLists[position].TourCode}")
+        intent.putExtra("position", (position+1).toString())
+
+        Log.d("TAGGGGGGGGGG", "onclick:...................... ${previousLists[position].TourCode} and position $position")
         startActivity(intent)
     }
 

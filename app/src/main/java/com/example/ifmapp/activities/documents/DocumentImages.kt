@@ -13,6 +13,7 @@ import com.example.ifmapp.apiinterface.ApiInterface
 import com.example.ifmapp.keys.Keys
 import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
 import com.example.ifmapp.toast.CustomToast
+import com.example.ifmapp.utils.GlobalLocation
 import com.example.ifmapp.utils.UserObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -29,7 +30,7 @@ class DocumentImages : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_document_images)
-        empId = intent.getStringExtra("empId")
+        empId = UserObject.userId
         docType = intent.getStringExtra(Keys.ID_TYPE)
 
         retrofitInstance = RetrofitInstance.apiInstance
@@ -39,42 +40,39 @@ class DocumentImages : AppCompatActivity() {
                 pin = users.pin
                 locationAutoId = users.LocationAutoId
             }
-
-
         }
         getImagesOfDocuments()
     }
 
-
     private fun getImagesOfDocuments() {
-        retrofitInstance.getEmployeeDocs(
-            "sams", empId.toString(), locationAutoId.toString(), docType.toString()
-        ).enqueue(object : Callback<TaskModel?> {
-            override fun onResponse(call: Call<TaskModel?>, response: Response<TaskModel?>) {
-                if (response.isSuccessful) {
+        Log.d("GETDOCU", "getImagesOfDocuments: ${UserObject.userId} ${UserObject.locationAutoId} $docType")
+        if ( UserObject.userId.isNotEmpty()&& UserObject.locationAutoId.isNotEmpty()&& docType.toString().isNotEmpty()){
+            retrofitInstance.getEmployeeDocs(
+                "sams", UserObject.userId, UserObject.locationAutoId, docType.toString()
+            ).enqueue(object : Callback<TaskModel?> {
+                override fun onResponse(call: Call<TaskModel?>, response: Response<TaskModel?>) {
+                    if (response.isSuccessful) {
 
-                    Log.d("TAGGGGGGGGGGG", "onResponse: \"Documents fetching successful\"")
-                }else{
-                    Log.d("TAGGGGGGGGGGG", "onResponse: \"Documents fetching not successful\"")
+                        Log.d("TAGGGGGGGGGGG", "onResponse: \"Documents fetching successful\"")
+                    }else{
+                        Log.d("TAGGGGGGGGGGG", "onResponse: \"Documents fetching not successful\"")
+
+
+                    }
+                }
+
+                override fun onFailure(call: Call<TaskModel?>, t: Throwable) {
+                    Log.d("TAGGGGGGGGGGG", "onFailure: \"Documents Fetching Failed\"")
 
 
                 }
-            }
+            })
+        }
 
-            override fun onFailure(call: Call<TaskModel?>, t: Throwable) {
-                Log.d("TAGGGGGGGGGGG", "onFailure: \"Documents fetching successful\"")
-
-
-            }
-        })
     }
 
     override fun onBackPressed() {
-        val intent = Intent(this@DocumentImages, MyDocumentsScreen::class.java)
-        intent.putExtra("mPIN", pin)
-        intent.putExtra("empName", empName)
-        intent.putExtra("empId", empId)
-        startActivity(intent)
+        startActivity(Intent(this@DocumentImages,MainActivity::class.java))
         super.onBackPressed()
     }
 }

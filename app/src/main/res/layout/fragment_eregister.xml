@@ -41,7 +41,7 @@
                         android:layout_marginEnd="13dp"
                         android:fontFamily="@font/roboto"
                         android:gravity="center"
-                        android:padding="6dp"
+                        android:padding="4dp"
                         android:text="E-Register"
                         android:textColor="#121212"
                         android:textSize="18sp"
@@ -239,7 +239,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="start"
                         android:fontFamily="@font/roboto"
-                        android:text="Add Photo (Optional)"
+                        android:text="Add Photo"
                         android:textColor="@color/black"
 
                         android:textSize="16sp"

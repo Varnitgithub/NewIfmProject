@@ -1,6 +1,7 @@
 package com.example.ifmapp.activities
 
 import SalaryAdapter
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.ifmapp.MainActivity
 import com.example.ifmapp.R
 import com.example.ifmapp.databinding.ActivitySalaryScreenBinding
 import com.example.ifmapp.modelclasses.SalaryModel
@@ -104,5 +106,10 @@ class SalaryScreen : AppCompatActivity() {
         } else {
             Toast.makeText(this, "There is no salary slip", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    override fun onBackPressed() {
+        startActivity(Intent(this@SalaryScreen,MainActivity::class.java))
+        super.onBackPressed()
     }
 }

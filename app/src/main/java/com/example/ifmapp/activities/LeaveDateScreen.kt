@@ -3,6 +3,7 @@ package com.example.ifmapp.activities
 import CustomDialogClass
 import android.annotation.SuppressLint
 import android.app.Dialog
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,6 +15,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import com.example.ifmapp.MainActivity
 import com.example.ifmapp.R
 import com.example.ifmapp.databinding.ActivityLeaveDateScreenBinding
 import com.example.ifmapp.fragments.LongLeaveFragment
@@ -114,5 +116,9 @@ class LeaveDateScreen : AppCompatActivity() {
         Log.d("TARRRRRRRRRRRRRR", "onCreate: TRRRRRR............empid ${UserObject.userId}")
         Log.d("TARRRRRRRRRRRRRR", "onCreate: TRRRRRR............pin ${UserObject.userPin}")
 
+    }
+    override fun onBackPressed() {
+        startActivity(Intent(this@LeaveDateScreen, MainActivity::class.java))
+        super.onBackPressed()
     }
 }

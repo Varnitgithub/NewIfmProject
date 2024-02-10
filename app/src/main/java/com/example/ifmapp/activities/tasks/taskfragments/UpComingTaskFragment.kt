@@ -25,11 +25,6 @@ class UpComingTaskFragment(private var siteSelect:String,private var upcomingLis
     private lateinit var binding: FragmentUpComingTaskBinding
     private lateinit var tasksAdapter: TasksAdapter
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -66,7 +61,9 @@ class UpComingTaskFragment(private var siteSelect:String,private var upcomingLis
         intent.putExtra("siteSelect", siteSelect)
 
         intent.putExtra("tourCode", upcomingLists[position].TourCode)
-        Log.d("TAGGGGGGGGGG", "onclick:...................... ${upcomingLists[position].TourCode}")
+        intent.putExtra("position", (position+1).toString())
+
+        Log.d("TAGGGGGGGGGG", "onclick:...................... ${upcomingLists[position].TourCode}  and position $position")
         startActivity(intent)
     }
 

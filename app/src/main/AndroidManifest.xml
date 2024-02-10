@@ -40,6 +40,9 @@
         android:theme="@style/Theme.IFMApp"
         tools:targetApi="31">
         <activity
+            android:name=".activities.checklists.ViewHouseKeepingPhoto"
+            android:exported="false" />
+        <activity
             android:name=".activities.checklists.CheckListForSecurity"
             android:exported="false" />
         <activity

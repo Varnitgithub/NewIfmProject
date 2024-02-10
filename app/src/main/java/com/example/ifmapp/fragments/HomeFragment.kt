@@ -227,6 +227,10 @@ class HomeFragment(
                         "TAGGGGGGGG",
                         "getLastLocation: $mLatitude $mLongitude and $mAltitude are coming"
                     )
+                    Log.d(
+                        "TAGGGGGGGG",
+                        "GLOBAL LOCATION: ${location.latitude.toString()} ${location.longitude.toString()} and ${location.altitude.toString()} are coming"
+                    )
                 }
             }
     }
@@ -274,6 +278,8 @@ class HomeFragment(
 
     override fun onResume() {
         super.onResume()
+        binding.progressBar.visibility = View.VISIBLE
+
         currentShiftActualLiveData.observe(requireActivity()) {
             for (timing in shiftListTiming) {
                 if (timing.substring(0, 1) == it) {
@@ -304,6 +310,7 @@ class HomeFragment(
                 }
             }
         }
+        Log.d("TAGGGGGGG", "onResume: this is user details ${UserObject.userNames} ${UserObject.userId} ${UserObject.designation} ${UserObject.userPin}")
         binding.userName.text = UserObject.userNames
         binding.userId.text = UserObject.userId
 
@@ -510,6 +517,8 @@ class HomeFragment(
         binding.checkoutBtn.setBackgroundResource(R.drawable.button_backwhite)
         binding.checkInBtn.setTextColor(resources.getColor(R.color.white))
         binding.checkInBtn.setBackgroundResource(R.drawable.button_back)
+        binding.progressBar.visibility = View.GONE
+
     }
 
     private fun userInExists(inTime: String, outTime: String) {
@@ -526,6 +535,7 @@ class HomeFragment(
         binding.checkInBtn.setBackgroundResource(R.drawable.button_backwhite)
         binding.checkoutBtn.setTextColor(resources.getColor(R.color.white))
         binding.checkoutBtn.setBackgroundResource(R.drawable.button_back)
+        binding.progressBar.visibility = View.GONE
 
 
     }
@@ -550,6 +560,7 @@ class HomeFragment(
         binding.checkInBtn.setBackgroundResource(R.drawable.button_backwhite)
         binding.checkoutBtn.setTextColor(resources.getColor(R.color.check_btn))
         binding.checkoutBtn.setBackgroundResource(R.drawable.button_backwhite)
+        binding.progressBar.visibility = View.GONE
         //shiftList.clear()
         //siteList.clear()
         // getSitesFromServer(locationAutoid, "28.4063024", "77.0685936", userId)

@@ -15,6 +15,7 @@ import com.example.ifmapp.fragments.ERegisterFragment
 import com.example.ifmapp.fragments.HomeFragment
 import com.example.ifmapp.fragments.MenuFragment
 import com.example.ifmapp.fragments.MyTaskFragment
+import com.example.ifmapp.utils.UserObject
 
 
 class MainActivity : AppCompatActivity() {
@@ -44,6 +45,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d("TAGGGGGGG", "oncreate of main: this is user details ${UserObject.userNames} ${UserObject.userId} ${UserObject.designation} ${UserObject.userPin}")
 
         otp = intent.getStringExtra("mPIN")
 
@@ -88,8 +90,9 @@ class MainActivity : AppCompatActivity() {
             )
         } else {
             homeFragment =
-                HomeFragment(this, mOTP.toString(),
-                    empNumber.toString(),userName.toString())
+                HomeFragment(this, UserObject.userPin,
+                    UserObject.userId,UserObject.userNames)
+
         }
 
         if (otp != null) {
@@ -115,9 +118,10 @@ class MainActivity : AppCompatActivity() {
 
 
         } else {
-            menuFragment = MenuFragment(mOTP.toString(),userName.toString(),empNumber.toString())
-            myTaskFragment = MyTaskFragment(this, mOTP.toString(),userName.toString(),empNumber.toString())
-            eRegisterFragment = ERegisterFragment(mOTP.toString(),empNumber.toString())
+            menuFragment = MenuFragment( UserObject.userPin,userName.toString(), UserObject.userId)
+            myTaskFragment = MyTaskFragment(this, UserObject.userPin,UserObject.userNames, UserObject.userId)
+            eRegisterFragment = ERegisterFragment( UserObject.userPin, UserObject.userId)
+            Log.d("TAGGGGG", "onCreate: this case is running for others")
 
 
         }
@@ -162,14 +166,14 @@ class MainActivity : AppCompatActivity() {
     }
     private fun addFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
-            .replace(R.id.frameLayout, fragment)
+            .replace(R.id.frameLayout_Main, fragment)
             .commit()
 
     }
     override fun onBackPressed() {
 
         val fragmentManager: FragmentManager = supportFragmentManager
-        val currentFragment: Fragment? = fragmentManager.findFragmentById(R.id.frameLayout)
+        val currentFragment: Fragment? = fragmentManager.findFragmentById(R.id.frameLayout_Main)
 
         when (currentFragment) {
             is HomeFragment -> {
@@ -211,4 +215,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        Log.d("TAGGGGGGG", "onresume of main: this is user details ${UserObject.userNames} ${UserObject.userId} ${UserObject.designation} ${UserObject.userPin}")
+
+    }
 }
