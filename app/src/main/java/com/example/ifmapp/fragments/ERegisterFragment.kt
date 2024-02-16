@@ -28,6 +28,7 @@ import com.example.ifmapp.modelclasses.verifymobile.VerifyOtpResponse
 import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
 import com.example.ifmapp.toast.CustomToast
 import com.example.ifmapp.utils.GlobalLocation
+import com.example.ifmapp.utils.UserObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -110,8 +111,6 @@ class ERegisterFragment(private var pin: String, private var empId: String) : Fr
         super.onResume()
         getSitesFromServer(
             locationAutoid.toString(),
-            GlobalLocation.location.latitude,
-            GlobalLocation.location.longitude,
             empId
         )
     }
@@ -243,14 +242,11 @@ class ERegisterFragment(private var pin: String, private var empId: String) : Fr
 
     private fun getSitesFromServer(
         locationAutoid: String,
-        latitude: String,
-        longitude: String,
         userId: String
     ) {
         siteList.clear()
         retrofitInstance.getGeoMappedSites(
-            "sams", locationAutoid, latitude,
-            longitude
+            "sams", UserObject.userId,locationAutoid
         ).enqueue(object : Callback<GeoMappedResponse?> {
             override fun onResponse(
                 call: Call<GeoMappedResponse?>,
@@ -260,7 +256,7 @@ class ERegisterFragment(private var pin: String, private var empId: String) : Fr
 
                     val sizes = response.body()?.size?.minus(1)
                     for (i in 0..sizes!!) {
-                        siteList.add(response.body()!!.get(i).ClientCode)
+                        siteList.add(response.body()!!.get(i).ClientSiteName)
                     }
                     Log.d("TAGGGGGGGGGGGGG", "onResponse: this is site list..............$siteList")
                     setSiteSelection(userId, siteList)

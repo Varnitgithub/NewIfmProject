@@ -86,3 +86,43 @@ class CustomGridAdapter(context: Context, resource: Int, dates: List<String>) :
         }
     }
 }
+
+/*class CustomGridAdapter(
+    context: Context,
+    resource: Int,
+    dates: List<String>,
+    val holidayDates: List<String>,
+    val workingDates: List<String>,
+    val weekendDates: List<String>
+) : ArrayAdapter<String>(context, resource, dates) {
+
+    // ... (rest of the adapter code)
+
+    // Modify setBackgroundColor method to use different lists for different backgrounds
+    @SuppressLint("ResourceAsColor")
+    fun setBackgroundColor(position: Int, textView: TextView) {
+        val date = getItem(position)?.toIntOrNull()
+
+        // Check if the date is in the holidayDates list
+        if (holidayDates.contains(date.toString())) {
+            textView.setBackgroundResource(R.drawable.holiday_date_back)
+            textView.setTextColor(R.color.white)
+        }
+        // Check if the date is in the workingDates list
+        else if (workingDates.contains(date.toString())) {
+            textView.setBackgroundResource(R.drawable.working_date_back)
+            textView.setTextColor(R.color.white)
+        }
+        // Check if the date is in the weekendDates list
+        else if (weekendDates.contains(date.toString())) {
+            textView.setBackgroundResource(R.drawable.weekend_date_back)
+            textView.setTextColor(R.color.white)
+        }
+        // Default background for other dates
+        else {
+            textView.setBackgroundColor(Color.TRANSPARENT)
+            textView.setTextColor(Color.BLACK)
+        }
+    }
+}
+*/

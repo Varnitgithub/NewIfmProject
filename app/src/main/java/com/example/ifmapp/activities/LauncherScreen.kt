@@ -5,16 +5,18 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
-import android.widget.Toast
+import android.view.animation.AnimationUtils
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.example.ifmapp.R
-import com.example.ifmapp.checked
 import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
 import com.example.ifmapp.toast.CustomToast
+import com.example.ifmapp.utils.CheckInternetConnection
 import com.example.ifmapp.utils.GlobalLocation
 import com.example.ifmapp.utils.UtilModel
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -26,14 +28,19 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+
+//AAAAFXAqqtg:APA91bEtVKr-vzafAfGINsli_ysT-_0zKwHVGhhH_1Wdtp4QqP2MAhhoSM39129kVN7HWxJcVi1RyAbbGlJsp-8z41zUeDb6sXVpg6IcpfRUVS5TOAEqFUPFLIcuQZRvbli3JrXI2o0Q
+//this is my firebase server key for notification
 class LauncherScreen : AppCompatActivity() {
     private var fusedLocationProviderClient: FusedLocationProviderClient? = null
     private var locationCallback: LocationCallback? = null
     private var locationRequest: LocationRequest? = null
     private var LOCATION_PERMISSION_REQUEST_CODE = 111
+    private val CAMERA_REQUEST_CODE = 11
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_launcher_screen)
+
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         locationRequest =
@@ -42,8 +49,18 @@ class LauncherScreen : AppCompatActivity() {
         createLocationRequest()
         Log.d("TAAAAAAAAAAAAA", "getLastLocation: this is global loc. ${GlobalLocation.location}")
 
+        /*val checkoutReceiver = CheckoutReceiver()
+        val checkoutTime = System.currentTimeMillis() + 1 * 60 * 1000 // 1 minutes from now
+        checkoutReceiver.setCheckoutTime(this, checkoutTime)
+        checkoutReceiver.checkCheckoutTime(this@LauncherScreen)*/
+
+
 
         if (checkPermission()) {
+            val welcomeText: TextView = findViewById(R.id.welcomeText)
+            welcomeText.text = "Welcome to GroupL" // Set your dynamic text here
+            welcomeText.startAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_in))
+            welcomeText.visibility = TextView.VISIBLE
             CoroutineScope(Dispatchers.Default).launch {
                 getLastLocation()
             }
@@ -55,8 +72,6 @@ class LauncherScreen : AppCompatActivity() {
         } else {
             requestPermission()
         }
-
-
     }
 
     private fun checkDatabaseUsers() {
@@ -101,9 +116,13 @@ class LauncherScreen : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-CoroutineScope(Dispatchers.Default).launch {
-    getLastLocation()
-}
+                val welcomeText: TextView = findViewById(R.id.welcomeText)
+                welcomeText.text = "Welcome to GroupL" // Set your dynamic text here
+                welcomeText.startAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_in))
+                welcomeText.visibility = TextView.VISIBLE
+                CoroutineScope(Dispatchers.Default).launch {
+                    getLastLocation()
+                }
                 val delayMillis = 3000L
                 Handler().postDelayed({
                     finish()
@@ -115,8 +134,6 @@ CoroutineScope(Dispatchers.Default).launch {
                 CustomToast.showToast(this@LauncherScreen, "please allow for location")
             }
             //Permission Granted
-
-
         }
     }
 
@@ -138,6 +155,13 @@ CoroutineScope(Dispatchers.Default).launch {
         }
     }
 
+    /*protected fun createLocationRequestz() {
+        mLocationRequest = LocationRequest()
+        mLocationRequest.setInterval(com.example.lenovo.sam.GeoAdressList.GeoAdress.INTERVAL)
+        mLocationRequest.setFastestInterval(com.example.lenovo.sam.GeoAdressList.GeoAdress.FASTEST_INTERVAL)
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+    }*/
+
     private fun removeLocationUpdates() {
         locationCallback.let {
             if (it != null) {
@@ -153,13 +177,9 @@ CoroutineScope(Dispatchers.Default).launch {
             ?.addOnSuccessListener { location: Location? ->
                 // Got last known location
                 location?.let {
-                    GlobalLocation.location = UtilModel(
-                        location.latitude.toString(),
-                        location.longitude.toString(),
-                        location.altitude.toString()
-                    )
-
-                    Log.d("TAAAAAAAAAAAAA", "getLastLocation: this is global loc. ${GlobalLocation.location}")
+                    CheckInternetConnection().GetLocation(this@LauncherScreen)?.latitude.toString()
+                    CheckInternetConnection().GetLocation(this@LauncherScreen)?.longitude.toString()
+                    CheckInternetConnection().GetLocation(this@LauncherScreen)?.altitude.toString()
                 }
             }
     }
@@ -168,4 +188,20 @@ CoroutineScope(Dispatchers.Default).launch {
         super.onDestroy()
         removeLocationUpdates()
     }
+
+    private fun checkCameraPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun requestCameraPermission() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.CAMERA),
+            CAMERA_REQUEST_CODE
+        )
+    }
+
 }

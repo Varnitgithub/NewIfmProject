@@ -27,6 +27,7 @@ class ViewHouseKeepingPhoto : AppCompatActivity() {
     private var siteSelect: String? = null
     private var tourCode: String? = null
     private var position: String? = null
+    private var headerSelect: String? = null
     private lateinit var retrofitInstance: ApiInterface
     private lateinit var viewPhotoRecyclerView: RecyclerView
     private lateinit var viewPhotoHouseKeepingAdapter: ViewPhotoHouseKeepingAdapter
@@ -36,7 +37,9 @@ class ViewHouseKeepingPhoto : AppCompatActivity() {
         retrofitInstance = RetrofitInstance.apiInstance
         siteSelect = intent.getStringExtra("siteSelect")
         tourCode = intent.getStringExtra("tourCode")
-        position = intent.getStringExtra("position")
+        position = intent.getStringExtra("photoPosition")
+        headerSelect = intent.getStringExtra("headerSelect")
+        Log.d("TAGGGGGGGGG", "onCreate: $position is the position")
         viewPhotoRecyclerView = findViewById(R.id.viewPhotoRecyclerView)
         viewPhotoHouseKeepingAdapter = ViewPhotoHouseKeepingAdapter(this@ViewHouseKeepingPhoto)
         viewPhotoRecyclerView.layoutManager = LinearLayoutManager(this@ViewHouseKeepingPhoto)
@@ -67,50 +70,54 @@ class ViewHouseKeepingPhoto : AppCompatActivity() {
 
         Log.d(
             "VIEWPHOTO",
-            "viewPhoto: TAGGG................1 ${UserObject.userId} 2 ${UserObject.userNames}" +
+            "viewPhoto: TAGGG................1 ${UserObject.userId} 2 ${headerSelect}" +
                     "3 ${UserObject.locationAutoId} 4 ${siteSelect.toString()} 5 ${currentTime} 6 ${tourCode.toString()} 7 $position"
         )
 
-        if (UserObject.userId.isNotEmpty() &&
-            UserObject.userNames.isNotEmpty() &&
+        if (
             position != null &&
-
-            UserObject.locationAutoId.isNotEmpty() &&
-            siteSelect.toString().isNotEmpty()
-            && currentTime.isNotEmpty() &&
+            headerSelect.toString().isNotEmpty() &&
+            siteSelect.toString().isNotEmpty() &&
             tourCode.toString().isNotEmpty()
         ) {
+            Log.d("TAGGGGGGGGGGG", "viewPhoto: enter here")
+
             retrofitInstance.getChecklistImageUpdatedHouseKeeping(
                 "sams",
-                UserObject.userId,
-                currentTime,
-                position.toString(),
-                UserObject.locationAutoId,
                 siteSelect.toString(),
-                tourCode.toString()
+                tourCode.toString(),
+                headerSelect.toString(),
+                position.toString()
+
             ).enqueue(object : Callback<ViewPhotoResponse?> {
                 override fun onResponse(
                     call: Call<ViewPhotoResponse?>,
                     response: Response<ViewPhotoResponse?>
                 ) {
                     if (response.isSuccessful) {
-                        var imagesList = ArrayList<ViewPhotoResponseItem>()
-                        for (i in 0 until response.body()?.size!!) {
-                            if (response.body()?.get(i) != null) {
-                                imagesList.add(
-                                    ViewPhotoResponseItem(
-                                        response.body()?.get(i)!!.ImageBase64String, ""
-                                    )
-                                )
+                        val responseBodySize = response.body()?.size
+                        if (responseBodySize!=null && responseBodySize>0){
+                            val imagesList = ArrayList<ViewPhotoResponseItem>()
+                            for (i in 0 until responseBodySize) {
+                                if (response.body()?.get(i) != null) {
+                                    imagesList.add(response.body()?.get(i)!!)
+                                }
+                            }
+
+                            if (imagesList.get(0).ImageBase64String==null){
+                                Log.d("TAGGGGGGGGGGGG", "onResponse:empty list $imagesList")
+
+                                viewPhotoHouseKeepingAdapter.updateList(emptyList())
+
+                            }else{
+                                Log.d("TAGGGGGGGGGGGG", "onResponse:non empty list $imagesList")
+
+                                viewPhotoHouseKeepingAdapter.updateList(imagesList)
+
                             }
                         }
 
-                        viewPhotoHouseKeepingAdapter.updateList(imagesList)
 
-                        CustomToast.showToast(
-                            this@ViewHouseKeepingPhoto,
-                            "Response   successful"
-                        )
                     } else {
                         CustomToast.showToast(
                             this@ViewHouseKeepingPhoto,

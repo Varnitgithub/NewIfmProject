@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:paddingBottom="4dp"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:paddingBottom="4dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -16,69 +16,85 @@
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:paddingBottom="3dp"
+            app:cardCornerRadius="12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_margin="8dp"
-            app:cardCornerRadius="12dp"
-            android:paddingBottom="3dp"
-app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="6dp"
-                >
+                android:layout_margin="6dp">
 
 
                 <TextView
                     android:id="@+id/work_txt"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="13dp"
-                    android:layout_marginEnd="13dp"
                     android:fontFamily="@font/roboto"
                     android:gravity="start"
                     android:padding="2dp"
-                    android:textColor="#121212"
-                    android:textSize="18sp"
+                    android:text="@string/office_floor_are_free_of_stairs_amp_orderless"
+                    android:textColor="@color/black"
+
+                    android:textSize="16sp"
                     android:textStyle="bold"
+                    app:layout_constraintBottom_toTopOf="@id/date_Txt"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <EditText
+                    android:id="@+id/date_Txt"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="40dp"
+                    android:fontFamily="@font/roboto"
+                    android:gravity="start"
+                    android:textSize="16sp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:maxLength="200"
+                    android:paddingStart="6dp"
+                    android:hint="Enter Text"
+                    android:background="@drawable/addphoto_back"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toTopOf="@id/view"
                     app:layout_constraintEnd_toStartOf="@id/statusDone_pending"
                     app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/work_txt"
+                     />
 
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:text="@string/office_floor_are_free_of_stairs_amp_orderless" />
 
                 <TextView
                     android:id="@+id/statusDone_pending"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="13dp"
-                    android:layout_marginEnd="13dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="10dp"
                     android:fontFamily="@font/roboto"
                     android:gravity="center"
                     android:padding="2dp"
-                    android:textColor="#121212"
-                    android:textSize="18sp"
+                    android:text="@string/pending"
+                    android:textColor="@color/black"
+                    android:textSize="15sp"
                     android:textStyle="bold"
-                    app:layout_constraintBottom_toTopOf="@id/view"
+                    app:layout_constraintBottom_toBottomOf="@id/switchButton"
                     app:layout_constraintEnd_toStartOf="@id/switchButton"
-                    app:layout_constraintStart_toEndOf="@id/work_txt"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:text="@string/pending" />
-
-
+                    app:layout_constraintTop_toTopOf="@id/switchButton" />
 
                 <Switch
                     android:id="@+id/switchButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
-                    app:layout_constraintEnd_toEndOf="parent"
                     android:layout_marginEnd="8dp"
-                    app:layout_constraintStart_toEndOf="@id/statusDone_pending"
-                    app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toTopOf="@id/view"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/work_txt"
                     tools:ignore="UseSwitchCompatOrMaterialXml" />
 
                 <View
@@ -86,26 +102,26 @@ app:layout_constraintBottom_toBottomOf="parent"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginStart="30dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="12dp"
                     android:layout_marginEnd="30dp"
                     android:background="#838181"
+                    app:layout_constraintBottom_toTopOf="@id/btns_LL"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/work_txt" />
+                    app:layout_constraintTop_toBottomOf="@id/statusDone_pending" />
 
                 <LinearLayout
+                    android:id="@+id/btns_LL"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:weightSum="2"
                     android:paddingBottom="3dp"
+                    android:weightSum="2"
+                    app:layout_constraintBottom_toBottomOf="parent"
 
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/view">
-
-
-
 
 
                     <Button
@@ -114,30 +130,27 @@ app:layout_constraintBottom_toBottomOf="parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_marginEnd="16dp"
-                        android:layout_margin="20dp"
-                        android:background="@drawable/addphoto_back"
-
+                        android:layout_marginTop="10dp"
                         android:layout_weight="1"
+
+                        android:background="@drawable/addphoto_back"
                         android:fontFamily="@font/roboto"
                         android:text="@string/add_photo"
-                        app:layout_constraintBottom_toBottomOf="parent"
                         android:textAllCaps="false"
-                        android:textColor="#001c35"
+                        android:textColor="@color/blueTC_Btn"
                         android:textSize="18sp"
                         android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
-
-
-
 
 
                     <Button
                         android:id="@+id/btn_viewPhoto"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="20dp"
+                        android:layout_marginTop="10dp"
                         android:layout_marginStart="16dp"
                         android:layout_marginEnd="16dp"
                         android:layout_weight="1"
@@ -160,7 +173,6 @@ app:layout_constraintBottom_toBottomOf="parent"
         </androidx.cardview.widget.CardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

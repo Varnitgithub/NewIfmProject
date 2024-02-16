@@ -10,6 +10,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/appScreensBack"
         tools:context=".activities.LeaveScreen">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -44,7 +45,7 @@
                 android:gravity="center"
                 android:padding="6dp"
                 android:text="Apply for Leave"
-                android:textColor="#121212"
+                android:textColor="@color/black"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -104,7 +105,8 @@
                                 android:fontFamily="@font/roboto"
                                 android:lineHeight="18sp"
                                 android:text="Apply for Leave"
-                                android:textColor="#121212"
+                                android:textColor="@color/black"
+
                                 android:textSize="15sp"
                                 android:textStyle="bold"
                                 app:layout_constraintBottom_toBottomOf="parent"
@@ -145,7 +147,8 @@
                                 android:fontFamily="@font/roboto"
                                 android:lineHeight="18sp"
                                 android:text="Leave Application Status"
-                                android:textColor="#121212"
+                                android:textColor="@color/black"
+
                                 android:textSize="15sp"
                                 android:textStyle="bold"
                                 app:layout_constraintBottom_toBottomOf="parent"
@@ -186,7 +189,8 @@
                                 android:fontFamily="@font/roboto"
                                 android:lineHeight="18sp"
                                 android:text="Leave Records"
-                                android:textColor="#121212"
+                                android:textColor="@color/black"
+
                                 android:textSize="15sp"
                                 android:textStyle="bold"
                                 app:layout_constraintBottom_toBottomOf="parent"

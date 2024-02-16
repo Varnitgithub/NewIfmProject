@@ -9,12 +9,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.ifmapp.MainActivity
 import com.example.ifmapp.R
+import com.example.ifmapp.SearchCheckList
 import com.example.ifmapp.activities.checklists.CheckListForHousekeeping
 import com.example.ifmapp.activities.tasks.TaskModel
 import com.example.ifmapp.activities.tasks.taskadapter.TasksAdapter
 import com.example.ifmapp.activities.tasks.taskapi_response.TaskApiResponseItem
 import com.example.ifmapp.databinding.FragmentPreviousTaskBinding
+import com.example.ifmapp.toast.CustomToast
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -38,12 +41,24 @@ class PreviousTaskFragment(private var siteSelect:String,private var previousLis
         binding.previousRecyclerView.adapter = tasksAdapter
         var mList = ArrayList<TaskModel>()
         var currentDate = getFormattedDate()
-        for (i in 0 until previousLists.size) {
-            var count = 1
-            mList.add(TaskModel(count, previousLists[i].TourDesc, currentDate, "Completed"))
-            count++
+        if (previousLists.isNotEmpty()){
+            for (i in 0 until previousLists.size) {
+                var count = 1
+                previousLists[i].TourDesc?.let {
+                    TaskModel(count,
+                        it, currentDate, "Completed")
+                }?.let { mList.add(it) }
+                count++
+            }
+            tasksAdapter.updateList(mList)
+        }else{
+            CustomToast.showToast(requireContext(),"No Checklist Found")
+            tasksAdapter.updateList(emptyList())
+            startActivity(Intent(requireContext(),MainActivity::class.java))
+
+
         }
-        tasksAdapter.updateList(mList)
+
 
 
 
@@ -59,13 +74,11 @@ class PreviousTaskFragment(private var siteSelect:String,private var previousLis
 
     override fun onclick(model: TaskModel, position: Int) {
         var intent = Intent(requireContext(), CheckListForHousekeeping::class.java)
-
-        intent.putExtra("tourCode", previousLists[position].TourCode)
+       // intent.putExtra("tourCode", previousLists[position].TourCode)
         intent.putExtra("siteSelect", siteSelect)
         intent.putExtra("position", (position+1).toString())
-
-        Log.d("TAGGGGGGGGGG", "onclick:...................... ${previousLists[position].TourCode} and position $position")
-        startActivity(intent)
+        intent.putExtra("tourCode",model.id)
+     //   startActivity(intent)
     }
 
 

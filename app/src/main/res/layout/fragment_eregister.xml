@@ -10,6 +10,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/appScreensBack"
         tools:context=".fragments.ERegisterFragment">
 
         <ScrollView
@@ -43,7 +44,7 @@
                         android:gravity="center"
                         android:padding="4dp"
                         android:text="E-Register"
-                        android:textColor="#121212"
+                        android:textColor="@color/black"
                         android:textSize="18sp"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -52,7 +53,6 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
-
 
 
                 <LinearLayout
@@ -73,7 +73,8 @@
                         android:fontFamily="@font/roboto"
                         android:padding="4dp"
                         android:text="Select Site"
-                        android:textColor="#121212"
+                        android:textColor="@color/black"
+
                         android:textSize="15sp"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toTopOf="@id/spinner_select_site"
@@ -112,7 +113,8 @@
                             android:fontFamily="@font/roboto"
                             android:padding="8dp"
                             android:text="Select Shift"
-                            android:textColor="#121212"
+                            android:textColor="@color/black"
+
                             android:textSize="16sp"
                             android:textStyle="bold"
 
@@ -124,8 +126,6 @@
 
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
 
 
                 </LinearLayout>
@@ -146,7 +146,7 @@
                         android:hint="Enter Name"
 
                         android:padding="2dp"
-
+                        app:hintTextColor="@color/black"
                         app:layout_constraintBaseline_toTopOf="@id/txt_selectShift"
                         app:layout_constraintBottom_toTopOf="@id/txt_selectShift"
                         app:layout_constraintEnd_toEndOf="@id/txt_selectSite"
@@ -161,6 +161,8 @@
                             android:paddingStart="6dp"
                             android:paddingEnd="6dp"
                             android:paddingBottom="6dp"
+                            android:textColor="@color/black"
+
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
@@ -175,7 +177,7 @@
                         android:background="@drawable/site_selection_back"
                         android:hint="Enter Purpose"
                         android:padding="2dp"
-
+                        app:hintTextColor="@color/black"
                         app:layout_constraintBaseline_toTopOf="@id/txt_selectShift"
                         app:layout_constraintBottom_toTopOf="@id/txt_selectShift"
                         app:layout_constraintEnd_toEndOf="@id/txt_selectSite"
@@ -188,6 +190,8 @@
                             android:layout_height="wrap_content"
                             android:background="@drawable/site_selection_back"
                             android:paddingStart="6dp"
+                            android:textColor="@color/black"
+
                             android:paddingEnd="6dp"
                             android:paddingBottom="6dp"
                             app:layout_constraintBottom_toBottomOf="parent"
@@ -201,11 +205,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:padding="2dp"
                         android:layout_marginTop="18dp"
                         android:background="@drawable/site_selection_back"
                         android:hint="Contact Number"
-                        >
+                        app:hintTextColor="@color/black"
+                        android:padding="2dp">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/visitorContactNumber"
@@ -214,6 +218,8 @@
                             android:background="@drawable/site_selection_back"
                             android:paddingStart="6dp"
                             android:paddingEnd="6dp"
+                            android:textColor="@color/black"
+
                             android:paddingBottom="6dp"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
@@ -229,8 +235,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
                     android:layout_marginTop="10dp"
+                    android:layout_marginEnd="16dp"
                     android:orientation="vertical">
 
                     <TextView
@@ -250,11 +256,11 @@
                         android:id="@+id/addPhotoTxtBtn_LL"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:padding="6dp"
+                        android:layout_gravity="center"
                         android:layout_marginTop="10dp"
                         android:background="@drawable/add_photo_back"
-                        android:layout_gravity="center">
+                        android:gravity="center"
+                        android:padding="6dp">
 
                         <TextView
                             android:id="@+id/addPhotoTxtBtn"
@@ -262,8 +268,8 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:fontFamily="@font/roboto"
-                            android:text="Add Photo"
                             android:padding="3dp"
+                            android:text="Add Photo"
                             android:textColor="@color/red_task"
 
                             android:textSize="17sp"
@@ -273,28 +279,27 @@
                     </LinearLayout>
 
 
-
                 </LinearLayout>
 
                 <ImageView
                     android:id="@+id/addPhotoImage"
                     android:layout_width="300dp"
-                    tools:src="@drawable/big_profile"
-                    android:layout_marginTop="15dp"
+                    android:layout_height="250dp"
                     android:layout_gravity="center"
-                    android:layout_height="250dp"/>
+                    android:layout_marginTop="15dp"
+                    tools:src="@drawable/big_profile" />
 
                 <Button
                     android:id="@+id/btn_Submit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="60dp"
+                    android:layout_marginEnd="16dp"
                     android:background="@drawable/button_back"
                     android:fontFamily="@font/roboto"
                     android:gravity="center"
                     android:text="Submit"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginTop="60dp"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
                     android:textSize="15sp"

@@ -10,6 +10,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/appScreensBack"
         tools:context=".activities.EnterPinCodeScreen">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -35,16 +36,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <ImageView
-                android:id="@+id/m_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:src="@drawable/m_icon"
 
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -112,6 +104,8 @@
                     android:background="@drawable/site_selection_back"
                     android:hint="Enter your pin code"
                     android:padding="16dp"
+                    android:textColor="@color/black"
+
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -186,7 +180,7 @@
             android:gravity="center"
             android:text="Sign In"
             android:textAllCaps="false"
-            android:textColor="#acacac"
+            android:textColor="@color/taskButton"
             android:textSize="15sp"
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginBottom="20dp"

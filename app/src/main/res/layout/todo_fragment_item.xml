@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingBottom="4dp"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:paddingBottom="4dp">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="12dp"
         android:layout_margin="4dp"
+        app:cardCornerRadius="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -18,20 +18,20 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/todo_CL"
             android:layout_width="match_parent"
-            android:padding="6dp"
+            android:layout_height="match_parent"
             android:layout_marginBottom="3dp"
-            android:layout_height="match_parent">
+            android:padding="6dp">
 
             <LinearLayout
                 android:id="@+id/todo_LL"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
+                android:background="@drawable/todo_taskno_back"
+                android:orientation="horizontal"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/todoDate"
-                android:background="@drawable/todo_taskno_back"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
@@ -43,11 +43,10 @@
                     android:fontFamily="@font/roboto"
                     android:gravity="center"
                     android:padding="6dp"
-                    tools:text="Task1"
                     android:textColor="@color/white"
-                    android:textSize="16sp"
+                    android:textSize="13sp"
                     android:textStyle="bold"
-                  />
+                    tools:text="Task1" />
 
 
             </LinearLayout>
@@ -56,19 +55,19 @@
                 android:id="@+id/todoDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="8dp"
                 android:fontFamily="@font/roboto"
                 android:gravity="center"
                 android:padding="6dp"
-                tools:text="02 feb 2024"
-                android:layout_marginTop="8dp"
-app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/todoStatus"
-                android:layout_marginStart="10dp"
                 android:textColor="@color/grey_task"
-                android:textSize="15sp"
+                android:textSize="13sp"
                 android:textStyle="bold"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/todoStatus"
                 app:layout_constraintStart_toEndOf="@id/todo_LL"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="02 feb 2024"
 
                 />
 
@@ -76,24 +75,21 @@ app:layout_constraintBottom_toBottomOf="parent"
                 android:id="@+id/todoStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
                 android:fontFamily="@font/roboto"
                 android:gravity="center"
                 android:padding="6dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                tools:text="TODO"
-                app:layout_constraintStart_toEndOf="@id/todoDate"
-                app:layout_constraintBottom_toBottomOf="parent"
                 android:textColor="@color/blue_task"
-                android:textSize="18sp"
+                android:textSize="13sp"
                 android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/todoDate"
                 app:layout_constraintTop_toTopOf="parent"
-              app:layout_constraintEnd_toEndOf="parent"
+                tools:text="TODO"
 
                 />
-
-
-
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

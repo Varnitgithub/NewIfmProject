@@ -10,6 +10,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/appScreensBack"
         tools:context=".activities.SalaryScreen">
 
 
@@ -29,14 +30,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <ImageView
-                android:id="@+id/nav_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/navigationicon"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
                 android:id="@+id/search_icon"
@@ -56,13 +49,13 @@
                 android:fontFamily="@font/roboto"
                 android:gravity="center"
                 android:text="Salary"
-                android:textColor="#121212"
+                android:textColor="@color/black"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:padding="6dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/search_icon"
-                app:layout_constraintStart_toEndOf="@id/nav_icon"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <EditText
@@ -74,12 +67,12 @@
                 android:background="@drawable/salaryedit_back"
                 android:layout_marginStart="13dp"
                 android:visibility="gone"
+                android:textColor="@color/black"
                 android:layout_marginEnd="13dp"
                 android:padding="8dp"
                 android:layout_marginBottom="3dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/search_icon"
-                app:layout_constraintStart_toEndOf="@id/nav_icon"
                 app:layout_constraintTop_toTopOf="parent" />
 
 

@@ -8,159 +8,154 @@
     </data>
 
 
-   <androidx.constraintlayout.widget.ConstraintLayout
-       android:layout_width="match_parent"
-       android:layout_height="match_parent"
-       android:background="#80000000"
-       >
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80000000">
 
 
-       <androidx.cardview.widget.CardView
-           android:layout_width="match_parent"
-           android:layout_height="wrap_content"
-           app:layout_constraintTop_toTopOf="parent"
-           app:layout_constraintBottom_toBottomOf="parent"
-           app:layout_constraintStart_toStartOf="parent"
-           app:layout_constraintEnd_toEndOf="parent"
-           app:cardCornerRadius="12dp"
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            app:cardCornerRadius="12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
 
-           android:layout_marginStart="16dp"
-           android:layout_marginEnd="16dp">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-           <LinearLayout
-               android:layout_width="match_parent"
-               android:layout_height="wrap_content"
-android:padding="8dp"
-               android:orientation="vertical">
-
-
-               <TextView
-                   android:id="@+id/applyforleave_txt"
-                   android:layout_width="match_parent"
-                   android:layout_height="wrap_content"
-                   android:layout_marginStart="13dp"
-                   android:layout_marginEnd="13dp"
-                   android:fontFamily="@font/roboto"
-                   android:gravity="center"
-                   android:padding="6dp"
-                   android:text="Please Select Language"
-                   android:textColor="#121212"
-                   android:textSize="19sp"
-                   android:textStyle="bold"
-                   app:layout_constraintEnd_toEndOf="parent"
-                   app:layout_constraintStart_toStartOf="parent"
-                   app:layout_constraintTop_toTopOf="parent"
-                   app:layout_constraintBottom_toBottomOf="parent" />
-
-               <androidx.constraintlayout.widget.ConstraintLayout
-                   android:id="@+id/familyEmergency"
-                   android:layout_width="match_parent"
-                   android:layout_height="wrap_content"
-                   android:layout_marginStart="10dp"
-                   android:layout_marginTop="8dp"
-                   android:layout_marginEnd="10dp"
-                   android:background="@drawable/appliedleaves_back"
-                   android:orientation="horizontal"
-                   android:padding="10dp"
-                   android:weightSum="2">
-
-                   <TextView
-                       android:layout_width="0dp"
-                       android:layout_height="wrap_content"
-                       android:layout_gravity="center"
-                       android:layout_marginStart="8dp"
-                       android:layout_weight="1"
-                       android:fontFamily="@font/roboto"
-                       android:lineHeight="18sp"
-                       android:text="English"
-                       android:textColor="#121212"
-                       android:textSize="15sp"
-                       android:textStyle="bold"
-                       app:layout_constraintBottom_toBottomOf="parent"
-                       app:layout_constraintStart_toStartOf="parent"
-                       app:layout_constraintTop_toTopOf="parent" />
-
-                   <RadioButton
-                       android:id="@+id/english_RadioBtn"
-                       android:layout_width="0dp"
-                       android:layout_height="wrap_content"
-                       android:layout_gravity="end"
-                       android:layout_weight="1"
-                       android:gravity="end"
-                       app:layout_constraintBottom_toBottomOf="parent"
-                       app:layout_constraintEnd_toEndOf="parent"
-                       app:layout_constraintTop_toTopOf="parent" />
-               </androidx.constraintlayout.widget.ConstraintLayout>
-
-               <androidx.constraintlayout.widget.ConstraintLayout
-                   android:id="@+id/otherReason"
-                   android:layout_width="match_parent"
-                   android:layout_height="wrap_content"
-                   android:layout_marginStart="10dp"
-                   android:layout_marginTop="6dp"
-                   android:layout_marginEnd="10dp"
-                   android:background="@drawable/appliedleaves_back"
-                   android:orientation="horizontal"
-                   android:padding="10dp"
-                   android:weightSum="2">
-
-                   <TextView
-                       android:layout_width="0dp"
-                       android:layout_height="wrap_content"
-                       android:layout_gravity="center"
-                       android:layout_marginStart="8dp"
-                       android:layout_weight="1"
-                       android:fontFamily="@font/roboto"
-                       android:lineHeight="18sp"
-                       android:text="@string/hindiLang"
-                       android:textColor="#121212"
-                       android:textSize="15sp"
-                       android:textStyle="bold"
-                       app:layout_constraintBottom_toBottomOf="parent"
-                       app:layout_constraintStart_toStartOf="parent"
-                       app:layout_constraintTop_toTopOf="parent" />
-
-                   <RadioButton
-                       android:id="@+id/hindi_RadioBtn"
-                       android:layout_width="0dp"
-                       android:layout_height="wrap_content"
-                       android:layout_gravity="end"
-                       android:layout_weight="1"
-                       android:gravity="end"
-                       app:layout_constraintBottom_toBottomOf="parent"
-                       app:layout_constraintEnd_toEndOf="parent"
-                       app:layout_constraintTop_toTopOf="parent" />
-               </androidx.constraintlayout.widget.ConstraintLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="8dp">
 
 
+                <TextView
+                    android:id="@+id/applyforleave_txt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="13dp"
+                    android:layout_marginEnd="13dp"
+                    android:fontFamily="@font/roboto"
+                    android:gravity="center"
+                    android:padding="6dp"
+                    android:text="Please Select Language"
+                    android:textColor="@color/black"
+                    android:textSize="19sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-               <Button
-                   android:id="@+id/btn_Done"
-                   android:layout_width="match_parent"
-                   android:layout_height="wrap_content"
-                   android:textSize="18sp"
-                   android:textStyle="bold"
-                   android:background="@drawable/button_backwhite"
-                   android:textColor="#ACACAC"
-                   android:fontFamily="@font/roboto"
-                   android:layout_margin="20dp"
-                   app:layout_constraintTop_toTopOf="parent"
-                   app:layout_constraintStart_toStartOf="parent"
-                   app:layout_constraintEnd_toEndOf="parent"
-                   android:layout_marginStart="16dp"
-                   app:layout_constraintBottom_toTopOf="@id/already_Registered"
-                   android:layout_marginEnd="16dp"
-                   android:text="Done"
-                   android:textAllCaps="false"/>
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/familyEmergency"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/appliedleaves_back"
+                    android:orientation="horizontal"
+                    android:padding="10dp"
+                    android:weightSum="2">
 
-           </LinearLayout>
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/roboto"
+                        android:lineHeight="18sp"
+                        android:text="English"
+                        android:textColor="@color/black"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-       </androidx.cardview.widget.CardView>
+                    <RadioButton
+                        android:id="@+id/english_RadioBtn"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:layout_weight="1"
+                        android:gravity="end"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+               <!-- <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/otherReason"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/appliedleaves_back"
+                    android:orientation="horizontal"
+                    android:padding="10dp"
+                    android:weightSum="2">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/roboto"
+                        android:lineHeight="18sp"
+                        android:text="@string/hindiLang"
+                        android:textColor="@color/black"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <RadioButton
+                        android:id="@+id/hindi_RadioBtn"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:layout_weight="1"
+                        android:gravity="end"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+-->
+
+                <Button
+                    android:id="@+id/btn_Done"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="20dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:background="@drawable/button_backwhite"
+                    android:fontFamily="@font/roboto"
+                    android:text="Done"
+                    android:textAllCaps="false"
+                    android:textColor="@color/taskButton"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toTopOf="@id/already_Registered"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
 
 
-
-
-
-   </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

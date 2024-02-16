@@ -1,42 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".activities.ScannerScreen">
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".activities.ScannerScreen">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.budiyev.android.codescanner.CodeScannerView
+                android:id="@+id/scannerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:autoFocusButtonColor="@color/white"
+                app:autoFocusButtonVisible="true"
+                app:flashButtonColor="@color/white"
+                app:frameColor="@color/white"
+                app:frameCornersSize="50dp"
+                app:frameCornersRadius="0dp"
+                app:frameAspectRatioHeight="1"
+                app:frameAspectRatioWidth="1"
+                app:frameSize="0.75"
+                app:frameThickness="2dp"
+                app:maskColor="#77000000" />
 
 
+        </FrameLayout>
 
 
-<!--<com.budiyev.android.codescanner.CodeScannerView-->
-<!--    android:id="@+id/scanner_view"-->
-<!--    android:layout_width="match_parent"-->
-<!--    android:layout_height="match_parent"-->
-<!--    app:autoFocusButtonColor="@color/white"-->
-<!--    app:autoFocusButtonVisible="true"-->
-<!--    app:flashButtonColor="@color/white"-->
-<!--    app:frameColor="@color/white"-->
-<!--    app:frameCornersSize="50dp"-->
-<!--    app:frameCornersRadius="0dp"-->
-<!--    app:frameAspectRatioHeight="1"-->
-<!--    app:frameAspectRatioWidth="1"-->
-<!--    app:frameSize="0.75"-->
-<!--    app:frameThickness="2dp"-->
-<!--    app:maskColor="#77000000"/>-->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:textSize="19sp"
+            android:textStyle="bold"
+            android:layout_marginTop="120dp"
+            android:textColor="#ffffff"
+            android:gravity="center"
+            android:text="Scan QR code for the unit/shift " />
 
-<!--    <TextView-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:fontFamily="@font/roboto"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        android:textSize="19sp"-->
-<!--        android:textStyle="bold"-->
-<!--        android:layout_marginTop="120dp"-->
-<!--        android:textColor="#ffffff"-->
-<!--        android:gravity="center"-->
-<!--        android:text="Scan QR code for the unit/shift "/>-->
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

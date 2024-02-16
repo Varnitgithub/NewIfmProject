@@ -10,6 +10,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/appScreensBack"
         tools:context=".fragments.LongLeaveFragment">
 
         <LinearLayout
@@ -107,6 +108,7 @@
                         android:layout_height="wrap_content"
                         android:hint="DD/MM/YYYY"
                         android:maxLines="1"
+                        android:textColor="@color/black"
                         android:background="@drawable/site_selection_back"
                         android:layout_marginEnd="13dp"
                         android:padding="8dp"
@@ -142,6 +144,7 @@
                         android:layout_height="wrap_content"
                         android:hint="DD/MM/YYYY"
                         android:maxLines="1"
+                        android:textColor="@color/black"
                         android:background="@drawable/site_selection_back"
                         android:layout_marginEnd="13dp"
                         android:padding="8dp"

@@ -1,6 +1,9 @@
 package com.example.ifmapp
 
+import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.app.Dialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -64,72 +67,7 @@ class MainActivity : AppCompatActivity() {
 
          inout = intent.getStringExtra("INOUTStatus")
 
-        if (otp != null) {
-            Log.d("TAGGGGGGGGGG", "onCreateView: 222........$otp $empNumber")
-            homeFragment =
-                HomeFragment(this, otp.toString()
-                    , empNumber.toString(),userName.toString()
-                )
-        } else if (otpFromLogin != null) {
-            homeFragment = HomeFragment(
-                this,
-                otpFromLogin.toString(),
-                empNumber.toString(), userName.toString()
-            )
-        } else if (otpFromsignUp != null) {
-            homeFragment = HomeFragment(
-                this,
-                otpFromsignUp.toString(),
-                empNumber.toString(), userName.toString()
-            )
-        } else if (pinFromSignin != null) {
-            homeFragment = HomeFragment(
-                this,
-                pinFromSignin.toString(),
-                empNumber.toString(), userName.toString()
-            )
-        } else {
-            homeFragment =
-                HomeFragment(this, UserObject.userPin,
-                    UserObject.userId,UserObject.userNames)
 
-        }
-
-        if (otp != null) {
-            menuFragment = MenuFragment(otp.toString(),userName.toString(),empNumber.toString())
-            myTaskFragment = MyTaskFragment(this, otp.toString(),userName.toString(),empNumber.toString())
-            eRegisterFragment = ERegisterFragment(otp.toString(),empNumber.toString())
-        } else if (otpFromLogin != null) {
-            menuFragment = MenuFragment(otpFromLogin.toString(),userName.toString(),empNumber.toString())
-            myTaskFragment = MyTaskFragment(this, otpFromLogin.toString(),userName.toString(),empNumber.toString())
-            eRegisterFragment = ERegisterFragment(otpFromLogin.toString(),empNumber.toString())
-
-
-        } else if (otpFromsignUp != null) {
-            menuFragment = MenuFragment(otpFromsignUp.toString(),userName.toString(),empNumber.toString())
-            myTaskFragment = MyTaskFragment(this, otpFromsignUp.toString(),userName.toString(),empNumber.toString())
-            eRegisterFragment = ERegisterFragment(otpFromsignUp.toString(),empNumber.toString())
-
-
-        } else if (pinFromSignin != null) {
-            menuFragment = MenuFragment(pinFromSignin.toString(),userName.toString(),empNumber.toString())
-            myTaskFragment = MyTaskFragment(this, pinFromSignin.toString(),userName.toString(),empNumber.toString())
-            eRegisterFragment = ERegisterFragment(pinFromSignin.toString(),empNumber.toString())
-
-
-        } else {
-            menuFragment = MenuFragment( UserObject.userPin,userName.toString(), UserObject.userId)
-            myTaskFragment = MyTaskFragment(this, UserObject.userPin,UserObject.userNames, UserObject.userId)
-            eRegisterFragment = ERegisterFragment( UserObject.userPin, UserObject.userId)
-            Log.d("TAGGGGG", "onCreate: this case is running for others")
-
-
-        }
-
-        val bundle = Bundle()
-        bundle.putString("mPIN", otp)
-        homeFragment.arguments = bundle
-        addFragment(homeFragment)
 
         hashMap = HashMap()
 
@@ -170,6 +108,7 @@ class MainActivity : AppCompatActivity() {
             .commit()
 
     }
+    @SuppressLint("MissingSuperCall")
     override fun onBackPressed() {
 
         val fragmentManager: FragmentManager = supportFragmentManager
@@ -177,7 +116,7 @@ class MainActivity : AppCompatActivity() {
 
         when (currentFragment) {
             is HomeFragment -> {
-                dialog = Dialog(this)
+               /* dialog = Dialog(this)
                 dialog.setContentView(R.layout.back_button_dialog)
                 dialog.setCancelable(true)
                 dialog.show()
@@ -192,7 +131,24 @@ class MainActivity : AppCompatActivity() {
                 }
                 btnNo.setOnClickListener {
                     dialog.dismiss()
-                }
+                }*/
+
+                var dialogBuilder=AlertDialog.Builder(this@MainActivity)
+                dialogBuilder.setTitle("GroupL")
+                dialogBuilder.setMessage("Are you sure,You want to logout?")
+
+                dialogBuilder.setPositiveButton("Logout",object :DialogInterface.OnClickListener{
+                    override fun onClick(dialog: DialogInterface?, which: Int) {
+                        startActivity(Intent(this@MainActivity, DashBoardScreen::class.java))
+                        dialog?.dismiss()
+                    }
+                })
+                dialogBuilder.setNegativeButton("Cancel", object : DialogInterface.OnClickListener {
+                    override fun onClick(dialog: DialogInterface?, which: Int) {
+                        dialog?.dismiss()
+                    }
+                })
+                dialogBuilder.show()
             }
 
             is MyTaskFragment -> {
@@ -217,6 +173,162 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        if (otp != null) {
+            Log.d("TAGGGGGGGGGG", "onCreateView: 222........$otp $empNumber")
+            homeFragment =
+                HomeFragment(this, otp.toString()
+                    , empNumber.toString(),userName.toString()
+                )
+        }
+        else if (otpFromLogin != null) {
+            homeFragment = HomeFragment(
+                this,
+                otpFromLogin.toString(),
+                empNumber.toString(), userName.toString()
+            )
+        }
+        else if (otpFromsignUp != null) {
+            homeFragment = HomeFragment(
+                this,
+                otpFromsignUp.toString(),
+                empNumber.toString(), userName.toString()
+            )
+        }
+        else if (pinFromSignin != null) {
+            homeFragment = HomeFragment(
+                this,
+                pinFromSignin.toString(),
+                empNumber.toString(), userName.toString()
+            )
+        }
+        else {
+            homeFragment =
+                HomeFragment(this, UserObject.userPin,
+                    UserObject.userId,UserObject.userNames)
+
+        }
+
+        if (otp != null) {
+            menuFragment = MenuFragment(otp.toString(),userName.toString(),empNumber.toString())
+            myTaskFragment = MyTaskFragment()
+            eRegisterFragment = ERegisterFragment(otp.toString(),empNumber.toString())
+        }
+        else if (otpFromLogin != null) {
+            menuFragment = MenuFragment(otpFromLogin.toString(),userName.toString(),empNumber.toString())
+            myTaskFragment = MyTaskFragment()
+            eRegisterFragment = ERegisterFragment(otpFromLogin.toString(),empNumber.toString())
+
+
+        }
+        else if (otpFromsignUp != null)
+        {
+            menuFragment = MenuFragment(otpFromsignUp.toString(),userName.toString(),empNumber.toString())
+            myTaskFragment = MyTaskFragment()
+            eRegisterFragment = ERegisterFragment(otpFromsignUp.toString(),empNumber.toString())
+
+
+        }
+        else if (pinFromSignin != null) {
+            menuFragment = MenuFragment(pinFromSignin.toString(),userName.toString(),empNumber.toString())
+            myTaskFragment = MyTaskFragment()
+            eRegisterFragment = ERegisterFragment(pinFromSignin.toString(),empNumber.toString())
+
+
+        }
+        else {
+            menuFragment = MenuFragment( UserObject.userPin,userName.toString(), UserObject.userId)
+            myTaskFragment = MyTaskFragment()
+            eRegisterFragment = ERegisterFragment( UserObject.userPin, UserObject.userId)
+            Log.d("TAGGGGG", "onCreate: this case is running for others")
+
+
+        }
+
+        val bundle = Bundle()
+        bundle.putString("mPIN", otp)
+        homeFragment.arguments = bundle
+        addFragment(homeFragment)
+        Log.d("TAGGGGGGG", "onresume of main: this is user details ${UserObject.userNames} ${UserObject.userId} ${UserObject.designation} ${UserObject.userPin}")
+
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        if (otp != null) {
+            Log.d("TAGGGGGGGGGG", "onCreateView: 222........$otp $empNumber")
+            homeFragment =
+                HomeFragment(this, otp.toString()
+                    , empNumber.toString(),userName.toString()
+                )
+        }
+        else if (otpFromLogin != null) {
+            homeFragment = HomeFragment(
+                this,
+                otpFromLogin.toString(),
+                empNumber.toString(), userName.toString()
+            )
+        }
+        else if (otpFromsignUp != null) {
+            homeFragment = HomeFragment(
+                this,
+                otpFromsignUp.toString(),
+                empNumber.toString(), userName.toString()
+            )
+        }
+        else if (pinFromSignin != null) {
+            homeFragment = HomeFragment(
+                this,
+                pinFromSignin.toString(),
+                empNumber.toString(), userName.toString()
+            )
+        }
+        else {
+            homeFragment =
+                HomeFragment(this, UserObject.userPin,
+                    UserObject.userId,UserObject.userNames)
+
+        }
+
+        if (otp != null) {
+            menuFragment = MenuFragment(otp.toString(),userName.toString(),empNumber.toString())
+            myTaskFragment = MyTaskFragment()
+            eRegisterFragment = ERegisterFragment(otp.toString(),empNumber.toString())
+        }
+        else if (otpFromLogin != null) {
+            menuFragment = MenuFragment(otpFromLogin.toString(),userName.toString(),empNumber.toString())
+            myTaskFragment = MyTaskFragment()
+            eRegisterFragment = ERegisterFragment(otpFromLogin.toString(),empNumber.toString())
+
+
+        }
+        else if (otpFromsignUp != null)
+        {
+            menuFragment = MenuFragment(otpFromsignUp.toString(),userName.toString(),empNumber.toString())
+            myTaskFragment = MyTaskFragment()
+            eRegisterFragment = ERegisterFragment(otpFromsignUp.toString(),empNumber.toString())
+
+
+        }
+        else if (pinFromSignin != null) {
+            menuFragment = MenuFragment(pinFromSignin.toString(),userName.toString(),empNumber.toString())
+            myTaskFragment = MyTaskFragment()
+            eRegisterFragment = ERegisterFragment(pinFromSignin.toString(),empNumber.toString())
+
+
+        }
+        else {
+            menuFragment = MenuFragment( UserObject.userPin,userName.toString(), UserObject.userId)
+            myTaskFragment = MyTaskFragment()
+            eRegisterFragment = ERegisterFragment( UserObject.userPin, UserObject.userId)
+            Log.d("TAGGGGG", "onCreate: this case is running for others")
+
+
+        }
+
+        val bundle = Bundle()
+        bundle.putString("mPIN", otp)
+        homeFragment.arguments = bundle
+        addFragment(homeFragment)
         Log.d("TAGGGGGGG", "onresume of main: this is user details ${UserObject.userNames} ${UserObject.userId} ${UserObject.designation} ${UserObject.userPin}")
 
     }

@@ -10,6 +10,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/appScreensBack"
         tools:context=".activities.tasks.TaskProfileScreen">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -49,7 +50,7 @@
                     android:gravity="center"
                     android:padding="6dp"
                     android:text="My Task"
-                    android:textColor="#121212"
+                    android:textColor="@color/black"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -125,7 +126,7 @@
                         android:layout_weight="1"
                         android:fontFamily="@font/roboto"
                         tools:text="Security Guard"
-                        android:textColor="#5E5D5D"
+                        android:textColor="@color/designationColor"
                         android:textSize="15sp" />
                 </LinearLayout>
 
@@ -169,7 +170,7 @@
                             android:fontFamily="@font/roboto"
                             android:padding="4dp"
                             android:text="Select Site"
-                            android:textColor="#121212"
+                            android:textColor="@color/black"
                             android:textSize="15sp"
                             android:textStyle="bold"
                             app:layout_constraintBottom_toTopOf="@id/spinner_select_site"
@@ -202,11 +203,7 @@
 
                         <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toBottomOf="parent"
-                            android:orientation="horizontal"
+                            android:layout_height="wrap_content" android:orientation="horizontal"
                             android:layout_marginTop="16dp"
                             android:padding="2dp"
                             android:weightSum="3">
@@ -220,10 +217,10 @@
                                 android:gravity="center"
                                 android:padding="10dp"
                                 android:text="Previous Task"
-                                android:layout_margin="2dp"
+                                android:layout_margin="1dp"
                                 android:background="@drawable/task_buttons_back_white"
-                                android:textColor="#ACACAC"
-                                android:textSize="15sp"
+                                android:textColor="@color/taskButton"
+                                android:textSize="14sp"
                                 android:layout_weight="1"
                                 android:textStyle="bold" />
 
@@ -234,12 +231,11 @@
                                 android:fontFamily="@font/roboto"
                                 android:gravity="center"
                                 android:padding="10dp"
-                                android:layout_margin="2dp"
-
+                                android:layout_margin="1dp"
                                 android:text="Todo Task"
                                 android:background="@drawable/button_back"
                                 android:textColor="@color/white"
-                                android:textSize="15sp"
+                                android:textSize="14sp"
                                 android:layout_weight="1"
                                 android:textStyle="bold" />
 
@@ -249,13 +245,12 @@
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/roboto"
                                 android:gravity="center"
-                                android:layout_margin="2dp"
-
+                                android:layout_margin="1dp"
                                 android:padding="10dp"
                                 android:text="Upcoming Task"
-                                android:textColor="#ACACAC"
+                                android:textColor="@color/taskButton"
                                 android:background="@drawable/task_buttons_back_white"
-                                android:textSize="15sp"
+                                android:textSize="12sp"
                                 android:layout_weight="1"
                                 android:textStyle="bold" />
                         </LinearLayout>

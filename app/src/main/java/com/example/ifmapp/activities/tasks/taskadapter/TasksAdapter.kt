@@ -117,14 +117,12 @@ class TasksAdapter(
             }
         }
     }
-
     fun updateList(newList: List<TaskModel>) {
         taskList.clear()
         taskList.addAll(newList)
 
       notifyDataSetChanged()
     }
-
 
     interface Clicked {
         fun onclick(model: TaskModel, position: Int)

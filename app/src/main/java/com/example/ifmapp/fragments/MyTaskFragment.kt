@@ -12,14 +12,10 @@ import com.example.ifmapp.R
 import com.example.ifmapp.activities.tasks.TaskProfileScreen
 import com.example.ifmapp.databinding.FragmentMytaskBinding
 import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
+import com.example.ifmapp.utils.UserObject
 
 
-class MyTaskFragment(
-    private var context: Context,
-    private var pin: String,
-    private var username: String,
-    private var empId: String
-) : Fragment() {
+class MyTaskFragment : Fragment() {
     private lateinit var binding: FragmentMytaskBinding
 
     override fun onCreateView(
@@ -42,19 +38,19 @@ class MyTaskFragment(
             if (isChecked) {
                 SaveUsersInSharedPreference.setHindiEnglish(requireContext(),"english")
 
-                binding.hindiRadioBtn.isChecked = false
+              //  binding.hindiRadioBtn.isChecked = false
                 binding.btnDone.setBackgroundResource(R.drawable.button_back)
                 binding.btnDone.setTextColor(resources.getColor(R.color.white))
             }
         }
-        binding.hindiRadioBtn.setOnCheckedChangeListener { _, isChecked ->
+       /* binding.hindiRadioBtn.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 SaveUsersInSharedPreference.setHindiEnglish(requireContext(),"hindi")
                 binding.englishRadioBtn.isChecked = false
                 binding.btnDone.setBackgroundResource(R.drawable.button_back)
                 binding.btnDone.setTextColor(resources.getColor(R.color.white))
             }
-        }
+        }*/
 
         binding.btnDone.setOnClickListener {
             languageSelectionDone()
@@ -65,9 +61,9 @@ class MyTaskFragment(
 
     private fun languageSelectionDone() {
 
-        if (binding.englishRadioBtn.isChecked || binding.hindiRadioBtn.isChecked) {
+        if (binding.englishRadioBtn.isChecked) {
             var intent = Intent(requireContext(), TaskProfileScreen::class.java)
-            intent.putExtra("empId", empId)
+            intent.putExtra("empId", UserObject.userId)
             startActivity(intent)
         }
     }

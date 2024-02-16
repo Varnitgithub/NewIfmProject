@@ -9,13 +9,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.ifmapp.MainActivity
 import com.example.ifmapp.R
+import com.example.ifmapp.SearchCheckList
 import com.example.ifmapp.activities.HouseKeepingChecklistScreen
 import com.example.ifmapp.activities.checklists.CheckListForHousekeeping
 import com.example.ifmapp.activities.tasks.TaskModel
 import com.example.ifmapp.activities.tasks.taskadapter.TasksAdapter
 import com.example.ifmapp.activities.tasks.taskapi_response.TaskApiResponseItem
 import com.example.ifmapp.databinding.FragmentUpComingTaskBinding
+import com.example.ifmapp.toast.CustomToast
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -37,16 +40,23 @@ class UpComingTaskFragment(private var siteSelect:String,private var upcomingLis
 
         binding.upComingTaskRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.upComingTaskRecyclerView.adapter = tasksAdapter
-        var mList = ArrayList<TaskModel>()
-        var currentDate = getFormattedDate()
-        for (i in 0 until upcomingLists.size) {
-            var count=1
-            mList.add(TaskModel(count, upcomingLists[i].TourDesc, currentDate, "New"))
-            count++
+        val mList = ArrayList<TaskModel>()
+        val currentDate = getFormattedDate()
+
+        if (upcomingLists.isNotEmpty()) {
+            for (i in 0 until upcomingLists.size) {
+                var count = 1
+                mList.add(TaskModel(count, upcomingLists[i].TourDesc.toString(), currentDate, "New"))
+                count++
+            }
+            tasksAdapter.updateList(mList)
+        }else{
+            CustomToast.showToast(requireContext(),"No Checklist Found")
+            tasksAdapter.updateList(emptyList())
+            startActivity(Intent(requireContext(), MainActivity::class.java))
+
+
         }
-        tasksAdapter.updateList(mList)
-
-
         return binding.root
     }
 
@@ -58,13 +68,12 @@ class UpComingTaskFragment(private var siteSelect:String,private var upcomingLis
 
     override fun onclick(model: TaskModel, position: Int) {
         var intent = Intent(requireContext(), CheckListForHousekeeping::class.java)
+
+
         intent.putExtra("siteSelect", siteSelect)
-
-        intent.putExtra("tourCode", upcomingLists[position].TourCode)
         intent.putExtra("position", (position+1).toString())
-
-        Log.d("TAGGGGGGGGGG", "onclick:...................... ${upcomingLists[position].TourCode}  and position $position")
-        startActivity(intent)
+        intent.putExtra("tourCode",model.id)
+      //  startActivity(intent)
     }
 
 

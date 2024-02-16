@@ -10,6 +10,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/appScreensBack"
         tools:context=".activities.LeaveDateScreen">
 
 
@@ -46,7 +47,7 @@
                 android:gravity="center"
                 android:padding="6dp"
                 android:text="Apply for Leave"
-                android:textColor="#121212"
+                android:textColor="@color/black"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
@@ -117,7 +118,7 @@
                         android:gravity="center"
                         android:text="Multiple"
                         android:textAllCaps="false"
-                        android:textColor="#acacac"
+                        android:textColor="@color/btn_continue"
                         android:layout_weight="1"
                         android:layout_marginBottom="33dp"
                         android:textSize="15sp"
@@ -138,7 +139,7 @@
                         android:text="Long"
                         android:layout_weight="1"
                         android:textAllCaps="false"
-                        android:textColor="#acacac"
+                        android:textColor="@color/btn_continue"
                         android:layout_marginBottom="33dp"
                         android:textSize="15sp"
                         android:layout_margin="5dp"

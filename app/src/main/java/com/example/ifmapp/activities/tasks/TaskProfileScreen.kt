@@ -24,6 +24,7 @@ import com.example.ifmapp.modelclasses.geomappedsite_model.GeoMappedResponse
 import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
 import com.example.ifmapp.toast.CustomToast
 import com.example.ifmapp.utils.GlobalLocation
+import com.example.ifmapp.utils.ShiftDetailsObject
 import com.example.ifmapp.utils.UserObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -38,10 +39,11 @@ class TaskProfileScreen : AppCompatActivity() {
     private var empName: String? = null
     private var pin: String? = null
     private var siteSelect: String? = null
+    private lateinit var siteNamesList: ArrayList<Pair<String, String>>
     private lateinit var siteList: ArrayList<String>
     private lateinit var retrofitInstance: ApiInterface
 
-    private lateinit var previousTaskList: ArrayList<TaskApiResponseItem>
+    private lateinit var previousTaskLists: ArrayList<TaskApiResponseItem>
     private lateinit var todoTaskList: ArrayList<TaskApiResponseItem>
     private lateinit var upComingTaskList: ArrayList<TaskApiResponseItem>
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,12 +54,21 @@ class TaskProfileScreen : AppCompatActivity() {
 
         //Initialization
         retrofitInstance = RetrofitInstance.apiInstance
-        previousTaskList = ArrayList()
+        previousTaskLists = ArrayList()
         todoTaskList = ArrayList()
         upComingTaskList = ArrayList()
         siteList = ArrayList()
+        siteNamesList = ArrayList()
 
         Log.d("TAGGGGGGGG", "onCreate: task profile screen...............$empId")
+
+
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        binding.progressBar.visibility = View.VISIBLE
 
         for (users in SaveUsersInSharedPreference.getList(this@TaskProfileScreen)) {
             if (users.empId == UserObject.userId) {
@@ -68,17 +79,23 @@ class TaskProfileScreen : AppCompatActivity() {
                 binding.designation.text = users.designation
             }
         }
-        getSitesFromServer(UserObject.locationAutoId,GlobalLocation.location.latitude
-            ,GlobalLocation.location.longitude,UserObject.userId)
+        getSitesFromServer(UserObject.locationAutoId,UserObject.userId)
 
         binding.previousTask.setOnClickListener {
             binding.progressBar.visibility = View.VISIBLE
 
-            if (previousTaskList.isNotEmpty()){
+            if (previousTaskLists.isNotEmpty()){
                 makeButtonHighlighted(binding.previousTask)
                 makeButtonNonHighlighted(binding.todoTask)
                 makeButtonNonHighlighted(binding.upComingTask)
-                addFragment(PreviousTaskFragment(siteSelect.toString(),previousTaskList))
+                addFragment(PreviousTaskFragment(siteSelect.toString(),previousTaskLists))
+                binding.progressBar.visibility = View.GONE
+
+            }else{
+
+                addFragment(PreviousTaskFragment(siteSelect.toString(), ArrayList()))
+                binding.progressBar.visibility = View.GONE
+
             }
             binding.progressBar.visibility = View.GONE
 
@@ -92,10 +109,13 @@ class TaskProfileScreen : AppCompatActivity() {
                 makeButtonNonHighlighted(binding.previousTask)
                 makeButtonNonHighlighted(binding.upComingTask)
                 addFragment(TodoTaskFragment(siteSelect.toString(),todoTaskList))
+                binding.progressBar.visibility = View.GONE
+
+            }else{
+                addFragment(TodoTaskFragment(siteSelect.toString(), ArrayList()))
+                binding.progressBar.visibility = View.GONE
             }
             binding.progressBar.visibility = View.GONE
-
-
         }
         binding.upComingTask.setOnClickListener {
             binding.progressBar.visibility = View.VISIBLE
@@ -105,20 +125,19 @@ class TaskProfileScreen : AppCompatActivity() {
                 makeButtonNonHighlighted(binding.todoTask)
                 makeButtonNonHighlighted(binding.previousTask)
                 addFragment(UpComingTaskFragment(siteSelect.toString(),upComingTaskList))
+                binding.progressBar.visibility = View.GONE
+
+            }else{
+                addFragment(UpComingTaskFragment(siteSelect.toString(), ArrayList()))
+                binding.progressBar.visibility = View.GONE
+
             }
             binding.progressBar.visibility = View.GONE
 
 
         }
-getTasksList()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        binding.progressBar.visibility = View.VISIBLE
 
     }
-
 
     private fun addFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
@@ -146,8 +165,6 @@ getTasksList()
         startActivity(intent)
         super.onBackPressed()
     }
-
-
     fun getCurrentTimeFormatted(): String {
         val currentTime = Calendar.getInstance().time
         val dateFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
@@ -161,7 +178,10 @@ getTasksList()
         return dateFormat.format(calendar.time)
     }
 
-    fun timeToSeconds(time: String): Long {
+    fun timeToSeconds(time: String?): Long {
+        if (time == null) {
+            return -1
+        }
         val parts = time.split(":")
         if (parts.size == 3) {
             val hours = parts[0].toLong()
@@ -174,10 +194,15 @@ getTasksList()
         }
     }
 
-    private fun getTasksList() {
-        Log.d("TASSSSKKKK", "onResponse:...............task api called ")
 
-        retrofitInstance.getTourTasks("sams").enqueue(object : Callback<TaskApiResponse?> {
+    private fun getTasksList() {
+        previousTaskLists.clear()
+        todoTaskList.clear()
+        upComingTaskList.clear()
+        Log.d("TASSSSKKKK", "onResponse:...............task api $siteSelect")
+
+        var fakerList=  ArrayList<TaskApiResponseItem>()
+        retrofitInstance.getTourTasks("sams",siteSelect.toString()).enqueue(object : Callback<TaskApiResponse?> {
             override fun onResponse(
                 call: Call<TaskApiResponse?>,
                 response: Response<TaskApiResponse?>
@@ -189,30 +214,78 @@ getTasksList()
                     var afterTime = getFutureTimeFormatted(2)
                     var afterTimeInSeconds = timeToSeconds(afterTime)
 
-                    for (i in 0 until response.body()?.size!!) {
-                        var fromTimeInSeconds = timeToSeconds(response.body()!![i].FromTime)
-                        var toTimeInSeconds = timeToSeconds(response.body()!![i].ToTime)
+                    Log.d("TASSSSKKKK", "onResponse:...............task api called here 1")
+
+                    val responseBodySize = response.body()?.size
+
+                    if(responseBodySize!=null && responseBodySize>0){
+                        Log.d("TASSSSKKKK", "onResponse:...............task api called here 2")
+
+                        for (i in 0 until responseBodySize) {
+                            var fromTimeInSeconds = timeToSeconds(response.body()?.get(i)?.FromTime)
+                            val toTimeInSeconds = timeToSeconds(response.body()?.get(i)?.ToTime)
 
 
-                        if (fromTimeInSeconds < currentTimeInSeconds && toTimeInSeconds > currentTimeInSeconds) {
+                            if (fromTimeInSeconds < currentTimeInSeconds && toTimeInSeconds > currentTimeInSeconds) {
 
-                            todoTaskList.add(response.body()!![i])
+                                todoTaskList.add(response.body()!![i])
+                                fakerList.add(response.body()!![i])
 
+                            } else if (fromTimeInSeconds < currentTimeInSeconds) {
+                                previousTaskLists.add(response.body()!![i])
+                                fakerList.add(response.body()!![i])
 
-                        } else if (fromTimeInSeconds < currentTimeInSeconds) {
-                            previousTaskList.add(response.body()!![i])
+                            } else {
+                                upComingTaskList.add(response.body()!![i])
+                                fakerList.add(response.body()!![i])
 
-
-                        } else {
-                            upComingTaskList.add(response.body()!![i])
+                            }
                         }
-                    }
-                    addFragment(TodoTaskFragment(siteSelect.toString(),todoTaskList))
-                    binding.progressBar.visibility = View.GONE
 
-                    Log.d("TASSSSKKKK", "onResponse:todo.................${todoTaskList} ")
-                    Log.d("TASSSSKKKK", "onResponse:previous.................${previousTaskList} ")
-                    Log.d("TASSSSKKKK", "onResponse:upcoming.................${upComingTaskList} ")
+                        Log.d("PREE", "onResponse_T:$todoTaskList ")
+                        Log.d("PREE", "onResponse_U:$upComingTaskList")
+                        Log.d("PREE", "onResponse_P:$previousTaskLists ")
+
+
+
+
+                        binding.upComingTask.isClickable = !upComingTaskList.isEmpty()
+
+
+                        if (previousTaskLists.isEmpty()){
+                            binding.previousTask.isClickable = false
+                            Log.d("PREE", "onResponse_P:mee called 1 ")
+
+                        }else{
+                            if (previousTaskLists.get(0).TourDesc==null){
+                                binding.previousTask.isClickable = false
+                                Log.d("PREE", "onResponse_P:mee called 3 ")
+                            }else{
+                                binding.previousTask.isClickable = true
+                                Log.d("PREE", "onResponse_P:mee called 2 ")
+                            }
+                        }
+                        if (todoTaskList.isEmpty()){
+                            CustomToast.showToast(this@TaskProfileScreen,"No Checklist Found For This Site")
+                            addFragment(TodoTaskFragment(siteSelect.toString(), ArrayList()))
+                            binding.todoTask.isClickable = false
+                            binding.progressBar.visibility = View.GONE
+
+                        }
+                        else{
+                            addFragment(TodoTaskFragment(siteSelect.toString(),
+                                todoTaskList))
+                        }
+                        binding.progressBar.visibility = View.GONE
+                    }
+                    else{
+                        CustomToast.showToast(this@TaskProfileScreen,"No Checklist Found For This Site")
+                    }
+                }else{
+                    previousTaskLists.clear()
+                    todoTaskList.clear()
+                    upComingTaskList.clear()
+                    addFragment(TodoTaskFragment(siteSelect.toString(),todoTaskList))
 
                 }
             }
@@ -256,8 +329,24 @@ getTasksList()
                     position: Int,
                     id: Long
                 ) {
-                    val selectedItem = parent?.getItemAtPosition(position).toString()
-                    siteSelect = selectedItem
+                    val selectedItem = parent?.getItemAtPosition(position)
+                    if (selectedItem != null) {
+
+                        val mSelectedSite = getClientCodeBySiteName(selectedItem.toString())
+                        siteSelect = mSelectedSite
+
+
+                          previousTaskLists.clear()
+                        todoTaskList.clear()
+                        upComingTaskList.clear()
+                        getTasksList()
+
+                        Log.d("TAGGGGG", "onItemSelected: this condition $mSelectedSite")
+                    } else {
+                        Log.d("TAGGGGG", "onItemSelected: this condition null")
+
+                        siteSelect == ""
+                    }
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -269,17 +358,22 @@ getTasksList()
                 }
             }
     }
+    fun getClientCodeBySiteName(clientSiteName: String): String? {
+        for (pair in siteNamesList) {
+            if (pair.first == clientSiteName) {
+                return pair.second // Return ClientCode if ClientSiteName matches
+            }
+        }
+        return null // Return null if no match is found
+    }
 
     private fun getSitesFromServer(
         locationAutoid: String,
-        latitude: String,
-        longitude: String,
         userId: String
     ) {
         siteList.clear()
         retrofitInstance.getGeoMappedSites(
-            "sams", locationAutoid, latitude,
-            longitude
+            "sams",UserObject.userId, locationAutoid
         ).enqueue(object : Callback<GeoMappedResponse?> {
             override fun onResponse(
                 call: Call<GeoMappedResponse?>,
@@ -287,12 +381,17 @@ getTasksList()
             ) {
                 if (response.isSuccessful) {
 
-                    val sizes = response.body()?.size?.minus(1)
-                    for (i in 0..sizes!!) {
-                        siteList.add(response.body()!!.get(i).ClientCode)
-                    }
-                    Log.d("TAGGGGGGGGGGGGG", "onResponse: this is site list..............$siteList")
-                    setSiteSelection(userId, siteList)
+                        val sizes = response.body()?.size?.minus(1)
+                        for (i in 0..sizes!!) {
+                            siteList.add(response.body()!!.get(i).ClientSiteName)
+
+                            siteNamesList.add(
+                                response.body()?.get(i)!!.ClientSiteName to response.body()
+                                    ?.get(i)!!.ClientCode
+                            )
+                        }
+                        Log.d("TAGGGGGGGGGGGGG", "onResponse: this is site list..............$siteList")
+                        setSiteSelection(userId, siteList)
                 }
             }
 

@@ -1,5 +1,6 @@
 package com.example.ifmapp.fragments
 
+
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -15,20 +16,27 @@ import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
+import com.example.ifmapp.MainActivity
 import com.example.ifmapp.R
 import com.example.ifmapp.RetrofitInstance
 import com.example.ifmapp.activities.CheckInScreen
 import com.example.ifmapp.activities.DashBoardScreen
+import com.example.ifmapp.activities.ScannerScreen
 import com.example.ifmapp.adapters.AddAccountAdapter
 import com.example.ifmapp.apiinterface.ApiInterface
 import com.example.ifmapp.databinding.FragmentHomeBinding
 import com.example.ifmapp.modelclasses.InOutTimeModel
 import com.example.ifmapp.modelclasses.geomappedsite_model.GeoMappedResponse
+import com.example.ifmapp.modelclasses.postmodel.PostModel
+import com.example.ifmapp.modelclasses.postmodel.PostModelItem
 import com.example.ifmapp.modelclasses.shiftwithtime_model.ShiftWithTimeResponse
 import com.example.ifmapp.modelclasses.usermodel_sharedpreference.UserListModel
+import com.example.ifmapp.modelclasses.verifymobile.VerifyOtpResponse
 import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
 import com.example.ifmapp.toast.CustomToast
+import com.example.ifmapp.utils.CheckInternetConnection
 import com.example.ifmapp.utils.GlobalLocation
+import com.example.ifmapp.utils.ShiftDetailsObject
 import com.example.ifmapp.utils.UserObject
 import com.example.ifmapp.utils.UtilModel
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -44,7 +52,6 @@ import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
-import kotlin.math.log
 
 class HomeFragment(
     private var context: Context,
@@ -59,13 +66,15 @@ class HomeFragment(
     private lateinit var siteListInPref: ArrayList<String>
     private lateinit var shiftList: ArrayList<String>
     private lateinit var siteList: ArrayList<String>
+    private lateinit var postList: ArrayList<PostModelItem>
     private lateinit var InOuttimeList: ArrayList<InOutTimeModel>
-
+    private lateinit var siteNamesList: ArrayList<Pair<String, String>>
+    private lateinit var siteAsmtList: ArrayList<Pair<String, String>>
     private lateinit var shiftListTiming: ArrayList<String>
-
-    private var shiftSelect: String? = null
+    private var shiftSelect: String? = ""
+    private var postSelect: String? = ""
     private var shiftSelectFromSF: String? = null
-    private var siteSelect: String? = null
+    private var siteSelect: String? = ""
     private lateinit var currentShiftActualLiveData: MutableLiveData<String>
     private lateinit var currentShiftServerLiveData: MutableLiveData<InOutTimeModel>
     private var fusedLocationProviderClient: FusedLocationProviderClient? = null
@@ -97,15 +106,7 @@ class HomeFragment(
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false)
 
-        /*  for (users in SaveUsersInSharedPreference.getList(requireContext())) {
-              if (users.empId == empId) {
-                  binding.userId.text = users.empId
-                  binding.userName.text = users.userName
-                  empName = users.userName
-                  pin = users.pin
-                  binding.designation.text = users.designation
-              }
-          }*/
+
 
         currentUser = SaveUsersInSharedPreference.getUserByPin(requireContext(), otp, userName)
 
@@ -131,6 +132,13 @@ class HomeFragment(
         binding.join.text = getFormattedDate()
         binding.out.text = getFormattedDate()
 
+
+        GlobalLocation.location = UtilModel(
+            CheckInternetConnection().GetLocation(requireContext())?.latitude.toString(),
+            CheckInternetConnection().GetLocation(requireContext())?.longitude.toString(),
+            CheckInternetConnection().GetLocation(requireContext())?.altitude.toString()
+        )
+
         createLocationRequest()
         binding.checkoutBtn.isEnabled = false
         retrofitInstance = RetrofitInstance.apiInstance
@@ -145,6 +153,9 @@ class HomeFragment(
         siteList = ArrayList()
         InOuttimeList = ArrayList()
         shiftList = ArrayList()
+        postList = ArrayList()
+        siteNamesList = ArrayList()
+        siteAsmtList = ArrayList()
         currentShiftActualLiveData = MutableLiveData()
         currentShiftServerLiveData = MutableLiveData()
 
@@ -153,28 +164,53 @@ class HomeFragment(
 
         }
 
-
         binding.checkInBtn.setOnClickListener {
-            if (shiftSelect != null && siteSelect != null) {
-                // geoMappedUser(shiftSelect.toString(),siteSelect.toString())
+
+
+            Log.d(
+                "TAAAAAAAAAA",
+                "onCreateView:outside $siteSelect $shiftSelect $postList ...................."
+            )
+            if (siteSelect!!.isNotEmpty() && shiftSelect!!.isNotEmpty() && postList.size == 1) {
+
                 binding.checkoutBtn.setTextColor(resources.getColor(R.color.check_btn))
                 binding.checkoutBtn.setBackgroundResource(R.drawable.button_backwhite)
                 binding.checkInBtn.setTextColor(resources.getColor(R.color.white))
                 binding.checkInBtn.setBackgroundResource(R.drawable.button_back)
-                Log.d(
-                    "TAGGGGGGGG",
-                    "onCreateView: $siteSelect and $shiftSelect select while checkin"
-                )
 
-                val intent = Intent(requireContext(), CheckInScreen::class.java)
+                ShiftDetailsObject.inOut = "IN"
+                ShiftDetailsObject.shiftSelect = shiftSelect.toString()
+                ShiftDetailsObject.siteSElect = siteSelect.toString()
+                ShiftDetailsObject.postSelect = ""
+                ShiftDetailsObject.post = postList.get(0).PostAutoId
+
+                checkPostWithSite(postList.get(0).PostAutoId)
+
+
+            } else if (siteSelect!!.isNotEmpty() && shiftSelect!!.isNotEmpty() && postList.size > 1) {
+
+                ShiftDetailsObject.inOut = "IN"
+                ShiftDetailsObject.shiftSelect = shiftSelect.toString()
+                ShiftDetailsObject.siteSElect = siteSelect.toString()
+                ShiftDetailsObject.postSelect = ""
+
+
+                binding.checkoutBtn.setTextColor(resources.getColor(R.color.check_btn))
+                binding.checkoutBtn.setBackgroundResource(R.drawable.button_backwhite)
+                binding.checkInBtn.setTextColor(resources.getColor(R.color.white))
+                binding.checkInBtn.setBackgroundResource(R.drawable.button_back)
+                val intent = Intent(requireContext(), ScannerScreen::class.java)
                 intent.putExtra("INOUTStatus", "IN")
                 intent.putExtra("mPIN", otp)
                 intent.putExtra("empName", userName)
                 intent.putExtra("shiftSelect", shiftSelect)
                 intent.putExtra("siteSelect", siteSelect)
+
                 startActivity(intent)
             } else {
+                var c = siteSelect
                 CustomToast.showToast(requireContext(), "Please select Shift and Site")
+
             }
         }
         binding.checkoutBtn.setOnClickListener {
@@ -183,6 +219,11 @@ class HomeFragment(
             binding.checkInBtn.setBackgroundResource(R.drawable.button_backwhite)
             binding.checkoutBtn.setTextColor(resources.getColor(R.color.white))
             binding.checkoutBtn.setBackgroundResource(R.drawable.button_back)
+
+            ShiftDetailsObject.inOut = "OUT"
+            ShiftDetailsObject.shiftSelect = shiftSelect.toString()
+            ShiftDetailsObject.siteSElect = siteSelect.toString()
+            ShiftDetailsObject.postSelect = ""
 
             var intent = Intent(requireContext(), CheckInScreen::class.java)
             intent.putExtra("INOUTStatus", "OUT")
@@ -218,19 +259,11 @@ class HomeFragment(
             ?.addOnSuccessListener { location: Location? ->
                 // Got last known location
                 location?.let {
-                    GlobalLocation.location = UtilModel(
-                        location.latitude.toString(),
-                        location.longitude.toString(),
-                        location.altitude.toString()
-                    )
-                    Log.d(
-                        "TAGGGGGGGG",
-                        "getLastLocation: $mLatitude $mLongitude and $mAltitude are coming"
-                    )
-                    Log.d(
-                        "TAGGGGGGGG",
-                        "GLOBAL LOCATION: ${location.latitude.toString()} ${location.longitude.toString()} and ${location.altitude.toString()} are coming"
-                    )
+                    /*   GlobalLocation.location = UtilModel(
+                           location.latitude.toString(),
+                           location.longitude.toString(),
+                           location.altitude.toString()
+                       )*/
                 }
             }
     }
@@ -278,6 +311,8 @@ class HomeFragment(
 
     override fun onResume() {
         super.onResume()
+
+        Log.d("GLOBAL", "home: ${GlobalLocation.location}")
         binding.progressBar.visibility = View.VISIBLE
 
         currentShiftActualLiveData.observe(requireActivity()) {
@@ -303,22 +338,21 @@ class HomeFragment(
                             locationAutoId.toString(),
                             empNumber
                         )
-
                     }
-
-
                 }
             }
         }
-        Log.d("TAGGGGGGG", "onResume: this is user details ${UserObject.userNames} ${UserObject.userId} ${UserObject.designation} ${UserObject.userPin}")
+        Log.d(
+            "TAGGGGGGG",
+            "onResume: this is user details ${UserObject.userNames} ${UserObject.userId} ${UserObject.designation} ${UserObject.userPin}"
+        )
         binding.userName.text = UserObject.userNames
         binding.userId.text = UserObject.userId
 
         binding.designation.text = UserObject.designation
+        //site list called
         getSitesFromServer(
             UserObject.locationAutoId,
-            GlobalLocation.location.latitude,
-            GlobalLocation.location.longitude,
             empNumber
         )
     }
@@ -340,8 +374,6 @@ class HomeFragment(
             if (shiftList.contains(site.shiftDetails.substring(0, 1))) {
                 _SiteList.clear()
                 _SiteList.add(site.shiftDetails.substring(0, 1))
-
-
             }
         }
         adapterSelectionShift.addAll(_SiteList)
@@ -357,15 +389,18 @@ class HomeFragment(
                     position: Int,
                     id: Long
                 ) {
-                    val selectedItem = parent?.getItemAtPosition(position).toString()
-                    currentShiftActualLiveData.postValue(selectedItem)
-                    shiftSelect = selectedItem
+                    val selectedItem = parent?.getItemAtPosition(position)
+                    if (selectedItem != null) {
+                        currentShiftActualLiveData.postValue(selectedItem.toString())
+                        shiftSelect = selectedItem.toString()
+                    } else {
+                        shiftSelect = ""
+                    }
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {
                     parent?.let {
                         if (it.count > 0) {
-                            shiftSelect = it.getItemAtPosition(0).toString()
                         }
                     }
                 }
@@ -378,12 +413,12 @@ class HomeFragment(
         asmtId: String,
         sites: ArrayList<String>
     ) {
-        var _SiteList = ArrayList<String>()
+        val _SiteList = ArrayList<String>()
         _SiteList.clear()
         _SiteList.addAll(sites)
 
         val adapterSelectionShift = ArrayAdapter(
-            requireContext(),
+            context,
             com.google.android.material.R.layout.support_simple_spinner_dropdown_item,
             ArrayList<String>()
         )
@@ -401,21 +436,43 @@ class HomeFragment(
 
         binding.spinnerSelectSite.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
+                @SuppressLint("SuspiciousIndentation")
                 override fun onItemSelected(
                     parent: AdapterView<*>?,
                     view: View?,
                     position: Int,
                     id: Long
                 ) {
-                    val selectedItem = parent?.getItemAtPosition(position).toString()
-                    getShiftsFromServer(locationAutoId.toString(), userId, selectedItem, asmtId)
-                    siteSelect = selectedItem
+                    val selectedItem = parent?.getItemAtPosition(position)
+                    if (selectedItem != null) {
+
+                        val mSelectedSite = getClientCodeBySiteName(selectedItem.toString())
+                        val masmt = getClientasmtBySiteName(selectedItem.toString())
+
+                        ShiftDetailsObject.asmtId = masmt!!
+
+                        siteSelect = mSelectedSite
+                        getShiftsFromServer(
+                            locationAutoId.toString(),
+                            userId,
+                            mSelectedSite!!,
+                            asmtId
+                        )
+                        getPosts(locationAutoid, mSelectedSite, asmtId)
+
+
+                        Log.d("TAGGGGG", "onItemSelected: this condition $mSelectedSite")
+                    } else {
+                        Log.d("TAGGGGG", "onItemSelected: this condition null")
+
+                        siteSelect == ""
+                    }
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {
                     parent?.let {
                         if (it.count > 0) {
-                            siteSelect = it.getItemAtPosition(0).toString()
+
                         }
                     }
                 }
@@ -423,87 +480,138 @@ class HomeFragment(
     }
 
     // Function to retrieve shifts from SharedPreferences
+    fun getClientCodeBySiteName(clientSiteName: String): String? {
+        for (pair in siteNamesList) {
+            if (pair.first == clientSiteName) {
+                return pair.second // Return ClientCode if ClientSiteName matches
+            }
+        }
+        return null // Return null if no match is found
+    }
 
+    fun getClientasmtBySiteName(clientSiteName: String): String? {
+        for (pair in siteAsmtList) {
+            if (pair.first == clientSiteName) {
+                return pair.second // Return ClientCode if ClientSiteName matches
+            }
+        }
+        return null // Return null if no match is found
+    }
 
     private fun getSitesFromServer(
         locationAutoid: String,
-        latitude: String,
-        longitude: String,
         userId: String
     ) {
-        siteList.clear()
-        retrofitInstance.getGeoMappedSites(
-            "sams", locationAutoid, latitude,
-            longitude
-        ).enqueue(object : Callback<GeoMappedResponse?> {
-            override fun onResponse(
-                call: Call<GeoMappedResponse?>,
-                response: Response<GeoMappedResponse?>
-            ) {
-                if (response.isSuccessful) {
+        if (locationAutoid.isNotEmpty() && userId.isNotEmpty()) {
+            siteList.clear()
 
-                    val sizes = response.body()?.size?.minus(1)
-                    for (i in 0..sizes!!) {
-                        siteList.add(response.body()!!.get(i).ClientCode)
+            retrofitInstance.getGeoMappedSites(
+                "sams", userId, locationAutoid
+            ).enqueue(object : Callback<GeoMappedResponse?> {
+                override fun onResponse(
+                    call: Call<GeoMappedResponse?>,
+                    response: Response<GeoMappedResponse?>
+                ) {
+                    if (response.isSuccessful) {
+                        Log.d("TZZZZZZZZZ", "onResponse: this is here 2")
+
+
+                        if (response.body()!![0].MessageID.toInt() == 1) {
+                            val sizes = response.body()?.size?.minus(1)
+                            for (i in 0..sizes!!) {
+                                siteList.add(response.body()!!.get(i).ClientSiteName)
+                                siteNamesList.add(
+                                    response.body()?.get(i)!!.ClientSiteName to response.body()
+                                        ?.get(i)!!.ClientCode
+                                )
+                                siteAsmtList.add(
+                                    response.body()?.get(i)!!.ClientSiteName to response.body()
+                                        ?.get(i)!!.AsmtId
+                                )
+                            }
+                            Log.d("TZZZZZZZZZ", "onResponse: this is sitelist $siteList")
+                            Log.d("TZZZZZZZZZ", "onResponse: this is sitelist $siteNamesList")
+
+                            asmtId = response.body()?.get(0)?.AsmtId.toString()
+                            Log.d(
+                                "TAGGGGGGGGGGGGG",
+                                "onResponse: this is site list..............$siteList"
+                            )
+                            setSiteSelection(locationAutoid, userId, asmtId.toString(), siteList)
+                        } else {
+                            CustomToast.showToast(
+                                requireContext(),
+                                "Employee Site mapping not exists!!"
+                            )
+                            binding.progressBar.visibility = View.GONE
+                            startActivity(Intent(requireContext(), DashBoardScreen::class.java))
+                        }
                     }
-                    asmtId = response.body()?.get(0)?.AsmtID.toString()
-                    Log.d("TAGGGGGGGGGGGGG", "onResponse: this is site list..............$siteList")
-                    setSiteSelection(locationAutoid, userId, asmtId.toString(), siteList)
                 }
-            }
 
-            override fun onFailure(
-                call: Call<GeoMappedResponse?>,
-                t: Throwable
-            ) {
+                override fun onFailure(
+                    call: Call<GeoMappedResponse?>,
+                    t: Throwable
+                ) {
 
-            }
-        })
+                }
+            })
+        }
+
     }
 
     private fun getShiftsFromServer(
         locationAutoid: String,
         userId: String,
-        site: String,
+        siteSelect: String,
         asmtId: String
     ) {
+        Log.d(
+            "TAGGGGGGGGGGGG",
+            "getShiftsFromServer: $locationAutoid ${UserObject.userId} $siteSelect ${ShiftDetailsObject.asmtId}"
+        )
+        if (siteSelect.isNotEmpty() && userId.isNotEmpty() && locationAutoid.isNotEmpty() && asmtId.isNotEmpty()) {
+            retrofitInstance.getAttendancDailyWithShift(
+                "sams",
+                siteSelect, ShiftDetailsObject.asmtId,
+                locationAutoid, UserObject.userId
+            ).enqueue(object : Callback<ShiftWithTimeResponse?> {
+                override fun onResponse(
+                    call: Call<ShiftWithTimeResponse?>,
+                    response: Response<ShiftWithTimeResponse?>
+                ) {
+                    if (response.isSuccessful) {
 
-        retrofitInstance.getAttendancDailyWithShift(
-            "sams",
-            site, asmtId,
-            locationAutoid, userId
-        ).enqueue(object : Callback<ShiftWithTimeResponse?> {
-            override fun onResponse(
-                call: Call<ShiftWithTimeResponse?>,
-                response: Response<ShiftWithTimeResponse?>
-            ) {
-                if (response.isSuccessful) {
+                        var size = response.body()?.size
+                        for (shifts in response.body()!!) {
+                            Log.d("TAGGGGGGGGGGGG", "getShiftsFromServer:${shifts.ShiftDetails}")
 
-                    for (shifts in response.body()!!) {
-
-                        shiftList.add(shifts.ShiftCode)
-                        InOuttimeList.add(
-                            InOutTimeModel(
-                                shifts.InTime,
-                                shifts.OutTime,
-                                shifts.ShiftCode
+                            shiftList.add(shifts.ShiftCode)
+                            InOuttimeList.add(
+                                InOutTimeModel(
+                                    shifts.InTime,
+                                    shifts.OutTime,
+                                    shifts.ShiftCode
+                                )
                             )
-                        )
-                        shiftListTiming.add(shifts.ShiftDetails)
+                            shiftListTiming.add(shifts.ShiftDetails)
 
+                        }
+                        setShiftSelection(locationAutoid, userId, asmtId, shiftList)
+                        shiftList.clear()
+
+                    } else {
+                        CustomToast.showToast(requireContext(), "Shifts Not Found")
                     }
-                    setShiftSelection(locationAutoid, userId, asmtId, shiftList)
-                    shiftList.clear()
-
-                } else {
-                    CustomToast.showToast(requireContext(), "Shifts Not Found")
                 }
-            }
 
-            override fun onFailure(call: Call<ShiftWithTimeResponse?>, t: Throwable) {
+                override fun onFailure(call: Call<ShiftWithTimeResponse?>, t: Throwable) {
 
-            }
-        })
+                }
+            })
+        }
+
+
     }
 
     private fun userNoExists(inTime: String, outTime: String) {
@@ -568,6 +676,76 @@ class HomeFragment(
 
     }
 
+    fun getPosts(locationAutoid: String, siteSelect: String, asmtId: String) {
+        retrofitInstance.getSitesPost("sams", locationAutoid, siteSelect, asmtId)
+            .enqueue(object : Callback<PostModel?> {
+                override fun onResponse(
+                    call: Call<PostModel?>,
+                    response: Response<PostModel?>
+                ) {
+                    if (response.isSuccessful) {
+
+                        for (i in 0 until response.body()!!.size) {
+                            postList.add(response.body()!!.get(i))
+                        }
+                    } else {
+                        CustomToast.showToast(requireContext(), "No Posts Available!!")
+                    }
+                }
+
+                override fun onFailure(call: Call<PostModel?>, t: Throwable) {
+
+                }
+            })
+    }
+
+    private fun checkPostWithSite(postId: String) {
+        Log.d("SITE", "checkPostWithSite: ${ShiftDetailsObject.siteSElect}")
+        Log.d("SITE", "checkPostWithSite: ${ShiftDetailsObject.asmtId}")
+        retrofitInstance.getGeoMappedSitesBasisOfPost(
+            "sams",
+            UserObject.locationAutoId,
+            GlobalLocation.location.latitude,
+            GlobalLocation.location.longitude,
+            ShiftDetailsObject.siteSElect,
+            ShiftDetailsObject.asmtId,
+            postId
+        )
+            .enqueue(object : Callback<VerifyOtpResponse?> {
+                override fun onResponse(
+                    call: Call<VerifyOtpResponse?>,
+                    response: Response<VerifyOtpResponse?>
+                ) {
+                    if (response.isSuccessful) {
+                        if (response.body()?.get(0)!!.MessageID.toInt() == 1) {
+                            ShiftDetailsObject.post = postId
+                            val intent = Intent(requireContext(), CheckInScreen::class.java)
+                            intent.putExtra("INOUTStatus", "IN")
+                            intent.putExtra("mPIN", otp)
+                            intent.putExtra("empName", userName)
+                            intent.putExtra("shiftSelect", shiftSelect.toString())
+                            intent.putExtra("siteSelect", siteSelect.toString())
+                            intent.putExtra("shiftTimingList", shiftListTiming)
+                            startActivity(intent)
+
+                        } else {
+                            CustomToast.showToast(
+                                requireContext(),
+                                response.body()?.get(0)!!.MessageString
+                            )
+                        }
+                    } else {
+                        CustomToast.showToast(requireContext(), "Response Unsuccessful")
+                    }
+                }
+
+                override fun onFailure(call: Call<VerifyOtpResponse?>, t: Throwable) {
+
+                }
+            })
+
+
+    }
 
 }
 

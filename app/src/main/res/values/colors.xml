@@ -15,4 +15,12 @@
     <color name="grey_task">#989898</color>
     <color name="green_task">#00AC60</color>
     <color name="blue_task">#064277</color>
+    <color name="designationColor">#5E5D5D</color>
+    <color name="cardviewback595151">#595151</color>
+    <color name="blueTC_Btn">#001C35</color>
+    <color name="a676767">#676767</color>
+    <color name="blackShady">#ECECEC</color>
+    <color name="appScreensBack">#DAD7D7</color>
+    <color name="logout_dialog_back">#F9E4BC</color>
+
 </resources>

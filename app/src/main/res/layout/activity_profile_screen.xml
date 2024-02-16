@@ -10,6 +10,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/appScreensBack"
         tools:context=".activities.ProfileScreen">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -25,23 +26,9 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <ImageView
-                android:id="@+id/nav_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/navigationicon"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
 
-            <ImageView
-                android:id="@+id/edit_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/edit_icon"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+
+
 
             <TextView
                 android:id="@+id/profile_txt"
@@ -52,12 +39,12 @@
                 android:fontFamily="@font/roboto"
                 android:gravity="center"
                 android:text="Profile"
-                android:textColor="#121212"
+                android:textColor="@color/black"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/edit_icon"
-                app:layout_constraintStart_toEndOf="@id/nav_icon"
+               app:layout_constraintStart_toStartOf="parent"
+               app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -133,7 +120,7 @@
                                 android:fontFamily="@font/roboto"
                                 android:gravity="center"
                                 android:text="Cameron Williamson"
-                                android:textColor="#121212"
+                                android:textColor="@color/black"
                                 android:textSize="18sp"
                                 android:textStyle="bold"
                                 android:layout_marginTop="12dp"
@@ -153,7 +140,7 @@
                                 android:fontFamily="@font/roboto"
                                 android:gravity="center"
                                 android:text="Security Guard - SO l ABC1234567"
-                                android:textColor="#ACACAC"
+                                android:textColor="@color/designationColor"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
                                 android:layout_marginTop="12dp"
@@ -172,7 +159,7 @@
                                 android:fontFamily="@font/roboto"
                                 android:gravity="center"
                                 android:text="10 year with SIS"
-                                android:textColor="#121212"
+                                android:textColor="@color/black"
                                 android:textSize="16sp"
                                 android:lineHeight="19sp"
                                 android:layout_gravity="center"
@@ -243,7 +230,7 @@
                                 android:fontFamily="@font/roboto"
                                 android:gravity="center"
                                 android:text="Age"
-                                android:textColor="#ACACAC"
+                                android:textColor="@color/taskButton"
                                 android:textSize="15sp"
                                 android:textStyle="bold"
                                 android:layout_marginTop="12dp" />
@@ -257,7 +244,8 @@
                                 android:fontFamily="@font/roboto"
                                 android:gravity="center"
                                 android:text="38yrs"
-                                android:textColor="#121212"
+                                android:textColor="@color/black"
+
                                 android:textSize="15sp"
                                 android:textStyle="bold"
                                 android:layout_marginTop="12dp" />
@@ -279,7 +267,7 @@
                                 android:fontFamily="@font/roboto"
                                 android:gravity="center"
                                 android:text="Qualification"
-                                android:textColor="#ACACAC"
+                                android:textColor="@color/taskButton"
                                 android:textSize="15sp"
                                 android:textStyle="bold"
                                 android:layout_marginTop="12dp" />
@@ -293,7 +281,8 @@
                                 android:fontFamily="@font/roboto"
                                 android:gravity="center"
                                 android:text="Graduated"
-                                android:textColor="#121212"
+                                android:textColor="@color/black"
+
                                 android:textSize="15sp"
                                 android:textStyle="bold"
                                 android:layout_marginTop="12dp" />
@@ -315,7 +304,7 @@
                                 android:fontFamily="@font/roboto"
                                 android:gravity="center"
                                 android:text="Weight"
-                                android:textColor="#ACACAC"
+                                android:textColor="@color/taskButton"
                                 android:textSize="15sp"
                                 android:textStyle="bold"
                                 android:layout_marginTop="12dp" />
@@ -329,7 +318,8 @@
                                 android:fontFamily="@font/roboto"
                                 android:gravity="center"
                                 android:text="65 kg"
-                                android:textColor="#121212"
+                                android:textColor="@color/black"
+
                                 android:textSize="15sp"
                                 android:textStyle="bold"
                                 android:layout_marginTop="12dp" />
@@ -363,7 +353,7 @@
                                 android:fontFamily="@font/roboto"
                                 android:gravity="center"
                                 android:text="Height"
-                                android:textColor="#ACACAC"
+                                android:textColor="@color/taskButton"
                                 android:textSize="15sp"
                                 android:textStyle="bold"
                                 android:layout_marginTop="12dp" />
@@ -377,7 +367,7 @@
                                 android:fontFamily="@font/roboto"
                                 android:gravity="center"
                                 android:text="176 cm"
-                                android:textColor="#121212"
+                                android:textColor="@color/black"
                                 android:textSize="15sp"
                                 android:textStyle="bold"
                                 android:layout_marginTop="12dp" />
@@ -399,7 +389,7 @@
                                 android:fontFamily="@font/roboto"
                                 android:gravity="center"
                                 android:text="Branch Name"
-                                android:textColor="#ACACAC"
+                                android:textColor="@color/taskButton"
                                 android:textSize="15sp"
                                 android:textStyle="bold"
                                 android:layout_marginTop="12dp" />
@@ -413,7 +403,7 @@
                                 android:fontFamily="@font/roboto"
                                 android:gravity="center"
                                 android:text="ABC"
-                                android:textColor="#121212"
+                                android:textColor="@color/black"
                                 android:textSize="15sp"
                                 android:textStyle="bold"
                                 android:layout_marginTop="12dp" />

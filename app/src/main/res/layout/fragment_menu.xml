@@ -279,10 +279,27 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
                     android:layout_weight="1"
+                    android:background="@drawable/bottom_frag_back"
 
                     android:gravity="center"
                     android:orientation="vertical"
-                    android:padding="12dp">
+                    android:paddingTop="13dp"
+                    android:paddingBottom="13dp">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/profile" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/roboto"
+                        android:gravity="center"
+                        android:text="Contact Us"
+
+                        android:textColor="@color/black"
+                        android:textSize="14sp" />
 
 
 

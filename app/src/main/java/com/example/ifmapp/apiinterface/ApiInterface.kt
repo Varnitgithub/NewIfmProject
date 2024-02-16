@@ -1,14 +1,17 @@
 package com.example.ifmapp.apiinterface
 
+import com.example.ifmapp.activities.checklists.checklist__model.CheckListModel
+import com.example.ifmapp.activities.checklists.checklist__model.ImageAddingModel
 import com.example.ifmapp.activities.checklists.housekeeping_model.ViewPhotoResponse
-import com.example.ifmapp.activities.tasks.TaskModel
 import com.example.ifmapp.activities.tasks.taskapi_response.TaskApiResponse
 import com.example.ifmapp.modelclasses.attendance_response.AttendanceResponse
 import com.example.ifmapp.modelclasses.daily_attendance_model.DailyAttendanceModel
+import com.example.ifmapp.modelclasses.document_images_model.DocumentImagesModel
 import com.example.ifmapp.modelclasses.geomappedsite_model.GeoMappedResponse
+import com.example.ifmapp.modelclasses.header_list_response_model.HeaderResponseModel
 import com.example.ifmapp.modelclasses.loginby_pin.LoginByPINResponse
+import com.example.ifmapp.modelclasses.postmodel.PostModel
 import com.example.ifmapp.modelclasses.shift_selection_model.ShiftSelectionResponse
-import com.example.ifmapp.modelclasses.shift_selection_model.ShiftSelectionResponseItem
 import com.example.ifmapp.modelclasses.shiftwithtime_model.ShiftWithTimeResponse
 import com.example.ifmapp.modelclasses.verifymobile.OtpSend
 import com.example.ifmapp.modelclasses.verifymobile.VerifyOtpResponse
@@ -87,12 +90,11 @@ interface ApiInterface {
        ):Call<ShiftSelectionResponse>
 
     @FormUrlEncoded
-    @POST("GetGeoMappedSites")
+    @POST("GetEmpMappedSites")
     fun getGeoMappedSites(
         @Field("connectionKey") connectionKey: String,
-        @Field("LocationAutoID") LocationAutoID: String,
-        @Field("Latitude") Latitude: String,
-        @Field("Longitude") Longitude: String,
+        @Field("EmpID") EmpID: String,
+        @Field("LocationAutoId") LocationAutoID: String,
     ):Call<GeoMappedResponse>
 
 
@@ -124,6 +126,7 @@ interface ApiInterface {
         @Field("ClientCode") ClientCode: String,
         @Field("ShiftCode") ShiftCode: String,
         @Field("LocationName") LocationName: String,
+        @Field("Post") Post: String,
     ):Call<AttendanceResponse>
 
 
@@ -138,12 +141,19 @@ interface ApiInterface {
     ):Call<ShiftWithTimeResponse>
 
     @FormUrlEncoded
-    @POST("GetTourCode")
+    @POST("GetClientTourCode")
     fun getTourTasks(
         @Field("connectionKey") connectionKey: String,
+        @Field("clientCode") clientCode: String,
     ):Call<TaskApiResponse>
 
 
+    @FormUrlEncoded
+    @POST("GetChecklistHeader")
+    fun getChecklistHeader(
+        @Field("connectionKey") connectionKey: String,
+        @Field("clientCode") clientCode: String,
+    ):Call<HeaderResponseModel>
 
     @FormUrlEncoded
     @POST("GetEmployeeDocs")
@@ -152,7 +162,7 @@ interface ApiInterface {
         @Field("EmpID") EmpID: String,
         @Field("LocationAutoID") LocationAutoID: String,
         @Field("DocType") DocType: String
-    ):Call<TaskModel>
+    ):Call<DocumentImagesModel>
 
 
     @FormUrlEncoded
@@ -170,42 +180,69 @@ interface ApiInterface {
     ):Call<VerifyOtpResponse>
 
     @FormUrlEncoded
-    @POST("InsertCheckListImageHouseKeeping")
+    @POST("InsertClientChecklistImage")
     fun insertCheckListImageHouseKeeping(
         @Field("connectionKey") connectionKey: String,
-        @Field("EmployeeID") EmployeeID: String,
-        @Field("EmployeeName") EmployeeName: String,
-        @Field("ChecklistId") ChecklistId: String,
-        @Field("ChecklistImageBase64") ChecklistImageBase64: String,
-        @Field("LocationAutoId") LocationAutoId: String,
         @Field("ClientCode") ClientCode: String,
-        @Field("DutyDateTime") DutyDateTime: String,
-        @Field("TourCode") TourCode: String,
-    ):Call<VerifyOtpResponse>
+        @Field("TourAutoId") TourAutoId: String,
+        @Field("ChecklistHeaderAutoID") ChecklistHeaderAutoID: String,
+        @Field("ChecklistAutoID") ChecklistAutoID: String,
+        @Field("ChecklistImageBase64") ChecklistImageBase64: String,
+    ):Call<ImageAddingModel>
 
     @FormUrlEncoded
-    @POST("UpdateChecklistStatustoCompletedHouseKeeping")
+    @POST("UpdateChecklistStatus")
     fun updateChecklistStatustoCompletedHouseKeeping(
         @Field("connectionKey") connectionKey: String,
-        @Field("EmployeeID") EmployeeID: String,
-        @Field("EmployeeName") EmployeeName: String,
-        @Field("ChecklistID") ChecklistID: String,
-        @Field("LocationAutoId") LocationAutoId: String,
         @Field("ClientCode") ClientCode: String,
-        @Field("TourCode") TourCode: String,
-    ):Call<VerifyOtpResponse>
+        @Field("TourAutoId") TourAutoId: String,
+        @Field("ChecklistHeaderAutoID") ChecklistHeaderAutoID: String,
+        @Field("ChecklistAutoID") ChecklistAutoID: String,
+    ):Call<ImageAddingModel>
     @FormUrlEncoded
-    @POST("GetChecklistImageUpdatedHouseKeeping")
+    @POST("GetClientChecklistImage")
     fun getChecklistImageUpdatedHouseKeeping(
         @Field("connectionKey") connectionKey: String,
-        @Field("EmployeeID") EmployeeID: String,
-        @Field("DutyDateTime") DutyDateTime: String,
-        @Field("ChecklistId") ChecklistId: String,
-        @Field("LocationAutoId") LocationAutoId: String,
         @Field("ClientCode") ClientCode: String,
-        @Field("TourCode") TourCode: String,
+        @Field("TourAutoId") TourAutoId: String,
+        @Field("ChecklistHeaderAutoID") ChecklistHeaderAutoID: String,
+        @Field("ChecklistAutoID") ChecklistAutoID: String,
+
+
+
     ):Call<ViewPhotoResponse>
 
+    @FormUrlEncoded
+    @POST("GetSitesPost")
+    fun getSitesPost(
+        @Field("connectionKey") connectionKey: String,
+        @Field("LocationAutoID") LocationAutoID: String,
+        @Field("ClientCode") ClientCode: String,
+        @Field("AsmtId") AsmtId: String,
+    ):Call<PostModel>
+
+    @FormUrlEncoded
+    @POST("GetGeoMappedSitesBasisOfPost")
+    fun getGeoMappedSitesBasisOfPost(
+        @Field("connectionKey") connectionKey: String,
+        @Field("LocationAutoID") LocationAutoID: String,
+        @Field("Latitude") Latitude: String,
+        @Field("Longitude") Longitude: String,
+
+        @Field("ClientCode") ClientCode: String,
+        @Field("AsmtID") AsmtID: String,
+        @Field("PostAutoID") PostAutoID: String,
+    ):Call<VerifyOtpResponse>
+
+
+    @FormUrlEncoded
+    @POST("GetChecklistName")
+    fun getChecklistName(
+        @Field("connectionKey") connectionKey: String,
+        @Field("ClientCode") ClientCode: String,
+        @Field("TourAutoId") TourAutoId: String,
+        @Field("ChecklistHeaderAutoID") ChecklistHeaderAutoID: String
+    ):Call<CheckListModel>
 
 }
 

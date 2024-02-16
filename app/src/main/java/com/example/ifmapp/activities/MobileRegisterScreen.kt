@@ -245,8 +245,6 @@ class MobileRegisterScreen : AppCompatActivity() {
                                 if (binding.otp1.text.isEmpty() && binding.otp2.text.isEmpty()
                                     && binding.otp3.text.isEmpty() && binding.otp4.text.isEmpty()
                                 ) {
-
-
                                     if (binding.mobileNoEdt.text.isNotEmpty()) {
                                         if (binding.mobileNoEdt.text.toString().length == 10) {
                                             mobileNumber =
@@ -355,16 +353,14 @@ class MobileRegisterScreen : AppCompatActivity() {
                                                                         ?.get(0)?.MessageString
                                                                 }"
                                                             )
-
-                                                            binding.progressBar.visibility =
-                                                                View.GONE
+                                                            binding.btnContinue.isEnabled = true
+                                                            binding.btnContinue.isClickable = true
+                                                            binding.progressBar.visibility = View.GONE
                                                             binding.otp1.text.clear()
                                                             binding.otp2.text.clear()
                                                             binding.otp3.text.clear()
                                                             binding.otp4.text.clear()
                                                         }
-
-
                                                     } else {
 
                                                         binding.progressBar.visibility = View.GONE
@@ -394,17 +390,23 @@ class MobileRegisterScreen : AppCompatActivity() {
                                     Toast.LENGTH_SHORT
                                 ).show()
                                 binding.progressBar.visibility = View.GONE
+                                binding.mobileNoEdt.isClickable = true
+                                binding.mobileNoEdt.isEnabled = true
                             }
 
 
                         } else {
                             CustomToast.showToast(this@MobileRegisterScreen, "user is not valid")
                             binding.progressBar.visibility = View.GONE
+                            binding.mobileNoEdt.isClickable = true
+                            binding.mobileNoEdt.isEnabled = true
                         }
                     }
 
                     override fun onFailure(call: Call<VerifyOtpResponse?>, t: Throwable) {
                         binding.progressBar.visibility = View.GONE
+                        binding.mobileNoEdt.isClickable = true
+                        binding.mobileNoEdt.isEnabled = true
                     }
                 })
 

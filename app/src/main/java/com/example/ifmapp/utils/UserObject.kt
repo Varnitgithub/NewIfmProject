@@ -6,4 +6,5 @@ object UserObject {
     var userPin:String=""
     var locationAutoId:String = ""
     var designation:String=""
+
 }

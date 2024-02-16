@@ -8,6 +8,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.ifmapp.MainActivity
 import com.example.ifmapp.R
+import com.example.ifmapp.activities.checklists.checklist__model.CheckListModel
+import com.example.ifmapp.activities.checklists.checklist__model.CheckListModelItem
 import com.example.ifmapp.apiinterface.ApiInterface
 import com.example.ifmapp.databinding.ActivityCheckListForSecurityBinding
 import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
@@ -26,7 +28,7 @@ class CheckListForSecurity : AppCompatActivity(), CheckListAdapter.Clicked {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_check_list_for_security)
         binding = DataBindingUtil.setContentView(this@CheckListForSecurity,R.layout.activity_check_list_for_housekeeping)
-        checkListAdapter = CheckListAdapter(this,this)
+        checkListAdapter = CheckListAdapter(this,this,"","","")
         binding.houseKeepingRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.houseKeepingRecyclerView.adapter = checkListAdapter
 
@@ -41,11 +43,11 @@ class CheckListForSecurity : AppCompatActivity(), CheckListAdapter.Clicked {
         }
 
         if (SaveUsersInSharedPreference.getHindiEnglish(this@CheckListForSecurity)=="hindi"){
-            val checklist = checklistDataInHindi()
-            checkListAdapter.updateList(checklist)
+       //     val checklist = checklistDataInHindi()
+          //  checkListAdapter.updateList(checklist)
         }else{
-            val checklist = checklistData()
-            checkListAdapter.updateList(checklist)
+         //   val checklist = checklistData()
+         //   checkListAdapter.updateList(checklist)
         }
 
 
@@ -53,6 +55,7 @@ class CheckListForSecurity : AppCompatActivity(), CheckListAdapter.Clicked {
 
 
 
+/*
     private fun checklistData():ArrayList<CheckListModel>{
         var checklist = ArrayList<CheckListModel>()
 
@@ -68,26 +71,27 @@ class CheckListForSecurity : AppCompatActivity(), CheckListAdapter.Clicked {
     private fun checklistDataInHindi():ArrayList<CheckListModel>{
         var checklist = ArrayList<CheckListModel>()
 
-        checklist.add(CheckListModel(1,"क्या आईडी कार्ड उपलब्ध है","लंबित",true))
+        checklist.add(CheckListModel(1,"क्या आईडी कार्ड उपलब्ध है","पैंडिंग",true))
         checklist.add(CheckListModel(2,"कार्यालय के फर्श पर सीढ़ियाँ नहीं हैं\n"+
-                "और व्यवस्थित क्या आप वर्दी में हैं", "लंबित",true))
-        checklist.add(CheckListModel(3,"क्या ताला सही ढंग से सील किया गया है", "लंबित",true))
-        checklist.add(CheckListModel(4,"क्या न्यायालय नोटिस प्रदर्शित किया जाना है", "लंबित",true))
+                "और व्यवस्थित क्या आप वर्दी में हैं", "पैंडिंग",true))
+        checklist.add(CheckListModel(3,"क्या ताला सही ढंग से सील किया गया है", "पैंडिंग",true))
+        checklist.add(CheckListModel(4,"क्या न्यायालय नोटिस प्रदर्शित किया जाना है", "पैंडिंग",true))
 
         return  checklist
     }
 
+*/
 
-    override fun onAddPhotoClick(checkListModel: CheckListModel, position: Int) {
+    override fun onAddPhotoClick(checkListModel: CheckListModelItem, position: Int) {
     }
 
-    override fun onViewPhotoClick(checkListModel: CheckListModel, position: Int) {
+    override fun onViewPhotoClick(checkListModel: CheckListModelItem, position: Int) {
 
     }
 
-    override fun onSwitchOnClick(checkListModel: CheckListModel, position: Int) {
-
-    }
+//    override fun onSwitchOnClick(checkListModel: CheckListModelItem, position: Int) {
+//
+//    }
 
 
     override fun onBackPressed() {

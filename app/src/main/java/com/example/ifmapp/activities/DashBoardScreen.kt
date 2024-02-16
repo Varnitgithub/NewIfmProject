@@ -15,21 +15,27 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.ifmapp.MainActivity
 import com.example.ifmapp.R
+import com.example.ifmapp.RetrofitInstance
 import com.example.ifmapp.adapters.AddAccountAdapter
+import com.example.ifmapp.apiinterface.ApiInterface
 import com.example.ifmapp.checked
 import com.example.ifmapp.databinding.ActivityDashBoardScreenBinding
 import com.example.ifmapp.modelclasses.AddAccountModel
+import com.example.ifmapp.modelclasses.loginby_pin.LoginByPINResponse
 import com.example.ifmapp.modelclasses.usermodel_sharedpreference.UserListModel
 import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
 import com.example.ifmapp.toast.CustomToast
 import com.otpview.OTPListener
 import com.otpview.OTPTextView
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class DashBoardScreen : AppCompatActivity(), AddAccountAdapter.OnClickedInterface {
     private lateinit var binding: ActivityDashBoardScreenBinding
     private val LOCATION_PERMISSION_REQUEST_CODE = 111
     private lateinit var otpTextView: OTPTextView
-
+private lateinit var retrofitInstance:ApiInterface
     private lateinit var addAccountAdapter: AddAccountAdapter
 
 
@@ -48,6 +54,7 @@ class DashBoardScreen : AppCompatActivity(), AddAccountAdapter.OnClickedInterfac
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dash_board_screen)
         usersList = ArrayList()
         allUsersList = ArrayList()
+        retrofitInstance = RetrofitInstance.apiInstance
         val newlist = SaveUsersInSharedPreference.getList(this).size
       //  currentUser = SaveUsersInSharedPreference.getList(this)[0]
         for (user in 0 until newlist) {
@@ -90,7 +97,7 @@ class DashBoardScreen : AppCompatActivity(), AddAccountAdapter.OnClickedInterfac
         }
 
         binding.forgotPin.setOnClickListener {
-            startActivity(Intent(this, GnereratePinCodeScreen::class.java))
+           // startActivity(Intent(this, GnereratePinCodeScreen::class.java))
         }
 
         binding.addAccount.setOnClickListener {
@@ -109,13 +116,9 @@ class DashBoardScreen : AppCompatActivity(), AddAccountAdapter.OnClickedInterfac
 
                 for (mUser in userList) {
                     if (mUser.pin == otp && mUser.userName == empName) {
-                        val intent = Intent(this@DashBoardScreen, MainActivity::class.java)
-                        intent.putExtra("mPIN", otp)
-                        intent.putExtra("mobileNumber", mobileNumber)
-                        intent.putExtra("empId", empNumber)
-                        intent.putExtra("empName", empName)
+                        loginUser(otp,empNumber?:"")
                         startActivity(intent)
-                        return // Exit the function early if PIN is correct
+                        return
                     }
                 }
 
@@ -123,10 +126,7 @@ class DashBoardScreen : AppCompatActivity(), AddAccountAdapter.OnClickedInterfac
                 CustomToast.showToast(this@DashBoardScreen, "Please Enter Correct Pin")
                 otpTextView.setOTP("")
                 otpTextView.resetState()
-
-
             }
-
         }
     }
 
@@ -209,6 +209,40 @@ class DashBoardScreen : AppCompatActivity(), AddAccountAdapter.OnClickedInterfac
     override fun onBackPressed() {
         super.onBackPressed()
         startActivity(Intent(this@DashBoardScreen, RegistrationScreen::class.java))
+    }
+
+    private fun loginUser(pin:String,empId:String){
+        retrofitInstance.loginByemployeeId("sams",empId,pin).enqueue(object : Callback<LoginByPINResponse?> {
+            override fun onResponse(
+                call: Call<LoginByPINResponse?>,
+                response: Response<LoginByPINResponse?>
+            ) {
+                if (response.isSuccessful){
+
+                    if (response.body()?.get(0)?.MessageID?.toInt()==1){
+                        val intent = Intent(this@DashBoardScreen, MainActivity::class.java)
+                        intent.putExtra("empId", empNumber)
+                        intent.putExtra("mPIN", pin)
+                        intent.putExtra("mobileNumber", mobileNumber)
+                        intent.putExtra("empName", empName)
+                        startActivity(intent)
+
+                    }else{
+                        response.body()?.get(0)?.MessageString?.let {
+                            CustomToast.showToast(this@DashBoardScreen,
+                                it
+                            )
+                        }
+                    }
+                }else{
+                    CustomToast.showToast(this@DashBoardScreen,"Response Failed")
+                }
+            }
+
+            override fun onFailure(call: Call<LoginByPINResponse?>, t: Throwable) {
+                TODO("Not yet implemented")
+            }
+        })
     }
 }
 

@@ -10,8 +10,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/appScreensBack"
         tools:context=".activities.SignInScreen">
-
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -113,10 +113,11 @@
                     android:layout_marginTop="8dp"
                     android:background="@drawable/site_selection_back"
                     android:hint="Enter your phone number"
-                    android:padding="16dp"
                     android:inputType="number"
                     android:maxLength="10"
+                    android:textColor="@color/black"
                     android:maxLines="1"
+                    android:padding="16dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -137,48 +138,48 @@
 
         </LinearLayout>
 
-       <!-- <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="4"
-            android:layout_marginTop="8dp"
-            app:layout_constraintEnd_toEndOf="@id/top_icons_CL"
-            app:layout_constraintStart_toStartOf="@id/top_icons_CL"
-            app:layout_constraintTop_toBottomOf="@id/id_icons">
+        <!-- <LinearLayout
+             android:layout_width="0dp"
+             android:layout_height="wrap_content"
+             android:orientation="horizontal"
+             android:weightSum="4"
+             android:layout_marginTop="8dp"
+             app:layout_constraintEnd_toEndOf="@id/top_icons_CL"
+             app:layout_constraintStart_toStartOf="@id/top_icons_CL"
+             app:layout_constraintTop_toBottomOf="@id/id_icons">
 
-            <TextView
-                android:layout_weight="1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/roboto"
-                android:textSize="15sp"
-                android:textStyle="bold"
-                android:textColor="#ACACAC"
-                android:gravity="end"
-                android:text="Already registered ?"/>
+             <TextView
+                 android:layout_weight="1"
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:fontFamily="@font/roboto"
+                 android:textSize="15sp"
+                 android:textStyle="bold"
+                 android:textColor="#ACACAC"
+                 android:gravity="end"
+                 android:text="Already registered ?"/>
 
-            <TextView
-                android:id="@+id/move_to_signup"
-                android:layout_weight="3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/roboto"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="#000000"
-                android:layout_marginStart="3dp"
-                android:text="Click here"/>
+             <TextView
+                 android:id="@+id/move_to_signup"
+                 android:layout_weight="3"
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:fontFamily="@font/roboto"
+                 android:textSize="16sp"
+                 android:textStyle="bold"
+                 android:textColor="#000000"
+                 android:layout_marginStart="3dp"
+                 android:text="Click here"/>
 
-        </LinearLayout>
--->
+         </LinearLayout>
+ -->
         <LinearLayout
             android:id="@+id/otp_section_LL"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:orientation="vertical"
-android:visibility="gone"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="@id/top_icons_CL"
             app:layout_constraintStart_toStartOf="@id/top_icons_CL"
             app:layout_constraintTop_toBottomOf="@id/id_icons">
@@ -232,11 +233,11 @@ android:visibility="gone"
                             android:layout_height="match_parent"
                             android:layout_marginEnd="3dp"
                             android:layout_weight="1"
+                            android:gravity="center"
                             android:inputType="number|numberPassword"
                             android:maxLength="1"
-                            android:gravity="center"
-                            android:textColorHint="@color/black"
                             android:textColor="@color/black"
+                            android:textColorHint="@color/black"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
@@ -265,12 +266,12 @@ android:visibility="gone"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="3dp"
                             android:layout_weight="1"
+                            android:gravity="center"
                             android:inputType="number|numberPassword"
                             android:maxLength="1"
-                            android:gravity="center"
 
-                            android:textColorHint="@color/white"
                             android:textColor="@color/black"
+                            android:textColorHint="@color/white"
 
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
@@ -300,13 +301,13 @@ android:visibility="gone"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="3dp"
                             android:layout_weight="1"
-                            android:inputType="number|numberPassword"
-
-                            android:maxLength="1"
                             android:gravity="center"
 
-                            android:textColorHint="@color/white"
+                            android:inputType="number|numberPassword"
+                            android:maxLength="1"
+
                             android:textColor="@color/black"
+                            android:textColorHint="@color/white"
 
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
@@ -336,11 +337,11 @@ android:visibility="gone"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="3dp"
                             android:layout_weight="1"
-                            android:textColor="@color/black"
+                            android:gravity="center"
                             android:inputType="number|numberPassword"
 
                             android:maxLength="1"
-                            android:gravity="center"
+                            android:textColor="@color/black"
 
                             android:textColorHint="@color/white"
                             app:layout_constraintBottom_toBottomOf="parent"
@@ -381,22 +382,20 @@ android:visibility="gone"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/roboto"
                         android:gravity="center"
-                        tools:text="00:00"
                         android:textColor="#acacac"
                         android:textSize="15sp"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
 
-                        app:layout_constraintTop_toTopOf="parent" />
+                        tools:text="00:00" />
 
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
-
-
 
 
         </LinearLayout>
@@ -406,86 +405,86 @@ android:visibility="gone"
             android:id="@+id/resent_otp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="10dp"
             android:fontFamily="@font/roboto"
-            android:text="Resend OTP"
-            android:layout_marginStart="16dp"
             android:padding="3dp"
-            android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@id/otp_section_LL"
-            app:layout_constraintStart_toStartOf="parent"
-            android:textColor="#dc133f"
+            android:text="Resend OTP"
+            android:textColor="@color/red"
             android:textSize="15sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/otp_section_LL" />
 
-      <!--  <LinearLayout
-            android:id="@+id/don_t_have_LL"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:orientation="horizontal"
-            android:padding="14dp"
-            android:weightSum="3"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/top_icons_CL"
-            app:layout_constraintStart_toStartOf="@id/top_icons_CL">
+        <!--  <LinearLayout
+              android:id="@+id/don_t_have_LL"
+              android:layout_width="0dp"
+              android:layout_height="wrap_content"
+              android:layout_marginBottom="20dp"
+              android:orientation="horizontal"
+              android:padding="14dp"
+              android:weightSum="3"
+              app:layout_constraintBottom_toBottomOf="parent"
+              app:layout_constraintEnd_toEndOf="@id/top_icons_CL"
+              app:layout_constraintStart_toStartOf="@id/top_icons_CL">
 
 
-            <TextView
-                android:id="@+id/txt_signin"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:layout_weight="2"
-                android:gravity="end"
-                android:text="Don't have an phone no? "
-                android:textColor="#7d7d7d"
-                android:textSize="15sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/wayToSignin"
-                app:layout_constraintTop_toTopOf="parent" />
+              <TextView
+                  android:id="@+id/txt_signin"
+                  android:layout_width="0dp"
+                  android:layout_height="wrap_content"
+                  android:layout_marginStart="15dp"
+                  android:layout_weight="2"
+                  android:gravity="end"
+                  android:text="Don't have an phone no? "
+                  android:textColor="#7d7d7d"
+                  android:textSize="15sp"
+                  app:layout_constraintBottom_toBottomOf="parent"
+                  app:layout_constraintEnd_toStartOf="@id/wayToSignin"
+                  app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/wayToSignup"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:fontFamily="@font/roboto"
-                android:gravity="start"
-                android:text="Sign up"
-                android:textColor="#001c35"
-                android:textSize="15sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/txt_signin"
-                app:layout_constraintTop_toTopOf="parent" />
+              <TextView
+                  android:id="@+id/wayToSignup"
+                  android:layout_width="0dp"
+                  android:layout_height="wrap_content"
+                  android:layout_weight="1"
+                  android:fontFamily="@font/roboto"
+                  android:gravity="start"
+                  android:text="Sign up"
+                  android:textColor="#001c35"
+                  android:textSize="15sp"
+                  app:layout_constraintBottom_toBottomOf="parent"
+                  app:layout_constraintStart_toEndOf="@id/txt_signin"
+                  app:layout_constraintTop_toTopOf="parent" />
 
-        </LinearLayout>-->
+          </LinearLayout>-->
 
 
         <Button
             android:id="@+id/btn_continue"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
             android:background="@drawable/site_selection_back"
             android:fontFamily="@font/roboto"
             android:gravity="center"
             android:text="Continue"
             android:textAllCaps="false"
-            android:textColor="#acacac"
+            android:textColor="@color/taskButton"
             android:textSize="15sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="20dp"
             app:layout_constraintEnd_toEndOf="@id/top_icons_CL"
             app:layout_constraintStart_toStartOf="@id/top_icons_CL" />
 
         <ProgressBar
+            android:id="@+id/progressBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/progressBar"
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -9,12 +9,15 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.ifmapp.MainActivity
 import com.example.ifmapp.R
+import com.example.ifmapp.SearchCheckList
 import com.example.ifmapp.activities.checklists.CheckListForHousekeeping
 import com.example.ifmapp.activities.tasks.TaskModel
 import com.example.ifmapp.activities.tasks.taskadapter.TasksAdapter
 import com.example.ifmapp.activities.tasks.taskapi_response.TaskApiResponseItem
 import com.example.ifmapp.databinding.FragmentTodoTaskBinding
+import com.example.ifmapp.toast.CustomToast
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -37,13 +40,22 @@ class TodoTaskFragment(private var siteSelect:String,private var todoLists:Array
         binding.todoRecyclerview.adapter = tasksAdapter
         var mList  = ArrayList<TaskModel>()
         var currentDate=  getFormattedDate()
-        for (i in 0 until todoLists.size){
-            var count  =1
-            mList.add(TaskModel(count,todoLists[i].TourDesc,currentDate,"TODO"))
-            count++
-        }
-        tasksAdapter.updateList(mList)
 
+        if (todoLists.isNotEmpty()) {
+
+
+            for (i in 0 until todoLists.size) {
+                var count = 1
+                mList.add(TaskModel(count, todoLists[i].TourDesc.toString(), currentDate, "TODO"))
+                count++
+            }
+            tasksAdapter.updateList(mList)
+        }else{
+            CustomToast.showToast(requireContext(),"No Checklist Found")
+            tasksAdapter.updateList(emptyList())
+            startActivity(Intent(requireContext(), MainActivity::class.java))
+
+        }
    return binding.root
     }
     private fun getFormattedDate(): String {
@@ -55,12 +67,9 @@ class TodoTaskFragment(private var siteSelect:String,private var todoLists:Array
     override fun onclick(model: TaskModel, position: Int) {
         var intent = Intent(requireContext(), CheckListForHousekeeping::class.java)
         intent.putExtra("siteSelect", siteSelect)
-
-        intent.putExtra("tourCode", todoLists[position].TourCode)
         intent.putExtra("position", (position+1).toString())
-
-
-        Log.d("TAGGGGGGGGGG", "onclick:...................... ${todoLists[position].TourCode} and position $position")
+        intent.putExtra("tourCode",model.id.toString())
+        Log.d("TAGGGGGGGGGGG", "onCreate: 22222.......${model.id}")
         startActivity(intent)
     }
 

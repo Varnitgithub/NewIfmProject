@@ -2,6 +2,7 @@ package com.example.ifmapp.activities.checklists
 
 import CheckListAdapter
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -10,6 +11,9 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Base64
 import android.util.Log
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
@@ -19,9 +23,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.ifmapp.MainActivity
 import com.example.ifmapp.R
 import com.example.ifmapp.RetrofitInstance
-import com.example.ifmapp.activities.checklists.housekeeping_model.ViewPhotoResponse
+import com.example.ifmapp.activities.checklists.checklist__model.CheckListModel
+import com.example.ifmapp.activities.checklists.checklist__model.CheckListModelItem
+import com.example.ifmapp.activities.checklists.checklist__model.ImageAddingModel
 import com.example.ifmapp.apiinterface.ApiInterface
 import com.example.ifmapp.databinding.ActivityCheckListForHousekeepingBinding
+import com.example.ifmapp.modelclasses.header_list_response_model.HeaderResponseModel
 import com.example.ifmapp.modelclasses.verifymobile.VerifyOtpResponse
 import com.example.ifmapp.shared_preference.SaveUsersInSharedPreference
 import com.example.ifmapp.toast.CustomToast
@@ -42,6 +49,15 @@ class CheckListForHousekeeping : AppCompatActivity(), CheckListAdapter.Clicked {
     private var siteSelect: String? = null
     private var tourCode: String? = null
     private var mPosition: String? = null
+    private var headerId: String? = null
+    private var position: String? = null
+    private var tourCodes: String? = null
+
+    private lateinit var headerIDSelect: ArrayList<Pair<String, String>>
+    private lateinit var headerList: ArrayList<String>
+    private var headerSelect: String? = null
+    private var addPhotoPosition = ""
+
     private lateinit var retrofitInstance: ApiInterface
     private lateinit var binding: ActivityCheckListForHousekeepingBinding
     private lateinit var checkListAdapter: CheckListAdapter
@@ -56,7 +72,6 @@ class CheckListForHousekeeping : AppCompatActivity(), CheckListAdapter.Clicked {
             }
         }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //  setContentView(R.layout.activity_check_list_for_housekeeping)
@@ -64,10 +79,21 @@ class CheckListForHousekeeping : AppCompatActivity(), CheckListAdapter.Clicked {
             this@CheckListForHousekeeping,
             R.layout.activity_check_list_for_housekeeping
         )
+        headerList = ArrayList()
+        headerIDSelect = ArrayList()
         empId = intent.getStringExtra("empId")
+        headerId = intent.getStringExtra("headerId")
+        Log.d("HEADER", "onResume: this is headerId $headerId")
         siteSelect = intent.getStringExtra("siteSelect")
+        position = intent.getStringExtra("position")
         tourCode = intent.getStringExtra("tourCode")
         mPosition = intent.getStringExtra("position")
+        Log.d("TAGGGGGGGG", "onCreate:tour code... $tourCode")
+        Log.d("TAGGGGGGGG", "onCreate:tour code... $siteSelect")
+        retrofitInstance = RetrofitInstance.apiInstance
+        if (siteSelect != null) {
+            getHeaderFromServer(siteSelect.toString())
+        }
 
         for (users in SaveUsersInSharedPreference.getList(this@CheckListForHousekeeping)) {
             if (users.empId == UserObject.userId) {
@@ -77,124 +103,136 @@ class CheckListForHousekeeping : AppCompatActivity(), CheckListAdapter.Clicked {
             }
         }
         retrofitInstance = RetrofitInstance.apiInstance
-        checkListAdapter = CheckListAdapter(this, this)
         binding.houseKeepingRecyclerView.layoutManager = LinearLayoutManager(this)
-        binding.houseKeepingRecyclerView.adapter = checkListAdapter
+
+
 
         if (SaveUsersInSharedPreference.getHindiEnglish(this@CheckListForHousekeeping) == "hindi") {
-            val checklist = checklistDataInHindi()
-            checkListAdapter.updateList(checklist)
         } else {
-            val checklist = checklistData()
-            checkListAdapter.updateList(checklist)
         }
+
     }
 
-    fun checklistData(): ArrayList<CheckListModel> {
-        var checklist = ArrayList<CheckListModel>()
-
-        checklist.add(
-            CheckListModel(
-                1, "Entrance glass clean & free\n" +
-                        "from smudges", "pending", true
-            )
-        )
-        checklist.add(
-            CheckListModel(
-                2, "Office floor are free of stairs\n" +
-                        "& orderless", "pending", true
-            )
-        )
-        checklist.add(CheckListModel(3, "Tables, printers are free from dust", "pending", true))
-        checklist.add(CheckListModel(4, "The meeting room is clean and odorless", "pending", true))
-
-        checklist.add(CheckListModel(5, "Bathroom is cleaned and odorless", "pending", true))
-
-        checklist.add(
-            CheckListModel(
-                6,
-                "The batihroom is stocked with soap, paper towels and toilet tissue",
-                "pending",
-                true
-            )
-        )
-        checklist.add(
-            CheckListModel(
-                7,
-                "Sufficient material available at the site",
-                "pending",
-                true
-            )
-        )
-
-
-        return checklist
-    }
-
-    fun checklistDataInHindi(): ArrayList<CheckListModel> {
-        var checklist = ArrayList<CheckListModel>()
-
-        checklist.add(
-            CheckListModel(
-                1, "प्रवेश द्वार का शीशा साफ़ और मुफ़्त\n" +
-                        "धब्बे से", "लंबित", true
-            )
-        )
-        checklist.add(
-            CheckListModel(
-                2, "कार्यालय के फर्श पर सीढ़ियाँ नहीं हैं\n" +
-                        "और व्यवस्थित", "लंबित", true
-            )
-        )
-        checklist.add(CheckListModel(3, "टेबल, प्रिंटर धूल से मुक्त हैं", "लंबित", true))
-        checklist.add(CheckListModel(4, "बैठक कक्ष साफ और गंधहीन है", "लंबित", true))
-
-        checklist.add(
-            CheckListModel(
-                5,
-                "बाथरूम साफ और गंधहीन है", "लंबित", true
-            )
-        )
-
-        checklist.add(
-            CheckListModel(
-                6,
-                "बाटीरूम में साबुन, कागज़ के तौलिये और शौचालय के टिश्यू भरे हुए हैं",
-                "लंबित",
-                true
-            )
-        )
-        checklist.add(
-            CheckListModel(
-                7,
-                "साइट पर पर्याप्त सामग्री उपलब्ध हैं", "लंबित", true
-            )
-        )
-
-
-        return checklist
-    }
-
-    override fun onAddPhotoClick(checkListModel: CheckListModel, position: Int) {
+    override fun onAddPhotoClick(checkListModel: CheckListModelItem, position: Int) {
         if (checkCameraPermission()) {
             openCamera()
+            addPhotoPosition = checkListModel.ChecklistAutoID
         } else {
             requestCameraPermission()
         }
     }
 
-    override fun onViewPhotoClick(checkListModel: CheckListModel, position: Int) {
-        var intent= Intent(this@CheckListForHousekeeping,ViewHouseKeepingPhoto::class.java)
+    override fun onViewPhotoClick(checkListModel: CheckListModelItem, position: Int) {
+        var intent = Intent(this@CheckListForHousekeeping, ViewHouseKeepingPhoto::class.java)
         intent.putExtra("tourCode", tourCode)
         intent.putExtra("siteSelect", siteSelect)
-        intent.putExtra("position", mPosition)
+        intent.putExtra("headerSelect", headerSelect)
+        intent.putExtra("photoPosition", checkListModel.ChecklistAutoID)
+        Log.d("TAGGGGGGGGGGGGG", "onViewPhotoClick: ${position + 1}")
         startActivity(intent)
     }
 
-    override fun onSwitchOnClick(checkListModel: CheckListModel, position: Int) {
-        makeStatusComplete()
+    fun setSiteSelection(
+        sites: ArrayList<String>
+    ) {
+        val _SiteList = ArrayList<String>()
+        _SiteList.clear()
+        _SiteList.addAll(sites)
+
+        val adapterSelectionShift = ArrayAdapter(
+            this@CheckListForHousekeeping,
+            com.google.android.material.R.layout.support_simple_spinner_dropdown_item,
+            ArrayList<String>()
+        )
+        adapterSelectionShift.addAll(_SiteList)
+
+        adapterSelectionShift.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.spinnerSelectSite.adapter = adapterSelectionShift
+
+        binding.spinnerSelectSite.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                @SuppressLint("SuspiciousIndentation")
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    val selectedItem = parent?.getItemAtPosition(position)
+                    if (selectedItem != null) {
+                        var mSelectedheaderId = getClientHeaderBySiteName(selectedItem.toString())
+                        headerSelect = mSelectedheaderId
+
+                        if (siteSelect != null && tourCode != null && headerSelect!=null) {
+
+                            getCheckList(siteSelect ?: "", tourCode ?: "", headerSelect.toString())
+                            checkListAdapter = CheckListAdapter(this@CheckListForHousekeeping,
+                                this@CheckListForHousekeeping, siteSelect.toString(),
+                                tourCode.toString(),headerSelect.toString())
+
+                            binding.houseKeepingRecyclerView.adapter = checkListAdapter
+                        }
+                        Log.d("TAGGGGG", "onItemSelected: this condition $mSelectedheaderId")
+                    } else {
+                        Log.d("TAGGGGG", "onItemSelected: this condition null")
+
+                        siteSelect == ""
+                    }
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    parent?.let {
+                        if (it.count > 0) {
+
+                        }
+                    }
+                }
+            }
     }
 
+
+    private fun getHeaderFromServer(
+        selectSite: String
+    ) {
+        headerList.clear()
+        retrofitInstance.getChecklistHeader(
+            "sams", selectSite
+        ).enqueue(object : Callback<HeaderResponseModel?> {
+            override fun onResponse(
+                call: Call<HeaderResponseModel?>,
+                response: Response<HeaderResponseModel?>
+            ) {
+                if (response.isSuccessful) {
+                    val sizes = response.body()?.size?.minus(1)
+                    for (i in 0..sizes!!) {
+                        headerList.add(response.body()!!.get(i).ChecklistHeader)
+                        headerIDSelect.add(
+                            response.body()?.get(i)!!.ChecklistHeader to response.body()
+                                ?.get(i)!!.ChecklistHeaderAutoID
+                        )
+                    }
+                    Log.d("TAGGGG", "onResponse headerlist: $headerList")
+                    setSiteSelection(headerList)
+                }
+            }
+
+            override fun onFailure(
+                call: Call<HeaderResponseModel?>,
+                t: Throwable
+            ) {
+
+            }
+        })
+    }
+
+    fun getClientHeaderBySiteName(headerName: String): String? {
+        for (pair in headerIDSelect) {
+            if (pair.first == headerName) {
+                return pair.second // Return ClientCode if ClientSiteName matches
+            }
+        }
+        return null // Return null if no match is found
+    }
 
     override fun onBackPressed() {
         val intent = Intent(this@CheckListForHousekeeping, MainActivity::class.java)
@@ -213,51 +251,40 @@ class CheckListForHousekeeping : AppCompatActivity(), CheckListAdapter.Clicked {
     }
 
     private fun addPhotoApi(base64Image: Bitmap) {
-        var currentTime = getCurrentTimeFormatted()
+        val currentTime = getCurrentTimeFormatted()
         val imageIntoBase64 = bitmapToBase64(base64Image)
 
         Log.d(
             "ADDPHOTO",
-            "viewPhoto: TAGGG................1 ${UserObject.userId} 2 ${UserObject.userNames}" +
-                    "3 ${UserObject.locationAutoId} 4 ${siteSelect.toString()} 5 ${currentTime} 6 ${tourCode.toString()} 7 $mPosition" +
-                    "  9${mPosition.toString()}"
+            "viewPhoto: TAGGG................1 ${headerSelect} 2 ${UserObject.userNames}" +
+                    "3 ${UserObject.locationAutoId} 4 ${siteSelect.toString()} 5 ${currentTime}" +
+                    " 6 ${tourCode.toString()} 7 $addPhotoPosition"
         )
 
-        if (UserObject.userId.isNotEmpty() &&
-            UserObject.userNames.isNotEmpty() &&
-            mPosition != null &&
+        if (
+            addPhotoPosition.isNotEmpty() &&
             imageIntoBase64.isNotEmpty() &&
-            UserObject.locationAutoId.isNotEmpty() &&
-            siteSelect.toString().isNotEmpty()
-            && currentTime.isNotEmpty() &&
-            tourCode.toString().isNotEmpty()
+            siteSelect.toString().isNotEmpty()&&
+            tourCode.toString().isNotEmpty()&&headerSelect.toString().isNotEmpty()
         ) {
             retrofitInstance.insertCheckListImageHouseKeeping(
-                "sams",
-                UserObject.userId,
-                UserObject.userNames,
-                mPosition.toString(),
-                imageIntoBase64,
-                UserObject.locationAutoId,
-                siteSelect.toString(),
-                currentTime,
-                tourCode.toString()
-            ).enqueue(object : Callback<VerifyOtpResponse?> {
+                "sams",siteSelect.toString(),tourCode.toString(),headerSelect.toString(),addPhotoPosition,imageIntoBase64
+            ).enqueue(object : Callback<ImageAddingModel?> {
                 override fun onResponse(
-                    call: Call<VerifyOtpResponse?>,
-                    response: Response<VerifyOtpResponse?>
+                    call: Call<ImageAddingModel?>,
+                    response: Response<ImageAddingModel?>
                 ) {
                     if (response.isSuccessful) {
                         if (response.body()?.get(0)?.MessageID?.toInt() == 1) {
                             CustomToast.showToast(
                                 this@CheckListForHousekeeping,
-                                response.body()?.get(0)?.MessageString.toString()
+                               "Success"
                             )
                             Log.d("TARRRRRRRRRRRR", "onResponse: response success")
                         } else {
                             CustomToast.showToast(
                                 this@CheckListForHousekeeping,
-                                response.body()?.get(0)?.MessageString.toString()
+                               "Failed"
                             )
                         }
                     } else {
@@ -268,7 +295,7 @@ class CheckListForHousekeeping : AppCompatActivity(), CheckListAdapter.Clicked {
                     }
                 }
 
-                override fun onFailure(call: Call<VerifyOtpResponse?>, t: Throwable) {
+                override fun onFailure(call: Call<ImageAddingModel?>, t: Throwable) {
                     CustomToast.showToast(
                         this@CheckListForHousekeeping,
                         "Response Failed"
@@ -286,8 +313,6 @@ class CheckListForHousekeeping : AppCompatActivity(), CheckListAdapter.Clicked {
         val dateFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
         return dateFormat.format(currentTime)
     }
-
-
 
     private fun checkCameraPermission(): Boolean {
         return ContextCompat.checkSelfPermission(
@@ -326,14 +351,8 @@ class CheckListForHousekeeping : AppCompatActivity(), CheckListAdapter.Clicked {
         }
     }
 
-    private fun makeStatusComplete() {
+   /* private fun makeStatusComplete() {
         val currentTime = getCurrentTimeFormatted()
-
-        Log.d(
-            "STATUS",
-            "viewPhoto: TAGGG................1 ${UserObject.userId} 2 ${UserObject.userNames}" +
-                    "3 ${UserObject.locationAutoId} 4 ${siteSelect.toString()} 5 ${currentTime} 6 ${tourCode.toString()} 7 $mPosition"
-        )
 
 
         retrofitInstance.updateChecklistStatustoCompletedHouseKeeping(
@@ -363,7 +382,6 @@ class CheckListForHousekeeping : AppCompatActivity(), CheckListAdapter.Clicked {
                         )
                     }
 
-
                 } else {
                     CustomToast.showToast(
                         this@CheckListForHousekeeping,
@@ -372,7 +390,6 @@ class CheckListForHousekeeping : AppCompatActivity(), CheckListAdapter.Clicked {
                 }
             }
 
-
             override fun onFailure(call: Call<VerifyOtpResponse?>, t: Throwable) {
                 CustomToast.showToast(
                     this@CheckListForHousekeeping,
@@ -380,5 +397,28 @@ class CheckListForHousekeeping : AppCompatActivity(), CheckListAdapter.Clicked {
                 )
             }
         })
+    }*/
+
+    private fun getCheckList(clientCode: String, tourAutoId: String, headerAutoId: String) {
+        retrofitInstance.getChecklistName("sams", clientCode, tourAutoId, headerAutoId)
+            .enqueue(object : Callback<CheckListModel?> {
+                override fun onResponse(
+                    call: Call<CheckListModel?>,
+                    response: Response<CheckListModel?>
+                ) {
+                    if (response.isSuccessful) {
+                        response.body()?.let { checkListAdapter.updateList(it) }
+                    } else {
+
+                        CustomToast.showToast(this@CheckListForHousekeeping, "No Checklist Found")
+                    startActivity(Intent(this@CheckListForHousekeeping,MainActivity::class.java))
+
+                    }
+                }
+
+                override fun onFailure(call: Call<CheckListModel?>, t: Throwable) {
+
+                }
+            })
     }
 }

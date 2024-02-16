@@ -24,6 +24,7 @@ android {
     }
 
     buildTypes {
+
         release {
             isMinifyEnabled = false
             proguardFiles(
@@ -87,7 +88,7 @@ dependencies {
    // implementation("org.greenrobot:eventbus:3.2.0")
     implementation ("com.google.android.gms:play-services-location:21.0.0")
 
- //   implementation ("com.github.yuriy-budiyev:code-scanner:2.3.2")
+    implementation ("com.github.yuriy-budiyev:code-scanner:2.3.2")
 
     implementation ("de.hdodenhof:circleimageview:3.1.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")

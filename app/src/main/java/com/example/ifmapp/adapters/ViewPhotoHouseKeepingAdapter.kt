@@ -7,16 +7,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageView
-import android.widget.TextView
-import androidx.compose.runtime.currentCompositionLocalContext
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ifmapp.R
-import com.example.ifmapp.activities.checklists.CheckListModel
 import com.example.ifmapp.activities.checklists.housekeeping_model.ViewPhotoResponseItem
-import com.example.ifmapp.modelclasses.SalaryModel
 
 class ViewPhotoHouseKeepingAdapter(private val context: Context) :
     RecyclerView.Adapter<ViewPhotoHouseKeepingAdapter.DocumentsViewHolder>() {
@@ -46,12 +40,14 @@ class ViewPhotoHouseKeepingAdapter(private val context: Context) :
 
     override fun onBindViewHolder(holder: DocumentsViewHolder, position: Int) {
         val currentItem = checkList[position]
-        val bitmapImage = base64ToBitmap(currentItem.ImageBase64String)
-        if (bitmapImage != null) {
-            holder.image.setImageBitmap(bitmapImage)
-        }
-
-
+if (currentItem.ImageBase64String!=null){
+    val bitmapImage = base64ToBitmap(currentItem.ImageBase64String)
+    Log.d("TAGGGGGGGG", "onBindViewHolder: get bitmap $bitmapImage")
+    if (bitmapImage != null) {
+        Log.d("TAGGGGGGGG", "onBindViewHolder: get not null bitmap")
+        holder.image.setImageBitmap(bitmapImage)
+    }
+}
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -65,6 +61,8 @@ class ViewPhotoHouseKeepingAdapter(private val context: Context) :
 
     fun base64ToBitmap(base64Image: String): Bitmap? {
         try {
+            Log.d("TAGGGGGGGG", "base64ToBitmap: change into bitmap")
+
             val decodedBytes = Base64.decode(base64Image, Base64.DEFAULT)
             return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
         } catch (e: Exception) {

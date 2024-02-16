@@ -10,6 +10,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/appScreensBack"
         tools:context=".activities.CheckInScreen">
 
 
@@ -86,7 +87,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
-                    android:background="#F3F0F0"
+                    android:background="@color/cardviewback595151"
                     app:cardCornerRadius="10dp"
                     app:layout_constraintEnd_toEndOf="@id/top_icons_CL"
                     app:layout_constraintStart_toStartOf="@id/top_icons_CL"
@@ -189,7 +190,7 @@
                                                 android:layout_weight="1"
                                                 android:fontFamily="@font/roboto"
                                                 tools:text="Security Guard"
-                                                android:textColor="#5E5D5D"
+                                                android:textColor="@color/designationColor"
 
                                                 android:textSize="15sp" />
                                         </LinearLayout>
@@ -342,7 +343,7 @@
                                     android:gravity="center"
                                     android:text="Retake"
                                     android:textAllCaps="false"
-                                    android:textColor="#001C35"
+                                    android:textColor="@color/blueTC_Btn"
                                     android:textSize="14sp"
                                     android:textStyle="bold"
                                     app:layout_constraintEnd_toEndOf="@id/top_icons_CL"
@@ -359,7 +360,7 @@
                                     android:gravity="center"
                                     android:text="Submit"
                                     android:textAllCaps="false"
-                                    android:textColor="#ffffff"
+                                    android:textColor="@color/white"
                                     android:textSize="14sp"
 
                                     app:layout_constraintEnd_toEndOf="@id/top_icons_CL"
@@ -387,7 +388,7 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:gravity="end"
-                                        android:textColor="#001C35"
+                                        android:textColor="@color/blueTC_Btn"
                                         android:textSize="19sp"
                                         android:layout_weight="1"
                                         android:layout_marginEnd="5dp"
@@ -401,7 +402,7 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:gravity="start"
-                                        android:textColor="#001C35"
+                                        android:textColor="@color/blueTC_Btn"
                                         android:textSize="19sp"
                                         android:layout_marginStart="5dp"
                                         android:layout_weight="1"
@@ -421,7 +422,8 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:gravity="end"
-                                        android:textColor="#001C35"
+                                        android:textColor="@color/blueTC_Btn"
+
                                         android:textSize="19sp"
                                         android:layout_weight="1"
                                         android:layout_marginEnd="5dp"
@@ -435,7 +437,8 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:gravity="start"
-                                        android:textColor="#001C35"
+                                        android:textColor="@color/blueTC_Btn"
+
                                         android:textSize="19sp"
                                         android:layout_marginStart="5dp"
                                         android:layout_weight="1"
@@ -523,7 +526,7 @@
                         android:gravity="center"
                         android:lineHeight="26sp"
                         android:text="Attendance Marked Successfully!"
-                        android:textColor="#00AC60"
+                        android:textColor="@color/green_task"
                         android:textSize="19.18sp"
                         android:textStyle="bold" />
 
@@ -535,7 +538,7 @@
                         android:fontFamily="@font/roboto"
                         android:gravity="center"
                         android:text="Thank You!"
-                        android:textColor="#001C35"
+                        android:textColor="@color/blueTC_Btn"
 
                         android:textSize="24sp"
                         android:textStyle="bold" />
@@ -569,7 +572,7 @@
                         android:gravity="center"
 
                         android:text="Cameron Williamson"
-                        android:textColor="#001C35"
+                        android:textColor="@color/blueTC_Btn"
                         android:textSize="18sp"
                         android:textStyle="bold" />
 
@@ -583,7 +586,7 @@
                         android:gravity="center"
 
                         android:text="Security Guard - SO"
-                        android:textColor="#676767"
+                        android:textColor="@color/a676767"
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
@@ -610,7 +613,7 @@
                         android:gravity="center"
                         android:padding="8dp"
                         android:text="Shift A | 08:00 AM | Friday 7 Feb"
-                        android:textColor="#121212"
+                        android:textColor="@color/black"
                         android:textSize="15sp"
                         android:textStyle="bold" />
 
@@ -627,7 +630,7 @@
                         android:gravity="center"
                         android:lineHeight="18sp"
                         android:padding="8dp"
-                        android:textColor="#121212"
+                        android:textColor="@color/black"
                         android:textSize="15sp"
                         android:textStyle="bold"
                         tools:text="Axis Bank DLE UNT 12345 (CMW)" />
@@ -645,7 +648,7 @@
                         android:fontFamily="@font/roboto"
                         android:gravity="center"
                         android:padding="8dp"
-                        android:textColor="#121212"
+                        android:textColor="@color/black"
                         android:textSize="15sp"
                         android:textStyle="bold"
                         tools:text="Post: Main Gate - Post Rank SO" />

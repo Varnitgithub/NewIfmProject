@@ -10,6 +10,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/appScreensBack"
         tools:context=".activities.SignUpWithoutMobile">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -112,6 +113,7 @@
                         android:inputType="text|textNoSuggestions"
                         android:maxLines="1"
                         android:maxLength="12"
+                        android:textColor="@color/black"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -137,7 +139,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#EC2222"
+                android:textColor="@color/red"
                 android:textStyle="bold"
                 android:textSize="16sp"
 
@@ -195,6 +197,7 @@
                         android:maxLength="4"
                         android:maxLines="1"
                         android:padding="16dp"
+                        android:textColor="@color/black"
                         android:inputType="number"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -265,6 +268,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="3dp"
                                 android:layout_weight="1"
+                                android:textColor="@color/black"
                                 android:background="@drawable/edit_pin_back"
                                 android:inputType="number"
                                 android:gravity="center|bottom" />
@@ -293,6 +297,7 @@
                                 android:layout_weight="1"
                                 android:background="@drawable/edit_pin_back"
                                 android:inputType="number"
+                                android:textColor="@color/black"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
@@ -323,6 +328,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="3dp"
                                 android:layout_weight="1"
+                                android:textColor="@color/black"
                                 android:background="@drawable/edit_pin_back"
                                 android:inputType="number"
                                 app:layout_constraintBottom_toBottomOf="parent"
@@ -355,6 +361,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="3dp"
                                 android:layout_weight="1"
+                                android:textColor="@color/black"
                                 android:background="@drawable/edit_pin_back"
                                 android:inputType="number"
                                 app:layout_constraintBottom_toBottomOf="parent"
@@ -405,7 +412,7 @@
                             android:fontFamily="@font/roboto"
                             android:gravity="center"
                             android:text="00:00"
-                            android:textColor="#acacac"
+                            android:textColor="@color/taskButton"
                             android:textSize="15sp"
                             android:textStyle="bold"
                             app:layout_constraintBottom_toBottomOf="parent"

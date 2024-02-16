@@ -2,7 +2,7 @@
 <shape xmlns:tools="http://schemas.android.com/tools"
     android:shape="rectangle"  xmlns:android="http://schemas.android.com/apk/res/android"
     tools:ignore="MissingDefaultResource">
-<stroke android:color="#001C35"
+<stroke android:color="@color/blueTC_Btn"
     android:width="2dp"/>
     <corners android:radius="10dp"/>
 </shape>
