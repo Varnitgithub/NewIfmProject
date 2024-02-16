@@ -5,7 +5,7 @@ import com.google.gson.GsonBuilder
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-const val BASE_URL = "https://ifm360.in/sams/webservices/GroupLApp.asmx/"
+const val BASE_URL = "https://ifm360.in/GroupL/webservices/GroupLApp.asmx/"
 object RetrofitInstance {
 
     private val retrofit:Retrofit by lazy {

@@ -173,6 +173,34 @@
 
          </LinearLayout>
  -->
+
+        <com.otpview.OTPTextView
+            android:id="@+id/otp_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
+            app:otp_text_size="20dp"
+            android:visibility="gone"
+            app:bar_enabled="true"
+            app:bar_error_color="@color/red"
+            app:bar_active_color="@color/black"
+            app:bar_inactive_color="@android:color/darker_gray"
+            app:hide_otp_drawable="@drawable/bg_otp_box_hide"
+            app:bar_success_color="#33cc33"
+            app:bar_margin_bottom="0dp"
+            app:bar_margin_left="2dp"
+            android:layout_marginTop="14dp"
+            app:bar_margin_right="2dp"
+            app:bar_height="1.5dp"
+            app:box_margin="0dp"
+            app:layout_constraintStart_toStartOf="@id/top_icons_CL"
+            app:layout_constraintTop_toBottomOf="@id/id_icons"
+            app:height="40dp"
+            app:width="40dp"
+            app:hide_otp="false"
+            app:length="4"
+            app:otp=""/>
+
         <LinearLayout
             android:id="@+id/otp_section_LL"
             android:layout_width="0dp"
@@ -339,10 +367,8 @@
                             android:layout_weight="1"
                             android:gravity="center"
                             android:inputType="number|numberPassword"
-
                             android:maxLength="1"
                             android:textColor="@color/black"
-
                             android:textColorHint="@color/white"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"

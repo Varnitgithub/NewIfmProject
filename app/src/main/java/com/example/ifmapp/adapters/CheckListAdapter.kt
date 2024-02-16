@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import android.widget.Switch
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
@@ -35,6 +36,7 @@ class CheckListAdapter(
         var addPhoto: Button = itemView.findViewById(R.id.btn_addphoto)
         var viewPhoto: Button = itemView.findViewById(R.id.btn_viewPhoto)
         var switchButton: Switch = itemView.findViewById(R.id.switchButton)
+        var userInputText:EditText = itemView.findViewById(R.id.userInput_Txt)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DocumentsViewHolder {
@@ -69,11 +71,18 @@ class CheckListAdapter(
         holder.statusPendingDone.text = currentItem.Status
 
         if (currentItem.Status == "Pending") {
+            val empId = UserObject.userId
 
-            Log.d("TAGGGGGGGGGGG", "onBindViewHolder:123 $siteSelect $tourCode $headerSelect $position")
             holder.switchButton.setOnClickListener {
+
+                val remarkText = holder.userInputText.text.toString().trim()
+
+                Log.d("TAGGGGGGGGGGG", "onBindViewHolder:123 $siteSelect $tourCode" +
+                        " $headerSelect $position $remarkText $empId")
+
                 retrofitInstance.updateChecklistStatustoCompletedHouseKeeping(
-                    "sams", siteSelect, tourCode, headerSelect,currentItem.ChecklistAutoID
+                    "sams", siteSelect, tourCode,
+                    headerSelect,currentItem.ChecklistAutoID,empId,remarkText
                 ).enqueue(object : Callback<ImageAddingModel?> {
                     override fun onResponse(
                         call: Call<ImageAddingModel?>,
@@ -82,11 +91,16 @@ class CheckListAdapter(
                         if (response.isSuccessful) {
 
                             if (response.body()?.get(0)?.MessageID?.toInt() == 1) {
+
                                 CustomToast.showToast(context,"Status Updated")
 
                                 holder.statusPendingDone.text = "Completed"
-                                holder.switchButton.isEnabled = false
+                                holder.switchButton.isClickable = false
                                 holder.switchButton.isChecked = true
+                                holder.addPhoto.isClickable = false
+                                holder.userInputText.setText(remarkText)
+                                holder.userInputText.isEnabled = false
+
 
                             } else {
                              CustomToast.showToast(context,"Status Update Failed")
@@ -107,10 +121,13 @@ class CheckListAdapter(
                     }
                 })
             }
-        } else {
-            holder.switchButton.isEnabled = false
+        }
+        else {
+            holder.switchButton.isClickable = false
+            holder.switchButton.isChecked = true
             holder.addPhoto.isClickable= false
-            holder.addPhoto.isEnabled  =false
+            holder.userInputText.setText(currentItem.Remarks)
+            holder.userInputText.isEnabled = false
 
         }
     }

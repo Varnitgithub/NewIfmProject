@@ -27,6 +27,8 @@ import com.example.ifmapp.modelclasses.verifymobile.OtpSend
 import com.example.ifmapp.modelclasses.verifymobile.VerifyOtpResponse
 import com.example.ifmapp.toast.CustomToast
 import com.example.ifmapp.utils.IMEIGetter
+import com.otpview.OTPListener
+import com.otpview.OTPTextView
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -39,10 +41,13 @@ class MobileRegisterScreen : AppCompatActivity() {
     private val LOCATION_PERMISSION_REQUEST_CODE = 123
     private val READ_PHONE_PERMISSION = 123
     private var oneTimeResend = true
+    private lateinit var otpTextView: OTPTextView
+
     private val BACKGROUND_LOCATION_CODE = 111
     private var countDownTimer: CountDownTimer? = null
     private val initialTimeMillis: Long = 30000 // 30 seconds
-    private val countDownIntervalMillis: Long = 1000 // 1 second
+    private val countDownIntervalMillis: Long = 1000
+    private var userOtp:String=""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,6 +57,8 @@ class MobileRegisterScreen : AppCompatActivity() {
         binding.resentOtp.visibility = View.GONE
         binding.otpSectionLL.visibility = View.GONE
         binding.progressBar.visibility = View.GONE
+        otpTextView = findViewById(R.id.otp_view)
+
         /*   if (checkPermission()) {
 
            } else {
@@ -60,12 +67,19 @@ class MobileRegisterScreen : AppCompatActivity() {
 
    */
         //getPhoneRead()
+otpTextView.otpListener = object :OTPListener{
+    override fun onInteractionListener() {
 
+    }
 
+    override fun onOTPComplete(otp: String) {
+        userOtp = otp
+    }
+
+}
 //
         binding.btnContinue.setOnClickListener {
             binding.progressBar.visibility = View.VISIBLE
-
             sendOTP()
         }
 
@@ -307,7 +321,8 @@ class MobileRegisterScreen : AppCompatActivity() {
                                         )
 
                                     }
-                                } else {
+                                }
+                                else {
 
                                     if (binding.otp1.text.isNotEmpty() && binding.otp2.text.isNotEmpty()
                                         && binding.otp3.text.isNotEmpty() && binding.otp4.text.isNotEmpty()

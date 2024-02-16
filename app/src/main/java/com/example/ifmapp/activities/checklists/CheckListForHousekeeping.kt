@@ -253,14 +253,6 @@ class CheckListForHousekeeping : AppCompatActivity(), CheckListAdapter.Clicked {
     private fun addPhotoApi(base64Image: Bitmap) {
         val currentTime = getCurrentTimeFormatted()
         val imageIntoBase64 = bitmapToBase64(base64Image)
-
-        Log.d(
-            "ADDPHOTO",
-            "viewPhoto: TAGGG................1 ${headerSelect} 2 ${UserObject.userNames}" +
-                    "3 ${UserObject.locationAutoId} 4 ${siteSelect.toString()} 5 ${currentTime}" +
-                    " 6 ${tourCode.toString()} 7 $addPhotoPosition"
-        )
-
         if (
             addPhotoPosition.isNotEmpty() &&
             imageIntoBase64.isNotEmpty() &&
@@ -278,13 +270,13 @@ class CheckListForHousekeeping : AppCompatActivity(), CheckListAdapter.Clicked {
                         if (response.body()?.get(0)?.MessageID?.toInt() == 1) {
                             CustomToast.showToast(
                                 this@CheckListForHousekeeping,
-                               "Success"
+                               "Photo Updated"
                             )
                             Log.d("TARRRRRRRRRRRR", "onResponse: response success")
                         } else {
                             CustomToast.showToast(
                                 this@CheckListForHousekeeping,
-                               "Failed"
+                               "Photo Update Failed"
                             )
                         }
                     } else {
@@ -400,7 +392,7 @@ class CheckListForHousekeeping : AppCompatActivity(), CheckListAdapter.Clicked {
     }*/
 
     private fun getCheckList(clientCode: String, tourAutoId: String, headerAutoId: String) {
-        retrofitInstance.getChecklistName("sams", clientCode, tourAutoId, headerAutoId)
+        retrofitInstance.getChecklistName("sams", clientCode, tourAutoId, headerAutoId,UserObject.userId)
             .enqueue(object : Callback<CheckListModel?> {
                 override fun onResponse(
                     call: Call<CheckListModel?>,

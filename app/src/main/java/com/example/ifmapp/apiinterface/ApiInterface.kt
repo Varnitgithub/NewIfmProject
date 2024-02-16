@@ -198,6 +198,8 @@ interface ApiInterface {
         @Field("TourAutoId") TourAutoId: String,
         @Field("ChecklistHeaderAutoID") ChecklistHeaderAutoID: String,
         @Field("ChecklistAutoID") ChecklistAutoID: String,
+        @Field("EmpCode") EmpCode: String,
+        @Field("Remarks") Remarks: String,
     ):Call<ImageAddingModel>
     @FormUrlEncoded
     @POST("GetClientChecklistImage")
@@ -241,7 +243,8 @@ interface ApiInterface {
         @Field("connectionKey") connectionKey: String,
         @Field("ClientCode") ClientCode: String,
         @Field("TourAutoId") TourAutoId: String,
-        @Field("ChecklistHeaderAutoID") ChecklistHeaderAutoID: String
+        @Field("ChecklistHeaderAutoID") ChecklistHeaderAutoID: String,
+        @Field("EmpID") EmpID: String
     ):Call<CheckListModel>
 
 }

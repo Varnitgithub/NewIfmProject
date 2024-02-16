@@ -75,7 +75,7 @@ private lateinit var retrofitInstance:ApiInterface
 
         addAccountAdapter = AddAccountAdapter(this, this)
         binding.accountsRecyclerView.layoutManager =
-            GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, true)
+            GridLayoutManager(this, 4, GridLayoutManager.VERTICAL, true)
         binding.accountsRecyclerView.adapter = addAccountAdapter
         val employeesList = ArrayList<AddAccountModel>()
 
@@ -240,7 +240,7 @@ private lateinit var retrofitInstance:ApiInterface
             }
 
             override fun onFailure(call: Call<LoginByPINResponse?>, t: Throwable) {
-                TODO("Not yet implemented")
+
             }
         })
     }
