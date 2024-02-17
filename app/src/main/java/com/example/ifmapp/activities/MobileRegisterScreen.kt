@@ -58,6 +58,7 @@ class MobileRegisterScreen : AppCompatActivity() {
         binding.otpSectionLL.visibility = View.GONE
         binding.progressBar.visibility = View.GONE
         otpTextView = findViewById(R.id.otp_view)
+        binding.btnContinue.isClickable = false
 
         /*   if (checkPermission()) {
 
@@ -81,6 +82,7 @@ otpTextView.otpListener = object :OTPListener{
         binding.btnContinue.setOnClickListener {
             binding.progressBar.visibility = View.VISIBLE
             sendOTP()
+            binding.btnContinue.isClickable = false
         }
 
         binding.resentOtp.setOnClickListener {
@@ -104,16 +106,19 @@ otpTextView.otpListener = object :OTPListener{
             ) {
 
             }
-
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val currentLength = s?.length ?: 0
                 if (currentLength == 10) {
                     binding.btnContinue.setTextColor(resources.getColor(R.color.white))
                     binding.btnContinue.setBackgroundResource(R.drawable.button_back)
+                    binding.btnContinue.isClickable = true
+                    binding.btnContinue.isEnabled = true
 
                 } else {
                     binding.btnContinue.setTextColor(resources.getColor(R.color.check_btn))
                     binding.btnContinue.setBackgroundResource(R.drawable.button_backwhite)
+                    binding.btnContinue.isClickable = false
+                    binding.btnContinue.isEnabled = false
                 }
             }
 
@@ -218,6 +223,8 @@ otpTextView.otpListener = object :OTPListener{
                 if (oneTimeResend){
                     binding.resentOtp.isEnabled = true
                     binding.resentOtp.visibility = View.VISIBLE
+                    binding.timerCountCL.visibility = View.GONE
+
                 }
 
 
@@ -283,10 +290,7 @@ otpTextView.otpListener = object :OTPListener{
                                                         startCountdownTimer()
 
                                                     } else {
-
                                                         binding.progressBar.visibility = View.GONE
-
-
                                                     }
 
                                                 }
@@ -297,11 +301,6 @@ otpTextView.otpListener = object :OTPListener{
                                                 ) {
                                                     Log.d("TAGGGGGGGG", "onFailure: ${t.message}")
                                                     binding.progressBar.visibility = View.GONE
-
-
-                                                    // binding.otpSectionLL.visibility = View.VISIBLE
-
-
                                                 }
                                             })
                                         } else {

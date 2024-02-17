@@ -2,10 +2,13 @@ package com.example.ifmapp.fragments
 
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.location.Location
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -539,12 +542,16 @@ class HomeFragment(
                             )
                             setSiteSelection(locationAutoid, userId, asmtId.toString(), siteList)
                         } else {
-                            CustomToast.showToast(
-                                requireContext(),
-                                "Employee Site mapping not exists!!"
-                            )
+                            val dialogBuilder= AlertDialog.Builder(requireContext())
+                            dialogBuilder.setTitle("GroupL")
+                            dialogBuilder.setMessage("Employee Site mapping not exists!!")
+                            dialogBuilder.show()
                             binding.progressBar.visibility = View.GONE
-                            startActivity(Intent(requireContext(), DashBoardScreen::class.java))
+                            val delayMillis = 600L
+                            Handler().postDelayed({
+                                startActivity(Intent(requireContext(), DashBoardScreen::class.java))
+                            }, delayMillis)
+
                         }
                     }
                 }
@@ -745,8 +752,8 @@ class HomeFragment(
             })
 
 
-    }
 
+    }
 }
 
 
